@@ -258,7 +258,7 @@ export function createWorld(host:HTMLElement) {
     if(disposed)return;
     const w=Math.max(1,host.clientWidth),h=Math.max(1,host.clientHeight);
     camera.aspect=w/h;camera.fov=w<740?51:38;camera.updateProjectionMatrix();
-    renderer.setPixelRatio(Math.min(devicePixelRatio,w<740?1.15:1.65));
+    renderer.setPixelRatio(Math.min(devicePixelRatio,w<740?1:1.25));
     renderer.setSize(w,h,false);
   }
   const ro=new ResizeObserver(resize);ro.observe(host);resize();
