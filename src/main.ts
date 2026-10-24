@@ -83,7 +83,7 @@ app.innerHTML = `
 </header>
 <main>
   <section class="opening" id="start" aria-label="معرفی راماچ سیستم">
-    <div class="opening-center">
+    <div class="opening-center"><div class="opening-wordmark">
       <svg class="signature-logo" viewBox="0 0 1080 300" role="img" aria-label="RAMACH SYSTEMS" xmlns="http://www.w3.org/2000/svg">
         <defs><linearGradient id="signature-ink" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#c3ae8b"/><stop offset=".45" stop-color="#eee7d8"/><stop offset="1" stop-color="#9fb5ac"/></linearGradient></defs>
         <g class="signature-strokes" fill="none" stroke="url(#signature-ink)" stroke-width="4.1" stroke-linejoin="round" stroke-linecap="round">
@@ -96,8 +96,8 @@ app.innerHTML = `
         </g>
         <path class="signature-accent" d="M44 260 H1019" fill="none" stroke="#aa916d" stroke-width=".8"/>
       </svg>
-      <span class="signature-systems" dir="ltr">SYSTEMS</span>
-    </div>
+      <span class="opening-systems" dir="ltr">SYSTEMS</span>
+    </div></div>
   </section>
   <section id="journey" class="journey" aria-label="سفر تعاملی در اکوسیستم راماچ">
     <div class="stage">
