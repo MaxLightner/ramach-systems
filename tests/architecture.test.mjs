@@ -35,7 +35,7 @@ test('the narrative remains problem-first and distinguishes current products fro
 test('chapter headings include a restrained custom line icon',()=>{
   assert.match(main,/const chapterIcons = \[/);
   assert.match(main,/class="chapter-symbol"/);
-  assert.match(css,/\.chapter-symbol svg\{width:23px;height:23px/);
+  assert.match(css,/\.chapter-symbol svg\{display:block;width:23px;height:23px/);
   assert.match(css,/\.chapter-eyebrow\{[\s\S]*?display:flex;[\s\S]*?align-items:center/);
 });
 test('the hub is a small chip and seven story nodes connect by thin light traces',()=>{
