@@ -1,47 +1,42 @@
 # RAMACH SYSTEMS
 
-Persian-first, architectural technology homepage with a minimal real-time WebGL circuit board.
+Interactive architectural-technology brand website.
 
-- **Live:** https://maxlightner.github.io/ramach-systems/
-- **Stack:** TypeScript, Vite, Three.js. Static delivery; no server, user accounts, tracking or operational integrations.
-- **Design:** charcoal green, warm mineral paper, copper light; local Vazirmatn and Manrope variable fonts.
+**Website:** https://maxlightner.github.io/ramach-systems/
 
-## Development
+## Direction
 
-```sh
+- The opening is a quiet, flat architectural-line RAMACH mark: no 3D scene in the first viewport.
+- The first scroll reveals a **persistent, art-directed Three.js world** with five recognizable zones: architecture studio, construction site, owner oversight, data center, finance/operations.
+- The camera travels through a timeline controlled by **scroll in both directions**. Raw wheel delta never drives the camera. Frame-rate independent exponential damping produces soft, reversible movement.
+- Text is regular HTML/CSS on top of the scene, not 3D meshes. Typography is at least **9 CSS pixels** across breakpoints.
+- Final contact/CTA is the **only full-width static section after the 3D narrative**.
+
+## Stack
+
+TypeScript / Vite / Three.js, static GitHub Pages build. No backend, accounts, live app links, Blender bridges or streaming in this phase.
+
+```bash
 npm ci
-npm run dev
 npm test
 npm run build
-npm run preview
+npm run dev
 ```
 
-Node 22.12+ or 24+. Dependencies and lockfile are committed. GitHub Actions builds/tests pushes to `main`, then uploads and deploys `dist` to GitHub Pages. Pull requests build/test without deploying. Pages source must be **GitHub Actions**.
+GitHub Actions publishes the Vite output on pushes to main. Do not change the Pages base unless the custom domain is configured.
 
-## Modules
+## Components
 
-```text
-src/
-  config/ecosystem.ts   # Typed zone definitions and future product registry
-  content/home.ts       # Company/service editorial content
-  main.ts               # Semantic homepage and interaction state
-  styles.css            # Responsive visual system
-  scene/
-    ecosystem.ts        # Renderer, camera, light, interaction, lifecycle
-    board.ts            # Minimal processor, five modules, circuit traces and material system
-docs/architecture.md    # Expansion decisions and boundaries
-```
+- `src/main.ts` — editorial story, flat copy, scroll damping, chapter transitions
+- `src/scene/world.ts` — 3D world, sculptural central hub, architectural mini-environments, paths and reversible camera choreography
+- `src/styles.css` — brand art direction, intro line drawing, cinematic overlays, CTA and responsive layout
 
-The five processor modules and animated traces illustrate the company's connected-ecosystem vision. They are **not a live project dashboard**. Product names are future connections, not active links. The homepage contains no photography or generated raster artwork; the hero is rendered entirely as interactive Three.js geometry.
+The 3D objects are **stylized, procedural concept art**. They are not detailed photorealistic site assets or production digital twins. The phase does not connect real projects or users.
 
-## Interaction and performance
+## Performance
 
-Drag horizontally to orbit; select a module using scene labels or accessible buttons below it. Reset restores the master view. Pause stops autonomous movement; reduced-motion preference pauses it initially and makes focus changes immediate. A quality toggle disables shadows and reduces pixel ratio. Mobile starts in this mode. Rendering suspends when the experience leaves the viewport or the tab is hidden. The simple board geometry avoids model downloads and expensive postprocessing. Three.js is loaded separately from the editorial page. If WebGL initialization fails, all company content and module explanations remain usable.
+Lazy scene import when approaching the interactive section; capped pixel ratio on desktop and mobile; no external 3D model downloads; supports reduced-motion settings; canvas rendering is skipped when narrative is outside the viewport.
 
-Fonts and geometry ship locally: no third-party runtime API, photograph or model download. Labels are local canvas textures. Font licenses are included through the npm font packages. Three.js is MIT licensed; see its bundled package license. Company identity and original site design are not assigned an open-source license by this repository.
+## Next
 
-## Deployment on another domain
-
-`BASE_PATH=/ramach-systems/ npm run build` is used by Pages. The default relative base also supports a domain root. For a verified custom domain, configure DNS and Pages first, update the workflow base to `/`, then add `public/CNAME` with the verified domain. No domain or subdomain is assumed by this release. See the [official Pages workflow documentation](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages).
-
-The initial contact route is this repository's GitHub Discussions because no verified company email or phone number was supplied. Replace it with confirmed company contact details when available.
+Replace the temporary GitHub Discussions contact with verified business contact. In later phases add site pages, high-fidelity 3D assets, product links and separate application subdomains after their production endpoints are verified.
