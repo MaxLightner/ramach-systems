@@ -525,7 +525,7 @@ body{font-family:'Vazirmatn Variable','Vazirmatn',sans-serif;font-size:18px;back
 .opening-wordmark-svg{display:block;width:100%;height:auto;overflow:visible}
 .wordmark-line{
   fill:none;stroke:#e7e3d8;stroke-width:2.15;stroke-linecap:round;stroke-linejoin:round;
-  stroke-dasharray:1000;stroke-dashoffset:1000;filter:drop-shadow(0 0 7px #8fd7c516);
+  stroke-dasharray:5000;stroke-dashoffset:5000;filter:drop-shadow(0 0 7px #8fd7c516);
 }
 .wordmark-primary{
   font-family:'Manrope Variable','Manrope',sans-serif;font-size:146px;font-weight:680;letter-spacing:10px;

@@ -12,7 +12,7 @@ test('the opening logo is two outlined SVG text paths that draw progressively',(
   assert.match(main,/class="wordmark-line wordmark-primary"[^>]*pathLength="1000">RAMACH/);
   assert.match(main,/class="wordmark-line wordmark-secondary"[^>]*pathLength="1000">SYSTEMS/);
   assert.doesNotMatch(main,/class="signature-ramach"/);
-  assert.match(css,/\.wordmark-line\{[\s\S]*?fill:none;[\s\S]*?stroke-dasharray:1000;[\s\S]*?stroke-dashoffset:1000/);
+  assert.match(css,/\.wordmark-line\{[\s\S]*?fill:none;[\s\S]*?stroke-dasharray:5000;[\s\S]*?stroke-dashoffset:5000/);
   assert.match(css,/@keyframes drawWordmark/);
 });
 test('camera travel is smooth, stable and synchronized to the eight copy chapters',()=>{
