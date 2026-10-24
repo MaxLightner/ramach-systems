@@ -7,28 +7,36 @@ const world=await readFile(new URL('../src/scene/world.ts',import.meta.url),'utf
 const css=await readFile(new URL('../src/styles.css',import.meta.url),'utf8');
 const readme=await readFile(new URL('../README.md',import.meta.url),'utf8');
 
-test('the two-line logo is built from real SVG outline paths and draws one glyph at a time',()=>{
+test('the opening is deliberately blank before a two-line outline logo begins drawing',()=>{
   assert.match(main,/const wordmarkGlyphPaths = \{/);
   assert.match(main,/wordmarkTopRow\.map/);
   assert.match(main,/wordmarkBottomRow\.map/);
   assert.match(main,/pathLength="1000"/);
   assert.doesNotMatch(main,/<text class="wordmark-line/);
-  assert.match(main,/--line-delay:1\.58s/);
-  assert.match(css,/\.wordmark-glyph path\{[\s\S]*?fill:none;[\s\S]*?stroke-dasharray:1000;stroke-dashoffset:1000/);
-  assert.match(css,/@keyframes drawGlyph/);
-  assert.match(css,/prefers-reduced-motion:reduce[\s\S]*?\.wordmark-glyph path\{animation:none;stroke-dashoffset:0\}/);
+  assert.match(main,/window\.setTimeout\(\(\)=>document\.body\.classList\.add\('logo-drawing'\),680\)/);
+  assert.match(css,/\.opening\{[\s\S]*?background:#03090d/);
+  assert.match(css,/\.opening-grid,\.opening::before,\.opening::after\{display:none\}/);
+  assert.match(css,/\.opening-wordmark\{[\s\S]*?opacity:0;visibility:hidden/);
+  assert.match(css,/body\.logo-drawing \.opening-wordmark-svg \.wordmark-glyph path\{[\s\S]*?animation:drawGlyphFinal/);
+  assert.match(css,/@keyframes drawGlyphFinal/);
 });
-test('camera approaches a 3D chapter mark, settles, then allows its copy to appear',()=>{
-  assert.match(main,/const settledIndex=local>=\.84\?idx:-1/);
-  assert.match(main,/world=createWorld\(worldEl,chapters\.map\(c=>c\.align\)\)/);
-  assert.match(world,/const chapterTargets=\[/);
-  assert.match(world,/position\.distanceTo\(to\.position\)/);
-  assert.match(world,/new THREE\.QuadraticBezierCurve3\(from,control,to\)/);
-  assert.match(world,/const travel=smooth\(0,1,clamp\(local\/\.78\)\)/);
-  assert.match(world,/camera\.position\.copy\(cameraCurve\.getPoint\(travel\)\)/);
-  assert.match(world,/camera\.lookAt\(focusCurve\.getPoint\(travel\)\)/);
-  assert.doesNotMatch(world,/const focusPath=new THREE\.CatmullRomCurve3\(focusPoints/);
-  assert.doesNotMatch(world,/camera\.position\.set\(framedFocus/);
+test('the camera makes real 3D approaches, then returns to the central chip for the brand reveal',()=>{
+  assert.match(main,/const storyEnd=0\.82/);
+  assert.match(main,/const settledIndex=-1/);
+  assert.match(main,/if\(local>=\.77\)settledIndex=idx/);
+  assert.match(main,/else if\(local<\.16&&idx>0\)settledIndex=idx-1/);
+  assert.match(main,/closingBrand\.classList\.toggle\('is-visible',displayed>=\.965\)/);
+  assert.match(world,/const storyEnd=0\.82/);
+  assert.match(world,/const closingMark:CameraMark/);
+  assert.match(world,/const returnProgress=smooth\(0,1,clamp\(\(progress-storyEnd\)\/\(1-storyEnd\)\)\)/);
+  assert.match(world,/camera\.position\.copy\(cameraCurve\.getPoint\(returnProgress\)\)/);
+  assert.match(world,/camera\.lookAt\(focusCurve\.getPoint\(returnProgress\)\)/);
+});
+test('each chapter is revealed after arrival and lingers into the next camera move',()=>{
+  assert.match(main,/if\(local>=\.77\)settledIndex=idx/);
+  assert.match(main,/else if\(local<\.16&&idx>0\)settledIndex=idx-1/);
+  assert.match(css,/\.chapter\{[\s\S]*?transition:opacity \.58s/);
+  assert.match(css,/\.chapter\.is-active\{[\s\S]*?opacity:1;visibility:visible/);
 });
 test('the story retains eight problem-first chapters and labels future work honestly',()=>{
   assert.equal((main.match(/"k":\s*"/g)||[]).length,8);
@@ -41,6 +49,15 @@ test('chapter headings include restrained custom line icons',()=>{
   assert.match(main,/const chapterIcons = \[/);
   assert.match(main,/class="chapter-symbol"/);
   assert.match(css,/\.chapter-symbol svg\{display:block;width:23px;height:23px/);
+});
+test('node models visually match construction, collaboration, spatial layout, data, finance and architecture',()=>{
+  assert.match(world,/Construction mismatch: the built doorway/);
+  assert.match(world,/Three actual work participants connected to one shared model/);
+  assert.match(world,/inhabitable room, furniture and a translucent AR placement preview/);
+  assert.match(world,/desktop design viewport, web card and phone/);
+  assert.match(world,/project ledger, cost columns and a settled stack of payments/);
+  assert.match(world,/browser-like architectural portfolio showing a recognizable facade/);
+  assert.match(world,/neural lattice/);
 });
 test('the hub is a small microchip and seven story nodes connect through thin light paths',()=>{
   const v=world.match(/const nodePositions=\[([\s\S]*?)\] as const;/);
@@ -55,30 +72,26 @@ test('the hub is a small microchip and seven story nodes connect through thin li
   assert.match(world,/reverse=lane===1/);
   assert.match(world,/q\.reverse\?1-pulseTravel:pulseTravel/);
 });
-test('the 3D scene keeps its rendering workload restrained',()=>{
-  assert.match(world,/renderer\.shadowMap\.enabled = false/);
-  assert.match(world,/mesh\.castShadow=false;mesh\.receiveShadow=false/);
-  assert.match(world,/Math\.min\(devicePixelRatio,w<740\?1:1\.25\)/);
+test('the final page has a ticker at the top, one central CTA and a narrow utility footer',()=>{
+  const ending=main.slice(main.indexOf('<section class="ending"'),main.indexOf('</main>'));
+  assert.ok(ending.indexOf('class="ecosystem-strip"')<ending.indexOf('class="ending-center"'));
+  assert.ok(ending.indexOf('class="ending-center"')<ending.indexOf('class="site-footer"'));
+  assert.match(ending,/class="ending-cta" id="open-callback" type="button"/);
+  assert.doesNotMatch(ending,/class="ending-inner"/);
+  assert.doesNotMatch(ending,/class="ending-layout"/);
+  for(const label of ['محصولات','مقالات','ثبت‌نام','درباره راماچ','تماس','شبکه‌ها'])assert.ok(ending.includes(label),label);
+  assert.match(main,/endingObserver\.observe\(endingSection\)/);
+  assert.match(css,/@keyframes ramachTicker/);
+  assert.match(css,/\.ending-center\{[\s\S]*?place-items:center/);
 });
-test('the product strip identifies RAMACH products instead of implying external client logos',()=>{
-  assert.match(main,/class="ecosystem-strip"/);
-  for(const brand of ['ARCHIYAR','CHIDO','KITCHYAR','KAMCHEH','MIZATO'])assert.ok(main.includes(brand),brand);
-  assert.match(main,/محصولات اکوسیستم/);
-  assert.match(css,/@keyframes ecosystemDrift/);
-});
-test('the callback form never claims success without a configured endpoint',()=>{
-  assert.match(main,/id="callback-form"/);
-  assert.match(main,/name="phone" type="tel"/);
+test('the callback form is hidden until the single CTA opens its dialog and never claims false success',()=>{
+  assert.match(main,/id="callback-overlay" hidden/);
+  assert.match(main,/openCallback\.addEventListener\('click',showCallback\)/);
+  assert.match(main,/closeCallback\.addEventListener\('click',hideCallback\)/);
   assert.match(main,/VITE_CONTACT_ENDPOINT/);
   assert.match(main,/شماره شما ارسال یا ذخیره نشد/);
   assert.match(main,/response\.ok/);
-});
-test('the CTA is a compact editorial link, not an oversized pill',()=>{
-  assert.match(main,/class="ending-cta" href="#callback-form"/);
-  assert.match(main,/class="ending-cta-icon" aria-hidden="true"><svg/);
-  assert.match(css,/\.ending-cta\{[\s\S]*?min-width:0;padding:0;border:0;border-radius:0;background:transparent/);
-  assert.match(css,/\.ending-cta-icon\{[\s\S]*?width:38px;height:38px/);
-  assert.match(css,/\.ending-cta:hover \.ending-cta-icon/);
+  assert.match(css,/\.callback-overlay\[hidden\]\{display:none!important\}/);
 });
 test('all authored CSS font declarations remain at least 13px',()=>{
   const declarations=[...css.matchAll(/(?:font-size|font)\s*:\s*([^;}]+)/g)].map(m=>m[1]);
@@ -88,4 +101,10 @@ test('all authored CSS font declarations remain at least 13px',()=>{
   assert.deepEqual(below,[]);
   assert.match(css,/--minimum-text-size:13px/);
   assert.match(readme,/13 CSS px/);
+});
+test('the 3D scene keeps its rendering workload restrained and respects reduced motion',()=>{
+  assert.match(world,/renderer\.shadowMap\.enabled = false/);
+  assert.match(world,/mesh\.castShadow=false;mesh\.receiveShadow=false/);
+  assert.match(world,/Math\.min\(devicePixelRatio,w<740\?1:1\.25\)/);
+  assert.match(css,/prefers-reduced-motion:reduce/);
 });

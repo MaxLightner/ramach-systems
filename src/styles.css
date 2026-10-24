@@ -733,3 +733,274 @@ body{font-family:'Vazirmatn Variable','Vazirmatn',sans-serif;font-size:18px;back
   .chapter.is-active{transition-delay:0s}
   .ending-cta,.ending-cta-text,.ending-cta-icon{transition:none}
 }
+
+
+/* RAMACH FINAL PASS — black-start logo build, return-to-core, LED ticker and a single CTA. */
+.opening{
+  background:#03090d;
+  min-height:100svh;
+  height:112svh;
+}
+.opening-grid,.opening::before,.opening::after{display:none}
+.opening-center{width:100%;margin:0;opacity:1;transform:none}
+.opening-wordmark{
+  position:relative;display:block;width:min(88vw,1040px);margin:0 auto;
+  opacity:0;visibility:hidden;transform:translateY(8px);
+  transition:opacity .42s ease,transform .72s cubic-bezier(.16,1,.3,1),visibility 0s linear .42s;
+}
+.opening-wordmark::before{
+  content:"";position:absolute;z-index:-1;inset:17% 10%;
+  background:radial-gradient(ellipse at center,rgba(105,197,177,.12),rgba(185,157,114,.055) 42%,transparent 73%);
+  filter:blur(26px);opacity:0;transform:scale(.7);pointer-events:none;
+}
+.opening-wordmark::after{display:none}
+.opening-wordmark-svg{display:block;width:100%;height:auto;overflow:visible;filter:none}
+.opening-wordmark-svg .wordmark-glyph path{
+  fill:none;stroke:url(#wordmark-stroke);stroke-width:4.6;stroke-linecap:round;stroke-linejoin:round;
+  stroke-dasharray:1000;stroke-dashoffset:1000;opacity:1;filter:none;animation:none;
+}
+body.logo-drawing .opening-wordmark{
+  opacity:1;visibility:visible;transform:translateY(0);transition-delay:0s;
+}
+body.logo-drawing .opening-wordmark::before{animation:wordmarkBloom 1.7s 1.05s ease-out both}
+body.logo-drawing .opening-wordmark-svg .wordmark-glyph path{
+  animation:drawGlyphFinal .86s cubic-bezier(.65,0,.2,1) calc(var(--line-delay) + var(--glyph-delay)) both;
+}
+@keyframes drawGlyphFinal{
+  0%{stroke-dashoffset:1000;filter:drop-shadow(0 0 0 rgba(126,222,198,0));opacity:.65}
+  14%{opacity:1}
+  100%{stroke-dashoffset:0;filter:drop-shadow(0 0 4px rgba(126,222,198,.36))}
+}
+@keyframes wordmarkBloom{
+  0%{opacity:0;transform:scale(.7)}
+  45%{opacity:.48;transform:scale(1.04)}
+  100%{opacity:.16;transform:scale(1.12)}
+}
+@media(max-width:700px){
+  .opening-wordmark{width:94vw}
+  .opening-wordmark-svg .wordmark-glyph path{stroke-width:4.2}
+}
+
+/* Chapter copy appears after the camera nearly settles and lingers into the next move. */
+.chapter{
+  opacity:0;visibility:hidden;
+  transition:opacity .58s cubic-bezier(.2,.7,.1,1),transform .68s cubic-bezier(.16,1,.3,1),visibility 0s linear .58s;
+}
+.chapter.is-active{
+  opacity:1;visibility:visible;
+  transition-delay:0s,0s,0s;
+}
+.journey.is-returning .stage-top,
+.journey.is-returning .stage-bottom,
+.journey.is-returning .stage-frame,
+.journey.is-returning .chapter-progress{
+  opacity:0;transition:opacity .55s ease;
+}
+.closing-brand{
+  position:absolute;z-index:12;top:50%;left:50%;
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  transform:translate(-50%,calc(-50% + 18px));opacity:0;visibility:hidden;
+  color:#e9e7dd;pointer-events:none;text-align:center;white-space:nowrap;
+  transition:opacity .72s ease,transform .9s cubic-bezier(.16,1,.3,1),visibility 0s linear .72s;
+}
+.closing-brand.is-visible{
+  opacity:1;visibility:visible;transform:translate(-50%,-50%);
+  transition-delay:0s;
+}
+.closing-brand-main{
+  font:650 clamp(34px,5.2vw,64px)/1 'Manrope Variable','Manrope',sans-serif;
+  letter-spacing:.16em;text-indent:.16em;
+  text-shadow:0 0 28px rgba(111,207,184,.16);
+}
+.closing-brand-sub{
+  font:600 13px/1.4 'Manrope Variable','Manrope',sans-serif;
+  letter-spacing:.46em;text-indent:.46em;color:#a9c3b8;
+}
+
+/* Final screen: the product names are the moving sign; the only central action is the CTA. */
+.ending{
+  min-height:100svh;height:100svh;box-sizing:border-box;
+  display:flex;flex-direction:column;justify-content:space-between;align-items:stretch;
+  position:relative;isolation:isolate;overflow:hidden;
+  padding:0 clamp(22px,5vw,82px) 12px;
+  color:#e9e7de;background:
+    radial-gradient(ellipse at 50% 53%,rgba(23,61,57,.26),transparent 52%),
+    linear-gradient(145deg,#050b0e 0%,#081316 52%,#050b0e 100%);
+}
+.ending::before{content:none}
+.ecosystem-strip{
+  flex:none;position:relative;overflow:hidden;
+  width:calc(100% + 2 * clamp(22px,5vw,82px));
+  margin-inline:calc(-1 * clamp(22px,5vw,82px));
+  padding:27px 0 24px;background:transparent;color:#e8e7de;
+  border-top:0;border-bottom:1px solid rgba(163,194,178,.2);
+  opacity:0;transform:translateY(-7px);
+  transition:opacity .7s ease,transform .8s cubic-bezier(.16,1,.3,1);
+}
+.ending.is-visible .ecosystem-strip{opacity:1;transform:translateY(0)}
+.ecosystem-strip-head{display:none}
+.ecosystem-marquee{
+  position:relative;overflow:hidden;width:100%;direction:ltr;
+  mask-image:linear-gradient(90deg,transparent 0%,#000 8%,#000 92%,transparent 100%);
+}
+.ecosystem-marquee::after{
+  content:"";position:absolute;top:0;bottom:0;left:0;width:1px;
+  background:#b99d72;box-shadow:0 0 12px 2px rgba(185,157,114,.18);
+  opacity:.55;pointer-events:none;
+}
+.ecosystem-track{
+  display:flex;align-items:center;gap:clamp(22px,3.1vw,48px);width:max-content;
+  padding:3px 0;animation:ramachTicker 32s linear infinite;will-change:transform;
+}
+.ticker-brand{
+  display:inline-flex;align-items:center;white-space:nowrap;
+  font:650 clamp(17px,1.65vw,22px)/1.4 'Manrope Variable','Manrope',sans-serif;
+  letter-spacing:.16em;color:#d4ddd5;opacity:.86;
+  text-shadow:0 0 14px rgba(130,210,188,.12);
+}
+.ticker-ramach{color:#c4aa7d;opacity:1;letter-spacing:.12em}
+.ticker-separator{
+  color:#6d9c8e;font:400 13px/1 'Manrope Variable','Manrope',sans-serif;
+  opacity:.8;text-shadow:0 0 10px rgba(126,222,198,.25);
+}
+@keyframes ramachTicker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.ending-center{
+  flex:1;min-height:0;display:grid;place-items:center;
+  padding:35px 0;position:relative;
+}
+.ending-cta{
+  appearance:none;display:inline-flex;align-items:center;justify-content:center;gap:22px;
+  min-width:0;margin:0;padding:16px 0;border:0;border-radius:0;
+  background:transparent;color:#f0eee5;box-shadow:none;
+  font:600 21px/1.5 'Vazirmatn Variable','Vazirmatn',sans-serif;
+  cursor:pointer;text-decoration:none;transition:color .25s ease;
+}
+.ending-cta:hover{background:transparent;transform:none;box-shadow:none;color:#d4bd91}
+.ending-cta-text{
+  position:relative;display:inline-block;padding:0 0 8px;
+  font:600 21px/1.5 'Vazirmatn Variable','Vazirmatn',sans-serif;
+}
+.ending-cta-text::after{
+  content:"";position:absolute;right:0;bottom:0;width:100%;height:1px;
+  transform:scaleX(.42);transform-origin:right;
+  background:linear-gradient(90deg,#b99d72,#7db8a7);
+  transition:transform .45s cubic-bezier(.16,1,.3,1);
+}
+.ending-cta:hover .ending-cta-text::after{transform:scaleX(1)}
+.ending-cta-icon{
+  display:grid;place-items:center;flex:0 0 46px;width:46px;height:46px;
+  border:1px solid rgba(151,190,173,.55);border-radius:50%;
+  background:rgba(11,27,29,.45);color:#b9d2c4;
+  transition:transform .35s cubic-bezier(.16,1,.3,1),background .35s ease,border-color .35s ease,color .35s ease;
+}
+.ending-cta-icon svg{display:block;width:19px;height:19px}
+.ending-cta:hover .ending-cta-icon{
+  transform:translate(3px,-3px) rotate(3deg);background:#b99d72;border-color:#b99d72;color:#081316;
+}
+.ending-cta:focus-visible{outline:2px solid #b99d72;outline-offset:8px}
+
+/* Narrow utility footer: working links plus explicit placeholders for unconfigured routes/accounts. */
+.site-footer{
+  flex:none;position:relative;display:flex;align-items:center;justify-content:space-between;
+  gap:18px;min-height:47px;padding:12px 0 3px;
+  border-top:1px solid rgba(163,194,178,.2);
+  color:#92a59c;font-size:13px;line-height:1.6;
+}
+.footer-copy{font:550 13px/1.6 'Manrope Variable','Manrope',sans-serif;letter-spacing:.06em;white-space:nowrap}
+.footer-links{display:flex;align-items:center;justify-content:center;gap:clamp(12px,1.8vw,26px);flex-wrap:wrap}
+.footer-links a{
+  color:#aab8af;text-decoration:none;font-size:13px;white-space:nowrap;
+  transition:color .2s ease;
+}
+.footer-links a:hover{color:#e6d0a6}
+.footer-links a[data-coming-soon]{color:#74877f}
+.footer-social{display:flex;align-items:center;gap:8px;flex:none}
+.footer-social-label{font-size:13px;color:#7d9388;white-space:nowrap}
+.social-placeholder{
+  display:grid;place-items:center;width:29px;height:29px;padding:0;
+  border:1px solid rgba(142,176,160,.35);border-radius:50%;
+  background:transparent;color:#afc4b8;font:650 13px/1 'Manrope Variable','Manrope',sans-serif;
+  cursor:pointer;transition:border-color .2s ease,color .2s ease,background .2s ease;
+}
+.social-placeholder svg{width:14px;height:14px}
+.social-placeholder:hover{border-color:#b99d72;color:#e3cfaa;background:#b99d7210}
+.footer-notice{
+  position:absolute;right:0;bottom:calc(100% + 8px);max-width:min(360px,90vw);
+  padding:9px 13px;border:1px solid rgba(163,194,178,.24);border-radius:5px;
+  background:#0b1b1e;color:#d4dfd5;font-size:13px;line-height:1.7;
+}
+.footer-notice:empty{display:none}
+.footer-notice.is-visible{animation:footerNoticeIn .25s ease both}
+@keyframes footerNoticeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+
+/* The callback form stays out of the final composition until the single CTA is activated. */
+body.modal-open{overflow:hidden}
+.callback-overlay[hidden]{display:none!important}
+.callback-overlay{
+  position:fixed;z-index:200;inset:0;display:grid;place-items:center;
+  padding:18px;background:rgba(1,7,9,.78);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  opacity:0;transition:opacity .25s ease;
+}
+.callback-overlay.is-open{opacity:1}
+.callback-dialog{
+  position:relative;width:min(480px,100%);max-height:min(88svh,850px);overflow:auto;
+  transform:translateY(14px) scale(.99);transition:transform .38s cubic-bezier(.16,1,.3,1);
+  outline:none;
+}
+.callback-overlay.is-open .callback-dialog{transform:translateY(0) scale(1)}
+.callback-close{
+  position:absolute;z-index:2;top:11px;left:12px;width:36px;height:36px;
+  display:grid;place-items:center;border:1px solid #47635b;border-radius:50%;
+  background:#102326;color:#e9e7de;font:400 24px/1 'Manrope Variable','Manrope',sans-serif;cursor:pointer;
+}
+.callback-form{
+  width:100%;max-width:none;box-sizing:border-box;padding:52px clamp(22px,4vw,36px) 28px;
+  border:1px solid #2c4944;border-radius:10px;background:#0b191c;color:#e9e7de;
+  box-shadow:0 28px 90px rgba(0,0,0,.38);
+}
+.callback-kicker{font-size:13px;color:#9bb9a8}
+.callback-form h3{color:#f0eee5;font-size:27px}
+.callback-description{color:#a6b5ac;font-size:15px}
+.callback-form label{color:#c7d3c9}
+.callback-form input,.callback-form select{
+  background:#071215;border-color:#304a45;color:#f0eee5;border-radius:5px;
+}
+.callback-form input::placeholder{color:#73877e}
+.callback-form input:focus,.callback-form select:focus{border-color:#8db9a6;box-shadow:0 0 0 3px rgba(110,171,146,.14)}
+.callback-submit{
+  width:100%;min-height:48px;margin-top:21px;padding:10px 15px;
+  border:1px solid #b99d72;border-radius:4px;background:#b99d72;color:#081316;
+  font:650 15px/1.5 'Vazirmatn Variable','Vazirmatn',sans-serif;cursor:pointer;
+}
+.callback-submit:hover{background:#d2b98e}
+.callback-status{font-size:13px;line-height:1.8;color:#9cafa4}
+@media(max-width:900px){
+  .site-footer{display:grid;grid-template-columns:1fr auto;gap:12px 16px}
+  .footer-copy{grid-column:1}
+  .footer-social{grid-column:2;grid-row:1}
+  .footer-links{grid-column:1 / -1;grid-row:2;justify-content:flex-start;gap:16px}
+  .footer-notice{bottom:calc(100% + 8px)}
+}
+@media(max-width:600px){
+  .ending{padding-inline:18px;padding-bottom:12px}
+  .ecosystem-strip{width:calc(100% + 36px);margin-inline:-18px;padding:22px 0 19px}
+  .ecosystem-track{gap:22px;animation-duration:27s}
+  .ticker-brand{font-size:16px;letter-spacing:.12em}
+  .ending-center{padding:24px 0}
+  .ending-cta{gap:16px;font-size:19px}
+  .ending-cta-text{font-size:19px}
+  .ending-cta-icon{width:40px;height:40px;flex-basis:40px}
+  .site-footer{gap:10px;padding-top:11px}
+  .footer-copy{font-size:13px}
+  .footer-links{gap:9px 15px}
+  .footer-social-label{display:none}
+  .social-placeholder{width:28px;height:28px}
+  .closing-brand-main{font-size:34px}
+}
+@media(prefers-reduced-motion:reduce){
+  body.logo-drawing .opening-wordmark::before{animation:none;opacity:.16;transform:scale(1.1)}
+  body.logo-drawing .opening-wordmark-svg .wordmark-glyph path{animation:none;stroke-dashoffset:0;filter:none}
+  .ecosystem-track{animation:none}
+  .ending-cta,.ending-cta-text::after,.ending-cta-icon,.callback-overlay,.callback-dialog{transition:none}
+  .closing-brand{transition:none}
+}

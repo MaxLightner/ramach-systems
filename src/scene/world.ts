@@ -106,33 +106,39 @@ export function createWorld(host:HTMLElement, chapterAlignments:readonly ('left'
     halo.rotation.x=Math.PI/2;
     return halo;
   });
-  // 01 — A section of a building. The ghost blueprint is misaligned with the actual frame.
+  // 01 — Construction mismatch: the built doorway and the displaced plan disagree.
   {
     const g=worlds[0].group;
-    for(const x of [-2.8,2.8])for(const z of [-2.1,2.1])rod(g,new THREE.Vector3(x,-.4,z),new THREE.Vector3(x,4,z),.07,metal);
-    for(const y of [1.5,4])wireRectangle(g,5.6,4.2,y,stone);
-    box(g,3.45,2.7,.07,-1.06,1.0,-2.1,smoked);
-    box(g,2.0,2.0,.04,.8,2.2,2.15,ghost);
-    box(g,2.0,.035,.025,.8,3.28,2.15,signal);
-    const misplaced=box(g,3.45,.025,2.4,-.55,2.9,-1.25,ghost);
-    misplaced.rotation.z=.055;
-    for(const y of [.9,1.15,1.4])box(g,.04,.04,3.7,2.99,y,0,signal);
+    box(g,1.55,3.1,.22,-2.02,1.15,-2.1,concrete,.025);
+    box(g,1.55,3.1,.22,1.02,1.15,-2.1,concrete,.025);
+    box(g,1.5,.42,.22,-.5,2.84,-2.1,concrete,.025);
+    for(const x of [-1.25,.25])rod(g,new THREE.Vector3(x,-.38,-1.94),new THREE.Vector3(x,3.1,-1.94),.045,metal);
+    rod(g,new THREE.Vector3(-1.25,3.1,-1.94),new THREE.Vector3(.25,3.1,-1.94),.045,metal);
+    for(const x of [-.78,.72])rod(g,new THREE.Vector3(x,-.3,-1.18),new THREE.Vector3(x,3.35,-1.18),.035,signal);
+    rod(g,new THREE.Vector3(-.78,3.35,-1.18),new THREE.Vector3(.72,3.35,-1.18),.035,signal);
+    rod(g,new THREE.Vector3(-.78,-.3,-1.18),new THREE.Vector3(.72,-.3,-1.18),.035,signal);
+    box(g,3.5,.025,.04,-.2,2.55,-1.55,ghost);
+    box(g,3.5,.025,.04,.28,2.25,-1.2,signal);
   }
-  // 02 — Three separated participants and a single floating shared plane.
+  // 02 — Three actual work participants connected to one shared model.
   {
     const g=worlds[1].group;
     const positions=[[-2.7,-1.55],[2.5,-1.55],[.1,2.4]];
     for(const [x,z] of positions){
-      cyl(g,.64,.12,x,-.35,z,metal,38);
-      rod(g,new THREE.Vector3(x,.05,z),new THREE.Vector3(x,1.75,z),.037,metal);
-      put(g,new THREE.OctahedronGeometry(.34),smoked,x,2.12,z);
-      rod(g,new THREE.Vector3(x,2.25,z),new THREE.Vector3(x*.22,3.08,z*.22),.026,signal);
+      cyl(g,.52,.12,x,-.35,z,metal,32);
+      cyl(g,.22,.78,x,1.15,z,smoked,24);
+      put(g,new THREE.SphereGeometry(.24,18,14),stone,x,1.78,z);
+      rod(g,new THREE.Vector3(x-.18,1.38,z),new THREE.Vector3(x-.46,.98,z),.045,metal);
+      rod(g,new THREE.Vector3(x+.18,1.38,z),new THREE.Vector3(x+.46,.98,z),.045,metal);
+      rod(g,new THREE.Vector3(x-.11,.77,z),new THREE.Vector3(x-.15,.12,z),.055,metal);
+      rod(g,new THREE.Vector3(x+.11,.77,z),new THREE.Vector3(x+.15,.12,z),.055,metal);
+      rod(g,new THREE.Vector3(x,2.04,z),new THREE.Vector3(x*.18,3.0,z*.18),.022,signal);
     }
     box(g,4.0,.075,2.35,0,3.35,0,smoked,.015);
     wireRectangle(g,3.8,2.2,3.39,signal);
     for(let i=0;i<3;i++)box(g,.035,.025,1.2,-1.15+i*1.15,3.44,0,metal);
   }
-  // 03 — Minimal room outline and its floating AR overlay.
+  // 03 — An inhabitable room, furniture and a translucent AR placement preview.
   {
     const g=worlds[2].group;
     for(const x of [-2.8,2.8])for(const z of [-2.25,2.25])
@@ -140,50 +146,74 @@ export function createWorld(host:HTMLElement, chapterAlignments:readonly ('left'
     wireRectangle(g,5.6,4.5,3.4,stone);
     const transparentWall=box(g,5.5,3.7,.025,0,1.5,-2.23,smoked);
     transparentWall.rotation.y=.06;
-    box(g,2.45,2.5,.025,.75,1.13,-2.19,ghost);
+    box(g,2.15,.46,.78,-.72,-.12,.48,stone,.09);
+    box(g,2.15,.78,.2,-.72,.39,.78,smoked,.07);
+    box(g,.25,.54,.78,-1.67,.12,.48,metal,.06);
+    box(g,.25,.54,.78,.23,.12,.48,metal,.06);
+    box(g,.92,1.35,.55,1.78,.28,.12,charcoal,.045);
+    box(g,.86,.055,.58,1.78,.98,.12,metal,.02);
+    for(const y of [.1,.45,.75])box(g,.66,.025,.02,1.78,y,.405,signal);
     wireRectangle(g,4.25,3.25,1.1,signal);
-    for(let i=0;i<3;i++)box(g,.04,2.8,.025,-2.2+i*2.2,1.18,-2.12,signal);
+    for(let i=0;i<3;i++)box(g,.035,2.8,.025,-2.2+i*2.2,1.18,-2.12,ghost);
     ring(g,2.0,.018,1.65,signal);
   }
-  // 04 — Data synchronization: independent glass layers traversed by a signal.
+  // 04 — One model moves between a desktop design viewport, web card and phone.
   {
     const g=worlds[3].group;
-    for(let i=0;i<7;i++){
-      const x=-2.95+i*.98;
-      box(g,.11,3.1,.12,x,1.15,-1.28,charcoal);
-      box(g,.065,3.65,3.5,x,1.3,0,i===3?smoked:mutedGlass);
-      box(g,.12,.05,3.4,x,3.2,0,metal);
-      box(g,.12,.06,2.7,x,.35,0,signal);
-    }
-    rod(g,new THREE.Vector3(-3.6,2,-.8),new THREE.Vector3(3.6,2,-.8),.048,signal);
-    for(let i=0;i<5;i++)put(g,new THREE.OctahedronGeometry(.13),whiteLight,-2.7+i*1.35,2.0,-.8);
+    box(g,2.2,1.52,.16,-2.28,1.95,0,charcoal,.08);
+    box(g,1.98,1.28,.035,-2.28,1.95,.105,smoked,.025);
+    for(let i=0;i<4;i++)box(g,1.5,.035,.025,-2.28,2.35-i*.24,.13,i===0?signal:metal);
+    rod(g,new THREE.Vector3(-2.28,1.18,.04),new THREE.Vector3(-2.28,.62,.04),.07,metal);
+    box(g,1.0,.09,.48,-2.28,.56,.04,metal,.035);
+    box(g,1.12,1.72,.12,0,1.86,0,stone,.05);
+    for(const x of [-.28,0,.28])rod(g,new THREE.Vector3(x,.95,-.04),new THREE.Vector3(x,2.4,-.04),.025,metal);
+    box(g,.9,1.72,.13,2.28,1.82,0,charcoal,.12);
+    box(g,.73,1.48,.035,2.28,1.82,.085,smoked,.07);
+    for(let i=0;i<4;i++)box(g,.48,.035,.025,2.28,2.2-i*.25,.11,i===0?signal:metal);
+    rod(g,new THREE.Vector3(-1.12,2.45,.02),new THREE.Vector3(-.62,2.45,.02),.035,signal);
+    rod(g,new THREE.Vector3(.62,2.45,.02),new THREE.Vector3(1.78,2.45,.02),.035,signal);
+    for(const x of [-.88,0,1.12])put(g,new THREE.SphereGeometry(.09,12,8),whiteLight,x,2.45,.04);
   }
-  // 05 — Scattered ledgers converge into one readable plane; not coins or cartoons.
+  // 05 — A project ledger, cost columns and a settled stack of payments.
   {
     const g=worlds[4].group;
+    box(g,2.2,2.65,.14,-.55,1.28,0,smoked,.045);
     for(let i=0;i<5;i++){
-      const x=-2.8+i*1.4;
-      const h=.5+i*.45;
-      box(g,1.05,.065,2.3,x,h,0,smoked,.01);
-      box(g,.74,.029,.08,x,h+.045,-.64,metal);
-      box(g,.58,.029,.08,x,h+.045,-.24,signal);
+      const y=2.15-i*.42;
+      box(g,1.5,.035,.025,-.55,y,.095,metal);
+      box(g,.55,.035,.025,-.92,y-.16,.095,signal);
     }
+    for(let i=0;i<5;i++){
+      const x=-2.9+i*.62;
+      const h=.55+i*.42;
+      box(g,.34,h,.42,x,-.38+h/2,-.2,i===4?signal:metal,.025);
+    }
+    for(let i=0;i<4;i++)cyl(g,.42,.13,2.35,-.28+i*.15,.55,brass,32);
+    cyl(g,.42,.08,2.35,.37,.55,signal,32);
     wireRectangle(g,6.9,4.25,3.45,metal);
     box(g,6.65,.06,4.05,0,3.42,0,ghost);
-    for(let i=0;i<7;i++)box(g,5.75,.018,.02,0,3.49,-1.6+i*.49,signal);
   }
-  // 06 — Architecture becomes a responsive digital gallery, shown as a single portal.
+  // 06 — A browser-like architectural portfolio showing a recognizable facade.
   {
     const g=worlds[5].group;
     for(const x of [-3.3,3.3])
       rod(g,new THREE.Vector3(x,-.5,-.55),new THREE.Vector3(x,5.0,-.55),.085,metal);
     for(const y of [-.3,5.0])
       rod(g,new THREE.Vector3(-3.3,y,-.55),new THREE.Vector3(3.3,y,-.55),.085,metal);
-    box(g,6.2,4.9,.045,0,2.2,-.57,smoked);
-    box(g,3.5,2.3,.15,-.7,1.1,-.43,stone,.025);
-    box(g,2.55,.1,.95,-.65,2.1,-.15,metal);
-    box(g,2.7,2.2,.032,1.55,2.45,-.32,ghost);
-    for(let i=0;i<5;i++)box(g,1.75,.022,.03,1.35,3.2-i*.35,-.26,signal);
+    box(g,6.2,4.9,.08,0,2.2,-.57,charcoal,.045);
+    box(g,5.9,4.5,.035,0,2.2,-.49,smoked,.02);
+    box(g,2.05,2.25,.12,-1.2,1.45,-.39,stone,.025);
+    rod(g,new THREE.Vector3(-2.35,2.58,-.36),new THREE.Vector3(-1.2,3.55,-.36),.045,metal);
+    rod(g,new THREE.Vector3(-1.2,3.55,-.36),new THREE.Vector3(-.05,2.58,-.36),.045,metal);
+    for(const x of [-1.85,-1.2,-.55])for(const y of [1.0,1.7,2.4])
+      box(g,.28,.42,.035,x,y,-.30,signal,.015);
+    box(g,.32,.72,.04,-1.2,.85,-.29,charcoal,.015);
+    for(let i=0;i<3;i++){
+      box(g,.95,.68,.04,1.8,3.1-i*1.02,-.39,ghost,.025);
+      box(g,.63,.035,.025,1.8,3.25-i*1.02,-.35,metal);
+      box(g,.48,.035,.025,1.73,3.02-i*1.02,-.35,signal);
+    }
+    for(let i=0;i<5;i++)box(g,1.75,.022,.03,1.35,1.85-i*.35,-.26,signal);
   }
   // 07 — A restrained neural lattice for future intelligence, not a glowing crystal.
   {
@@ -254,9 +284,9 @@ export function createWorld(host:HTMLElement, chapterAlignments:readonly ('left'
       pulses.push({curve:route,orb,halo,offset:(i*.091+lane*.47)%1,reverse});
     }
   }
-  // Each chapter has a real 3D camera mark. It travels in depth, settles,
-  // and holds still before the matching editorial copy is allowed to appear.
+  // Eight chapter approaches occupy the first 82% of the scene; the last 18% returns to the chip.
   const clamp=(v:number,a=0,b=1)=>Math.max(a,Math.min(b,v));
+  const storyEnd=0.82;
   const chapterTargets=[
     new THREE.Vector3(0,1.65,0),
     ...worlds.map(({group})=>group.position.clone().add(new THREE.Vector3(0,2.1,0)))
@@ -277,6 +307,7 @@ export function createWorld(host:HTMLElement, chapterAlignments:readonly ('left'
   };
   let marks=chapterTargets.map(makeMark);
   const establishing:CameraMark={position:new THREE.Vector3(0,27,94),focus:new THREE.Vector3(0,1.5,0)};
+  const closingMark:CameraMark={position:new THREE.Vector3(0,13,25),focus:new THREE.Vector3(0,2.1,0)};
   function transitionCurve(from:THREE.Vector3,to:THREE.Vector3,height:number){
     const control=from.clone().add(to).multiplyScalar(.5);
     control.y+=height;
@@ -285,27 +316,38 @@ export function createWorld(host:HTMLElement, chapterAlignments:readonly ('left'
   let disposed=false;
   function update(progress:number,seconds:number){
     if(disposed)return;
-    const chapterCount=marks.length;
-    const chapterPhase=clamp(progress)*chapterCount;
-    const chapterIndex=Math.min(chapterCount-1,Math.floor(chapterPhase));
-    const local=chapterPhase-chapterIndex;
-    const from=chapterIndex===0?establishing:marks[chapterIndex-1];
-    const to=marks[chapterIndex];
-    const distance=from.position.distanceTo(to.position);
-    const travel=smooth(0,1,clamp(local/.78));
-    const cameraCurve=transitionCurve(from.position,to.position,Math.min(2.4,1.1+distance*.025));
-    const focusCurve=transitionCurve(from.focus,to.focus,.55);
-    camera.position.copy(cameraCurve.getPoint(travel));
-    camera.lookAt(focusCurve.getPoint(travel));
-
-    const centerWeight=1-smooth(.12,.72,Math.abs(chapterPhase-.62));
+    if(progress<storyEnd){
+      const storyProgress=clamp(progress/storyEnd);
+      const chapterCount=marks.length;
+      const chapterPhase=storyProgress*chapterCount;
+      const chapterIndex=Math.min(chapterCount-1,Math.floor(chapterPhase));
+      const local=chapterPhase-chapterIndex;
+      const from=chapterIndex===0?establishing:marks[chapterIndex-1];
+      const to=marks[chapterIndex];
+      const distance=from.position.distanceTo(to.position);
+      const travel=smooth(0,1,clamp(local/.78));
+      const cameraCurve=transitionCurve(from.position,to.position,Math.min(2.4,1.1+distance*.025));
+      const focusCurve=transitionCurve(from.focus,to.focus,.55);
+      camera.position.copy(cameraCurve.getPoint(travel));
+      camera.lookAt(focusCurve.getPoint(travel));
+    }else{
+      const returnProgress=smooth(0,1,clamp((progress-storyEnd)/(1-storyEnd)));
+      const distance=marks[marks.length-1].position.distanceTo(closingMark.position);
+      const cameraCurve=transitionCurve(marks[marks.length-1].position,closingMark.position,Math.min(8,distance*.055));
+      const focusCurve=transitionCurve(marks[marks.length-1].focus,closingMark.focus,1.1);
+      camera.position.copy(cameraCurve.getPoint(returnProgress));
+      camera.lookAt(focusCurve.getPoint(returnProgress));
+    }
+    const returnWeight=smooth(storyEnd,.99,progress);
+    const centerWeight=1-smooth(.12,.72,Math.abs(progress/storyEnd*marks.length-Math.round(progress/storyEnd*marks.length)));
     coreRing.rotation.z=Math.sin(seconds*.18)*.014;
     inner.scale.setScalar(1+Math.sin(seconds*.65)*.018);
-    glow.scale.setScalar(1+centerWeight*.035);
-    (glow.material as THREE.MeshBasicMaterial).opacity=.022+centerWeight*.035;
+    glow.scale.setScalar(1+returnWeight*.07+centerWeight*.025);
+    (glow.material as THREE.MeshBasicMaterial).opacity=.022+returnWeight*.045+centerWeight*.02;
     for(let i=0;i<nodeRings.length;i++){
+      const chapterPhase=clamp(progress/storyEnd)*marks.length;
       const distanceFromBeat=Math.abs(chapterPhase-(i+1+.68));
-      const weight=1-smooth(.12,.66,distanceFromBeat);
+      const weight=progress<storyEnd?1-smooth(.12,.66,distanceFromBeat):0;
       const halo=nodeRings[i];
       (halo.material as THREE.MeshBasicMaterial).opacity=.025+weight*.2;
       halo.scale.setScalar(1+weight*.018);
