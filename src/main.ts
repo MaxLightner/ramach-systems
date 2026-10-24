@@ -69,7 +69,17 @@ const chapters = [
     "align": "left"
   }
 ] as const;
-const mark='<svg viewBox="0 0 380 310" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path class="mark-line line-a" d="M59 252V56H206C286 56 317 147 253 183L208 203H133"/><path class="mark-line line-b" d="M132 251V117H207C246 117 251 170 205 171H133"/><path class="mark-line line-c" d="M221 196L314 252"/><path class="mark-line line-d" d="M59 271H314"/><circle class="mark-dot" cx="314" cy="252" r="5"/><circle class="mark-dot" cx="59" cy="56" r="5"/></svg>';
+const chapterIcons = [
+  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="7" width="10" height="10" rx="2"/><path d="M9 2v5m6-5v5M9 17v5m6-5v5M2 9h5m-5 6h5m10-6h5m-5 6h5"/><path d="M10 10h4v4h-4z"/></svg>',
+  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V4h16v16z"/><path d="M4 9h16M9 4v16M14 9v11"/><path d="M14 13h6"/></svg>',
+  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M2.5 20c.3-4 2.3-6 5.5-6s5.2 2 5.5 6M14 15c3.8-.8 6.4 1.1 7 4"/></svg>',
+  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 9 5-9 5-9-5 9-5Z"/><path d="m3 12 9 5 9-5M3 17l9 5 9-5M12 7v5"/></svg>',
+  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="2.2"/><circle cx="19" cy="5" r="2.2"/><circle cx="19" cy="19" r="2.2"/><path d="m7 11 9.8-5M7 13l9.8 5"/></svg>',
+  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 13h4m-4 3h8m-8-7v9"/></svg>',
+  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="14" rx="2"/><path d="M8 21h8m-4-4v4M7 7h10M7 11h6"/></svg>',
+  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="19" cy="19" r="2"/><circle cx="12" cy="12" r="2"/><path d="m11 6-5 11m7-11 5 11m-11 2h10M12 6v4"/></svg>'
+] as const;
+
 const app=document.querySelector<HTMLDivElement>('#app')!;
 app.innerHTML = `
 <a class="skip-link" href="#journey">رفتن به محتوای اصلی</a>
@@ -84,10 +94,10 @@ app.innerHTML = `
 <main>
   <section class="opening" id="start" aria-label="معرفی راماچ سیستم">
     <div class="opening-center"><div class="opening-wordmark">
-      <div class="signature-ramach" dir="ltr" role="img" aria-label="RAMACH">
-        <span aria-hidden="true" style="--letter-index:0">R</span><span aria-hidden="true" style="--letter-index:1">A</span><span aria-hidden="true" style="--letter-index:2">M</span><span aria-hidden="true" style="--letter-index:3">A</span><span aria-hidden="true" style="--letter-index:4">C</span><span aria-hidden="true" style="--letter-index:5">H</span>
-      </div>
-      <span class="opening-systems" dir="ltr">SYSTEMS</span>
+      <svg class="opening-wordmark-svg" viewBox="0 0 1200 340" role="img" aria-label="RAMACH SYSTEMS" xmlns="http://www.w3.org/2000/svg">
+        <text class="wordmark-line wordmark-primary" x="50%" y="139" text-anchor="middle" pathLength="1000">RAMACH</text>
+        <text class="wordmark-line wordmark-secondary" x="50%" y="285" text-anchor="middle" pathLength="1000">SYSTEMS</text>
+      </svg>
     </div></div>
   </section>
   <section id="journey" class="journey" aria-label="سفر تعاملی در اکوسیستم راماچ">
@@ -100,7 +110,7 @@ app.innerHTML = `
         ${chapters.map((c,i)=>`<article class="chapter ${i===0?'is-active':''}" data-chapter="${i}" data-align="${c.align}">
           <div class="chapter-count" dir="ltr">${c.k}</div>
           <span class="chapter-rule"></span>
-          <p class="chapter-eyebrow">${c.eyebrow}</p>
+          <p class="chapter-eyebrow"><span class="chapter-symbol" aria-hidden="true">${chapterIcons[i]}</span><span class="chapter-eyebrow-text">${c.eyebrow}</span></p>
           <h1>${c.title}</h1>
           <p class="chapter-body">${c.body}</p>
           <span class="chapter-note" dir="ltr">${c.note}</span>
@@ -111,15 +121,49 @@ app.innerHTML = `
       <div class="webgl-message" id="webgl-message" hidden>نمای سه‌بعدی در این مرورگر بارگذاری نشد؛ محتوای معرفی شرکت همچنان در دسترس است.</div>
     </div>
   </section>
+  <section class="ecosystem-strip" aria-label="محصولات اکوسیستم راماچ">
+    <div class="ecosystem-strip-head">
+      <span>محصولات اکوسیستم</span>
+      <span dir="ltr">BUILT AROUND REAL WORKFLOWS</span>
+    </div>
+    <div class="ecosystem-marquee" aria-label="Archiyar, Chido, Kitchyar, Kamcheh, Mizato">
+      <div class="ecosystem-track">
+        <span>ARCHIYAR <i>SPATIAL DESIGN</i></span><span>CHIDO <i>FURNITURE AR</i></span><span>KITCHYAR <i>KITCHEN AR</i></span><span>KAMCHEH <i>CONSTRUCTION OPS</i></span><span>MIZATO <i>HOSPITALITY TECH</i></span>
+        <span aria-hidden="true">ARCHIYAR <i>SPATIAL DESIGN</i></span><span aria-hidden="true">CHIDO <i>FURNITURE AR</i></span><span aria-hidden="true">KITCHYAR <i>KITCHEN AR</i></span><span aria-hidden="true">KAMCHEH <i>CONSTRUCTION OPS</i></span><span aria-hidden="true">MIZATO <i>HOSPITALITY TECH</i></span>
+      </div>
+    </div>
+  </section>
   <section class="ending" id="contact">
     <div class="ending-detail" dir="ltr"><span>RAMACH SYSTEMS</span><span>LET'S CONNECT WHAT MATTERS</span></div>
-    <div class="ending-inner">
-      <p class="ending-label">آغاز یک همکاری</p>
-      <h2>آینده را <em>با هم</em><br>می‌سازیم.</h2>
-      <p>برای توسعه یک نرم‌افزار، طراحی تجربه دیجیتال یا ساخت راهکاری تازه برای صنعت ساختمان، گفت‌وگو را شروع کنیم.</p>
-      <a class="ending-cta" href="https://github.com/MaxLightner/ramach-systems/discussions" target="_blank" rel="noopener noreferrer"><span class="ending-cta-text">شروع گفت‌وگو</span><span class="ending-cta-icon" aria-hidden="true">↗</span></a>
+    <div class="ending-layout">
+      <div class="ending-inner">
+        <p class="ending-label">آغاز یک همکاری</p>
+        <h2>آینده را <em>با هم</em><br>می‌سازیم.</h2>
+        <p>برای توسعه نرم‌افزار، طراحی تجربه دیجیتال یا ساخت راهکاری تازه برای صنعت ساختمان، گفت‌وگو را شروع کنیم.</p>
+        <a class="ending-cta" href="#callback-form"><span class="ending-cta-text">درخواست تماس</span><span class="ending-cta-icon" aria-hidden="true">↗</span></a>
+      </div>
+      <form class="callback-form" id="callback-form">
+        <p class="callback-kicker">گفت‌وگوی اولیه</p>
+        <h3>شماره‌ات را بگذار</h3>
+        <p class="callback-description">برای هماهنگی یک گفت‌وگوی کوتاه درباره پروژه یا همکاری.</p>
+        <label for="callback-phone">شماره تماس</label>
+        <input id="callback-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="مثلاً 0912 000 0000" pattern="[0-9۰-۹٠-٩+() \-]{8,22}" minlength="8" maxlength="22" required>
+        <label for="callback-topic">موضوع گفت‌وگو</label>
+        <select id="callback-topic" name="topic">
+          <option value="general">آشنایی و همکاری</option>
+          <option value="architecture">معماری و ساخت‌وساز</option>
+          <option value="spatial">فناوری فضایی و AR</option>
+          <option value="digital">وب و نرم‌افزار</option>
+        </select>
+        <button class="callback-submit" type="submit">درخواست تماس <span aria-hidden="true">↗</span></button>
+        <p class="callback-status" id="callback-status" role="status" aria-live="polite">ارسال درخواست پس از اتصال مقصد دریافت تماس فعال می‌شود؛ فعلاً اطلاعات شما ذخیره یا ارسال نمی‌شود.</p>
+      </form>
     </div>
-    <footer class="site-footer"><span>© ${new Date().getFullYear()} RAMACH SYSTEMS</span><span>SOFTWARE · SPATIAL TECHNOLOGY · AI · WEB</span><a href="#start">بازگشت به بالا ↑</a></footer>
+    <footer class="site-footer">
+      <span>© ${new Date().getFullYear()} RAMACH SYSTEMS</span>
+      <span>SOFTWARE · SPATIAL TECHNOLOGY · AI · WEB</span>
+      <a href="#start">بازگشت به بالا ↑</a>
+    </footer>
   </section>
 </main>`;
 
@@ -176,5 +220,31 @@ function frame(now:number){
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
+const callbackForm=document.querySelector<HTMLFormElement>('#callback-form')!;
+const callbackStatus=document.querySelector<HTMLElement>('#callback-status')!;
+callbackForm.addEventListener('submit',async event=>{
+  event.preventDefault();
+  if(!callbackForm.reportValidity())return;
+  const formData=new FormData(callbackForm);
+  const phone=String(formData.get('phone')??'').trim();
+  const digits=phone.replace(/[^0-9۰-۹٠-٩]/g,'').replace(/[۰-۹]/g,d=>String('۰۱۲۳۴۵۶۷۸۹'.indexOf(d))).replace(/[٠-٩]/g,d=>String('٠١٢٣٤٥٦٧٨٩'.indexOf(d)));
+  if(digits.length<8){callbackStatus.textContent='شماره تماس کامل نیست؛ لطفاً شماره را بررسی کنید.';return;}
+  const endpoint=(import.meta.env.VITE_CONTACT_ENDPOINT as string|undefined)?.trim();
+  if(!endpoint){
+    callbackStatus.textContent='فرم آماده است، اما مقصد دریافت درخواست هنوز تنظیم نشده؛ شماره شما ارسال یا ذخیره نشد.';
+    return;
+  }
+  const submit=callbackForm.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+  submit.disabled=true;callbackStatus.textContent='در حال ارسال درخواست…';
+  try{
+    const response=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone,topic:formData.get('topic'),source:'ramach-systems',createdAt:new Date().toISOString()})});
+    if(!response.ok)throw new Error('Contact endpoint rejected the request');
+    callbackStatus.textContent='درخواست تماس ارسال شد.';
+    callbackForm.reset();
+  }catch(error){
+    console.error('Callback request failed',error);
+    callbackStatus.textContent='ارسال انجام نشد؛ اتصال سامانه دریافت درخواست را بررسی کنید.';
+  }finally{submit.disabled=false;}
+});
 document.addEventListener('visibilitychange',()=>{last=performance.now();});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){nav.classList.remove('is-open');menu.setAttribute('aria-expanded','false');}});

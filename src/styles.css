@@ -83,7 +83,7 @@ button:focus-visible,a:focus-visible{outline:2px solid #d5a667;outline-offset:5p
 .stage-top,.stage-bottom{position:absolute;left:8vw;right:8vw;z-index:12;display:flex;align-items:center;justify-content:space-between}
 .stage-top{top:109px;direction:ltr;color:#a7c1ba;font:600 13px 'Manrope Variable','Manrope',sans-serif;letter-spacing:.15em}
 .stage-live{display:flex;align-items:center;gap:12px}.stage-live i{background:#83c9b6}
-.stage-bottom{bottom:65px;direction:rtl;color:#d0d8d0;font-size:12px}
+.stage-bottom{bottom:65px;direction:rtl;color:#d0d8d0;font-size:13px}
 .stage-number{font:550 13px 'Manrope Variable','Manrope',sans-serif;letter-spacing:.18em}
 .stage-number b{font-weight:800;color:#dbb989}
 .stage-copy{position:absolute;inset:0;z-index:10;pointer-events:none;display:flex;align-items:center}
@@ -119,7 +119,7 @@ button:focus-visible,a:focus-visible{outline:2px solid #d5a667;outline-offset:5p
 .ending-cta:hover{background:#2e5a53;transform:translateY(-3px)}
 .ending-cta span{font:350 26px 'Manrope Variable',sans-serif}
 .site-footer{display:flex;justify-content:space-between;gap:20px;padding:25px 0 5px;border-top:1px solid #b0b7ad;
- color:#52625f;font-size:11px}
+ color:#52625f;font-size:13px}
 .site-footer span:nth-child(2){font:600 13px 'Manrope Variable','Manrope',sans-serif;letter-spacing:.1em}
 @media(max-width:1000px){
  .site-header{padding-inline:4vw}.header-status{display:none}
@@ -130,7 +130,7 @@ button:focus-visible,a:focus-visible{outline:2px solid #d5a667;outline-offset:5p
 @media(max-width:700px){
  .site-header{height:66px;padding:0 19px}
  .brand-symbol{width:31px;height:33px;font-size:17px}
- .brand-words{font-size:15px}.brand-words small{font-size:10px}
+ .brand-words{font-size:15px}.brand-words small{font-size:13px}
  .menu-toggle{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;background:none;border:none;width:42px;height:42px}
  .menu-toggle span{display:block;width:24px;height:1px;background:#213639}
  .site-nav{position:absolute;top:66px;left:0;right:0;background:rgba(230,228,220,.97);display:none;flex-direction:column;align-items:stretch;gap:0;padding:10px 25px 25px;box-shadow:0 30px 40px #08171b25}
@@ -143,12 +143,12 @@ button:focus-visible,a:focus-visible{outline:2px solid #d5a667;outline-offset:5p
  .opening-thesis{margin-top:30px;gap:10px}
  .opening-thesis p{font-size:13px;white-space:normal;width:min(58vw,300px)}
  .hairline{width:18px}
- .opening-index,.opening-counter{bottom:29px;font-size:10px}
+ .opening-index,.opening-counter{bottom:29px;font-size:13px}
  .opening-scroll{bottom:75px}
  .journey{height:730svh}
  .stage{min-height:520px}
  .world-shade{background:linear-gradient(0deg,#051316ec 0%,#051316bf 24%,#05131600 60%),linear-gradient(180deg,#06171888 0%,transparent 45%)}
- .stage-top{top:82px;left:24px;right:24px;line-height:1.5;gap:15px;font-size:10px}
+ .stage-top{top:82px;left:24px;right:24px;line-height:1.5;gap:15px;font-size:13px}
  .stage-live{gap:7px}.stage-top span:last-child{max-width:160px;text-align:right}
  .stage-frame{inset:72px 14px 43px}.corner{width:15px;height:15px}
  .stage-copy{align-items:flex-end}
@@ -160,8 +160,8 @@ button:focus-visible,a:focus-visible{outline:2px solid #d5a667;outline-offset:5p
  .chapter h1{font-size:clamp(29px,7.2vw,45px);line-height:1.47}
  .chapter-body{font-size:13px;line-height:1.85;max-width:420px;margin:11px 0 13px}
  .chapter-note{font-size:13px;letter-spacing:.02em}
- .stage-bottom{left:31px;right:31px;bottom:54px;font-size:10px}
- .stage-number{font-size:10px}
+ .stage-bottom{left:31px;right:31px;bottom:54px;font-size:13px}
+ .stage-number{font-size:13px}
  .chapter-progress{left:20px;top:27%;bottom:23%}
  .ending{min-height:90svh;padding:90px 28px 20px}
  .ending:before{width:26%;top:19%}
@@ -169,8 +169,8 @@ button:focus-visible,a:focus-visible{outline:2px solid #d5a667;outline-offset:5p
  .ending-inner{padding:45px 0 30px}
  .ending h2{font-size:clamp(47px,11vw,70px)}
  .ending-inner>p:not(.ending-label){font-size:14px;line-height:1.9}
- .site-footer{flex-wrap:wrap;font-size:10px}
- .site-footer span:nth-child(2){order:3;width:100%;font-size:10px}
+ .site-footer{flex-wrap:wrap;font-size:13px}
+ .site-footer span:nth-child(2){order:3;width:100%;font-size:13px}
 }
 @media(max-height:640px) and (min-width:701px){
  .chapter h1{font-size:clamp(30px,3.2vw,56px)}
@@ -305,7 +305,7 @@ body.has-entered .site-header{transform:translateY(0);opacity:1;visibility:visib
 .chapter-body .solution-context{margin-top:15px;color:#baccc5;border-inline-start:1px solid #9fae945f;padding-inline-start:16px}
 .chapter-body strong{color:#e6cfaa;font-weight:650}
 .chapter-note,.chapter-rule,.chapter-count,.chapter-eyebrow{display:none}
-.scene-footer{position:absolute;bottom:43px;left:7%;right:7%;display:flex;align-items:center;justify-content:space-between;gap:24px;color:#9badac;z-index:15;font-size:clamp(11px,.9vw,13px)}
+.scene-footer{position:absolute;bottom:43px;left:7%;right:7%;display:flex;align-items:center;justify-content:space-between;gap:24px;color:#9badac;z-index:15;font-size:clamp(13px,.9vw,13px)}
 .scene-footer #stage-index{font:650 13px 'Manrope Variable','Manrope',sans-serif;letter-spacing:.16em;white-space:nowrap}
 .scene-progress{position:absolute;left:3.6vw;top:16%;bottom:14%;height:auto;width:1px;background:#75878142;z-index:13}
 .scene-progress>div{height:100%;width:2px;background:#c4a67c;transform-origin:top;transform:scaleY(0)}
@@ -336,7 +336,7 @@ body.has-entered .site-header{transform:translateY(0);opacity:1;visibility:visib
  .chapter-body{font-size:14px;line-height:1.75;margin-top:10px;max-width:none}
  .chapter-body .solution-context{margin-top:10px;padding-inline-start:11px}
  .scene-footer{bottom:53px;left:31px;right:31px;font-size:13px;gap:14px}
- .scene-footer #stage-index{font-size:11px}
+ .scene-footer #stage-index{font-size:13px}
  .scene-progress{left:14px;top:18%;bottom:31%}
  .world-shade{background:linear-gradient(0deg,rgba(2,8,12,.95),rgba(2,8,12,.77) 37%,transparent 70%),linear-gradient(180deg,rgba(2,8,12,.42),transparent 38%)}
  .ending{padding:95px 28px 23px;min-height:100svh}
@@ -344,7 +344,7 @@ body.has-entered .site-header{transform:translateY(0);opacity:1;visibility:visib
  .ending-center{padding:35px 0}
  .ending h2{font-size:clamp(43px,9vw,67px)}
  .ending-description{font-size:15px}
- .ending footer{font-size:10px}
+ .ending footer{font-size:13px}
 }
 @media(prefers-reduced-motion:reduce){
  .opening-systems{animation:none;opacity:1;transform:none}
@@ -494,7 +494,7 @@ body{font-family:'Vazirmatn Variable','Vazirmatn',sans-serif;font-size:18px;back
   .stage-number{font-size:13px}
   .chapter-progress{left:14px;top:18%;bottom:31%}
   .site-header .brand{font-size:16px}
-  .site-header .brand small{font-size:12px}
+  .site-header .brand small{font-size:13px}
   .site-nav{font-size:16px}
   .ending{min-height:100svh;padding:78px 26px 22px}
   .ending:before{right:-17%;top:22%;width:75%;height:54%;opacity:.42}
@@ -513,4 +513,168 @@ body{font-family:'Vazirmatn Variable','Vazirmatn',sans-serif;font-size:18px;back
   .signature-ramach span,.opening-systems,.opening-wordmark:after{animation:none;opacity:1;filter:none;transform:none}
   .chapter.is-active .chapter-count,.chapter.is-active .chapter-eyebrow,.chapter.is-active h1,.chapter.is-active .chapter-body,.chapter.is-active .chapter-rule{animation:none}
   .ending-cta,.ending-cta-icon{transition:none}
+}
+
+
+
+/* RAMACH 04 — outlined path-drawn wordmark, stable editorial camera framing,
+   restrained chapter glyphs, product ecosystem strip and honest callback form. */
+:root{--minimum-text-size:13px}
+.opening-wordmark{display:block;width:min(90vw,1040px);margin:0 auto;gap:0}
+.opening-wordmark:after{display:none}
+.opening-wordmark-svg{display:block;width:100%;height:auto;overflow:visible}
+.wordmark-line{
+  fill:none;stroke:#e7e3d8;stroke-width:2.15;stroke-linecap:round;stroke-linejoin:round;
+  stroke-dasharray:1000;stroke-dashoffset:1000;filter:drop-shadow(0 0 7px #8fd7c516);
+}
+.wordmark-primary{
+  font-family:'Manrope Variable','Manrope',sans-serif;font-size:146px;font-weight:680;letter-spacing:10px;
+  animation:drawWordmark 1.75s cubic-bezier(.55,.08,.25,1) .12s forwards;
+}
+.wordmark-secondary{
+  font-family:'Manrope Variable','Manrope',sans-serif;font-size:104px;font-weight:540;letter-spacing:17px;
+  animation:drawWordmark 1.55s cubic-bezier(.55,.08,.25,1) 1.15s forwards;
+}
+@keyframes drawWordmark{to{stroke-dashoffset:0}}
+.signature-ramach,.opening-systems{display:none!important}
+.chapter-eyebrow{
+  display:flex;align-items:center;gap:13px;min-height:43px;margin:0 0 13px;
+  font-size:16px;line-height:1.65;color:#d1dcd5;
+}
+.chapter-symbol{
+  width:42px;height:42px;flex:0 0 42px;display:grid;place-items:center;
+  border:1px solid #83c7b548;border-radius:11px;
+  background:linear-gradient(145deg,#183337bd,#0b1b20b8);
+  color:#b9e9dc;box-shadow:inset 0 1px #d8fff00c,0 5px 22px #0c282518;
+}
+.chapter-symbol svg{display:block;width:23px;height:23px;filter:drop-shadow(0 0 6px #8effdc20)}
+.chapter-eyebrow-text{display:block;min-width:0}
+.chapter[data-align='left'] .chapter-eyebrow{justify-content:flex-start}
+.chapter[data-align='right'] .chapter-eyebrow{justify-content:flex-start}
+.ecosystem-strip{
+  position:relative;overflow:hidden;background:#081418;color:#e2e7df;
+  border-top:1px solid #8ba79b20;border-bottom:1px solid #8ba79b25;
+  padding:27px 0 29px;
+}
+.ecosystem-strip-head{
+  display:flex;justify-content:space-between;align-items:center;gap:18px;
+  padding:0 clamp(24px,7vw,110px);margin-bottom:21px;
+  color:#bdc9c0;font-size:14px;font-weight:550;
+}
+.ecosystem-strip-head span:last-child{
+  font:600 13px/1.5 'Manrope Variable','Manrope',sans-serif;letter-spacing:.1em;color:#7e9d91;
+}
+.ecosystem-marquee{overflow:hidden;width:100%;mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent);direction:ltr}
+.ecosystem-track{display:flex;align-items:center;width:max-content;animation:ecosystemDrift 36s linear infinite;will-change:transform}
+.ecosystem-track span{
+  display:flex;align-items:baseline;gap:13px;padding:4px 32px;border-right:1px solid #9bb5a728;
+  white-space:nowrap;color:#e5e8df;font:650 23px/1.5 'Manrope Variable','Manrope',sans-serif;letter-spacing:.08em;
+}
+.ecosystem-track i{font:500 13px/1.5 'Manrope Variable','Manrope',sans-serif;font-style:normal;letter-spacing:.07em;color:#8cafa0}
+@keyframes ecosystemDrift{to{transform:translateX(-50%)}}
+.ending{
+  min-height:100svh;position:relative;isolation:isolate;overflow:hidden;
+  padding:clamp(68px,9vh,105px) clamp(24px,7vw,110px) 24px;
+  background:linear-gradient(128deg,#f0eee6 0%,#e6e8df 52%,#dce4db 100%);color:#172e2d;
+}
+.ending:before{top:11%;right:5%;width:min(30vw,440px);height:70%;opacity:.28}
+.ending:after{top:18%;right:9%;width:min(22vw,320px);opacity:.25}
+.ending-detail{font:600 13px/1.5 'Manrope Variable','Manrope',sans-serif;letter-spacing:.11em;color:#566c63;gap:20px}
+.ending-layout{
+  position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1.12fr) minmax(310px,.78fr);
+  align-items:center;gap:clamp(28px,5.5vw,88px);width:100%;max-width:1280px;margin:auto 0;
+  direction:rtl;
+}
+.ending-inner{max-width:760px;margin:0;padding:35px 0 42px;direction:rtl;text-align:right}
+.ending-label{font-size:16px;color:#6b8175;font-weight:600;margin-bottom:15px}
+.ending h2{font-size:clamp(52px,6.4vw,92px);font-weight:650;line-height:1.27;letter-spacing:-.055em;margin:8px 0 22px;color:#142d2c}
+.ending h2 em{font-weight:400;color:#83988a}
+.ending-inner>p:not(.ending-label){max-width:570px;font-size:clamp(16px,1.2vw,19px);line-height:1.95;color:#435a53;margin:0 0 27px}
+.ending-cta{
+  display:inline-flex;align-items:center;justify-content:space-between;gap:18px;
+  min-width:0;padding:7px 8px 7px 16px;border:1px solid #24443d;border-radius:7px;
+  background:#183a34;color:#f5f0e6;text-decoration:none;font-size:14px;font-weight:600;
+  box-shadow:none;transition:background .22s ease,transform .22s ease;
+}
+.ending-cta:hover{background:#28564b;transform:translateY(-2px);box-shadow:none}
+.ending-cta:focus-visible{outline:3px solid #b59a70;outline-offset:4px}
+.ending-cta-icon{
+  width:29px;height:29px;flex:0 0 29px;border-radius:4px;display:grid;place-items:center;
+  background:#d8bd91;color:#16332f;font:500 19px/1 'Manrope Variable','Manrope',sans-serif;
+  transition:transform .22s ease,background .22s ease;
+}
+.ending-cta:hover .ending-cta-icon{transform:translate(2px,-2px);background:#f0d8ab}
+.callback-form{
+  width:100%;max-width:470px;justify-self:start;padding:clamp(22px,3vw,34px);
+  border:1px solid #c6d0c5;border-radius:16px;background:#f7f5ee;color:#1b3430;
+  box-shadow:0 20px 55px #19382c12;direction:rtl;text-align:right;
+}
+.callback-kicker{font-size:13px;font-weight:650;color:#71887b;letter-spacing:.03em;margin:0 0 8px}
+.callback-form h3{font-size:clamp(25px,2.2vw,31px);line-height:1.4;font-weight:650;letter-spacing:-.025em;margin:0 0 8px;color:#18332f}
+.callback-description{font-size:15px;line-height:1.85;color:#5b6c63;margin:0 0 22px}
+.callback-form label{display:block;font-size:14px;font-weight:600;color:#324b42;margin:14px 0 7px}
+.callback-form input,.callback-form select{
+  display:block;width:100%;min-height:47px;border:1px solid #c7d0c6;border-radius:7px;
+  background:#fffefa;color:#19332f;padding:10px 13px;font:400 16px/1.5 'Vazirmatn Variable','Vazirmatn',sans-serif;
+  outline:none;transition:border-color .2s,box-shadow .2s;
+}
+.callback-form input:focus,.callback-form select:focus{border-color:#568879;box-shadow:0 0 0 3px #5d9c8420}
+.callback-form input::placeholder{color:#9aa59b}
+.callback-submit{
+  display:flex;align-items:center;justify-content:space-between;gap:18px;width:100%;min-height:44px;
+  margin-top:20px;padding:8px 14px;border:0;border-radius:7px;background:#183a34;color:#f5f0e6;
+  font:600 15px/1.5 'Vazirmatn Variable','Vazirmatn',sans-serif;cursor:pointer;transition:background .2s;
+}
+.callback-submit:hover{background:#28564b}
+.callback-submit span{font:500 20px/1 'Manrope Variable','Manrope',sans-serif}
+.callback-submit:disabled{opacity:.6;cursor:wait}
+.callback-status{font-size:13px;line-height:1.75;color:#6b7c70;margin:13px 0 0;min-height:45px}
+.site-footer{
+  position:relative;z-index:1;display:flex;justify-content:space-between;align-items:center;gap:18px;
+  padding:20px 0 4px;margin-top:24px;border-top:1px solid #a9b6aa;color:#52675f;font-size:13px;line-height:1.7;
+}
+.site-footer span:nth-child(2){font:600 13px/1.7 'Manrope Variable','Manrope',sans-serif;letter-spacing:.06em}
+.site-footer a{color:inherit;text-decoration:none}
+.site-footer a:hover{color:#142d2c}
+@media(max-width:900px){
+  .ending-layout{grid-template-columns:minmax(0,1fr) minmax(285px,.85fr);gap:28px}
+  .ending h2{font-size:clamp(47px,6.4vw,68px)}
+  .callback-form{padding:23px}
+  .ecosystem-track span{font-size:21px;padding-inline:25px}
+}
+@media(max-width:700px){
+  .opening-wordmark{width:95vw}
+  .wordmark-primary{font-size:145px;letter-spacing:8px}
+  .wordmark-secondary{font-size:103px;letter-spacing:12px}
+  .wordmark-line{stroke-width:2.35}
+  .chapter-eyebrow{font-size:15px;gap:10px;min-height:40px;margin-bottom:9px}
+  .chapter-symbol{width:38px;height:38px;flex-basis:38px;border-radius:10px}
+  .chapter-symbol svg{width:21px;height:21px}
+  .ecosystem-strip{padding:23px 0 25px}
+  .ecosystem-strip-head{padding-inline:25px;align-items:flex-start;flex-direction:column;gap:5px;margin-bottom:14px}
+  .ecosystem-strip-head span:last-child{font-size:13px}
+  .ecosystem-track span{font-size:19px;gap:10px;padding-inline:20px}
+  .ecosystem-track i{font-size:13px}
+  .ending{min-height:0;padding:65px 24px 22px}
+  .ending:before{right:-16%;top:12%;width:78%;height:54%;opacity:.2}
+  .ending:after{right:-4%;top:16%;width:64%;opacity:.18}
+  .ending-detail{font-size:13px;letter-spacing:.05em;gap:8px;align-items:flex-start;flex-direction:column}
+  .ending-layout{grid-template-columns:minmax(0,1fr);gap:18px;margin:28px 0 0}
+  .ending-inner{padding:16px 0 8px}
+  .ending-label{font-size:15px}
+  .ending h2{font-size:clamp(47px,12vw,70px);line-height:1.32;margin:9px 0 17px}
+  .ending-inner>p:not(.ending-label){font-size:16px;line-height:1.85;margin-bottom:22px}
+  .ending-cta{font-size:14px;padding:7px 8px 7px 14px}
+  .ending-cta-icon{width:28px;height:28px;flex-basis:28px;font-size:18px}
+  .callback-form{max-width:none;padding:22px;border-radius:13px}
+  .callback-form h3{font-size:26px}
+  .callback-description{font-size:15px}
+  .callback-form input,.callback-form select{font-size:16px;min-height:48px}
+  .site-footer{align-items:flex-start;flex-direction:column;gap:7px;padding-top:17px;margin-top:24px;font-size:13px}
+  .site-footer span:nth-child(2){font-size:13px;letter-spacing:.04em}
+}
+@media(prefers-reduced-motion:reduce){
+  .wordmark-line{animation:none;stroke-dashoffset:0}
+  .ecosystem-track{animation:none;transform:none}
+  .ending-cta,.ending-cta-icon,.callback-form input,.callback-form select{transition:none}
 }

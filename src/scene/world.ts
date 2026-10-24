@@ -75,7 +75,7 @@ export function createWorld(host:HTMLElement) {
     return group;
   }
   // Six widely-spaced story nodes, with visual hierarchy and negative space.
-  const nodePositions=[[23,-16],[-24,-15],[24,19],[-25,19],[2,-39],[2,40]] as const;
+  const nodePositions=[[22,-17],[27,8],[15,28],[-12,27],[-27,9],[-22,-17],[0,-34]] as const;
   const worlds=nodePositions.map(([x,z])=>({group:galleryNode(x,z)}));
   const center=new THREE.Group();root.add(center);
   box(center,8.7,.14,8.7,0,-.7,0,charcoal,.04);
@@ -85,12 +85,27 @@ export function createWorld(host:HTMLElement) {
     const x=Math.cos(a)*3.1,z=Math.sin(a)*3.1;
     rod(center,new THREE.Vector3(x,-.42,z),new THREE.Vector3(x*.45,2.7,z*.45),.036,metal);
   }
-  const core=put(center,new THREE.OctahedronGeometry(1.75,0),material(0x527779,.62,.14,{emissive:0x153c39,emissiveIntensity:.5}),0,3.05,0);
-  const inner=put(center,new THREE.OctahedronGeometry(.86,0),whiteLight,0,3.05,0);
-  const wire=put(center,new THREE.OctahedronGeometry(2.0,0),new THREE.MeshBasicMaterial({color:0xa4d2c7,wireframe:true,transparent:true,opacity:.54}),0,3.05,0);
+  // A small static microchip is the hub; circuit traces visibly leave its edge.
+  const chipBody=material(0x183a3d,.76,.24,{emissive:0x0b2929,emissiveIntensity:.45});
+  box(center,1.62,.48,1.62,0,3.05,0,chipBody,.075);
+  put(center,new THREE.BoxGeometry(1.72,.54,1.72),new THREE.MeshBasicMaterial({color:0x9ed9ce,wireframe:true,transparent:true,opacity:.48,toneMapped:false}),0,3.05,0);
+  const inner=box(center,.38,.075,.38,0,3.33,0,whiteLight,.025);
+  for(const offset of [-.48,0,.48]){
+    box(center,.29,.09,.13,offset,3.05,-.9,metal,.02);
+    box(center,.29,.09,.13,offset,3.05,.9,metal,.02);
+    box(center,.13,.09,.29,-.9,3.05,offset,metal,.02);
+    box(center,.13,.09,.29,.9,3.05,offset,metal,.02);
+  }
+  for(const x of [-.48,.48])for(const z of [-.48,.48])box(center,.12,.025,.12,x,3.33,z,signal,.012);
   const coreRing=new THREE.Group();coreRing.position.y=3.05;center.add(coreRing);
-  ring(coreRing,2.6,.021,0,metal);ring(coreRing,2.3,.019,.15,signal);
-  const glow=put(center,new THREE.SphereGeometry(3.6,28,18),new THREE.MeshBasicMaterial({color:0x61cbb6,transparent:true,opacity:.045,depthWrite:false,blending:THREE.AdditiveBlending}),0,3.05,0);
+  ring(coreRing,1.72,.018,0,metal);ring(coreRing,2.08,.014,.08,signal);
+  const glow=put(center,new THREE.SphereGeometry(2.8,24,16),new THREE.MeshBasicMaterial({color:0x61cbb6,transparent:true,opacity:.028,depthWrite:false,blending:THREE.AdditiveBlending}),0,3.05,0);
+  const nodeRings=worlds.map(({group})=>{
+    const ringMaterial=new THREE.MeshBasicMaterial({color:0x91ffe5,transparent:true,opacity:.045,depthWrite:false,toneMapped:false});
+    const halo=put(group,new THREE.TorusGeometry(4.38,.027,5,80),ringMaterial,0,-.55,0);
+    halo.rotation.x=Math.PI/2;
+    return halo;
+  });
   // 01 — A section of a building. The ghost blueprint is misaligned with the actual frame.
   {
     const g=worlds[0].group;
@@ -170,15 +185,33 @@ export function createWorld(host:HTMLElement) {
     box(g,2.7,2.2,.032,1.55,2.45,-.32,ghost);
     for(let i=0;i<5;i++)box(g,1.75,.022,.03,1.35,3.2-i*.35,-.26,signal);
   }
+  // 07 — A restrained neural lattice for future intelligence, not a glowing crystal.
+  {
+    const g=worlds[6].group;
+    const layers=[
+      [[-1.55,.45,-1.05],[0,.45,-1.05],[1.55,.45,-1.05]],
+      [[-1.55,1.75,0],[0,1.75,0],[1.55,1.75,0]],
+      [[-1.55,3.05,1.05],[0,3.05,1.05],[1.55,3.05,1.05]]
+    ].map(layer=>layer.map(([x,y,z])=>new THREE.Vector3(x,y,z)));
+    for(let layer=0;layer<layers.length-1;layer++){
+      for(const from of layers[layer])for(const to of layers[layer+1])rod(g,from,to,.018,layer===1?signal:mutedGlass);
+    }
+    for(let layer=0;layer<layers.length;layer++)for(let j=0;j<layers[layer].length;j++){
+      const p=layers[layer][j];
+      put(g,new THREE.SphereGeometry(.2,12,8),layer===1?whiteLight:signal,p.x,p.y,p.z);
+      put(g,new THREE.SphereGeometry(.34,10,7),new THREE.MeshBasicMaterial({color:0x7effdf,transparent:true,opacity:.07,blending:THREE.AdditiveBlending,depthWrite:false}),p.x,p.y,p.z);
+    }
+    wireRectangle(g,4.5,4.5,3.7,metal);
+  }
   // Engraved 90° routes with short 45° chamfers, not arcs or floating cables.
   // Gold packets depart the hub; cyan packets return, on discrete paired lanes.
   const pulses:PathPulse[]=[];
-  const track = new THREE.MeshBasicMaterial({color:0x31504e,transparent:true,opacity:.8,depthWrite:false});
-  const filament = new THREE.MeshBasicMaterial({color:0x508b7f,transparent:true,opacity:.52,depthWrite:false,toneMapped:false});
+  const track = new THREE.MeshBasicMaterial({color:0x31504e,transparent:true,opacity:.48,depthWrite:false});
+  const filament = new THREE.MeshBasicMaterial({color:0x508b7f,transparent:true,opacity:.55,depthWrite:false,toneMapped:false});
   const outgoing = new THREE.MeshBasicMaterial({color:0xffdda3,toneMapped:false});
   const incoming = new THREE.MeshBasicMaterial({color:0x9effe6,toneMapped:false});
-  const warmHalo = new THREE.MeshBasicMaterial({color:0xffcf83,transparent:true,opacity:.28,blending:THREE.AdditiveBlending,depthWrite:false,toneMapped:false});
-  const coolHalo = new THREE.MeshBasicMaterial({color:0x87ffe4,transparent:true,opacity:.3,blending:THREE.AdditiveBlending,depthWrite:false,toneMapped:false});
+  const warmHalo = new THREE.MeshBasicMaterial({color:0xffcf83,transparent:true,opacity:.19,blending:THREE.AdditiveBlending,depthWrite:false,toneMapped:false});
+  const coolHalo = new THREE.MeshBasicMaterial({color:0x87ffe4,transparent:true,opacity:.2,blending:THREE.AdditiveBlending,depthWrite:false,toneMapped:false});
   // Generate crisp segments; corner bevels preserve the board-routing geometry.
   function beveled(points:THREE.Vector3[],cut:number){
     const out:THREE.Vector3[]=[points[0].clone()];
@@ -199,58 +232,71 @@ export function createWorld(host:HTMLElement) {
     const destination=worlds[i].group.position;
     const direction=destination.clone().normalize();
     for(let lane=0;lane<2;lane++){
-      const side=lane===0?-.21:.21;
-      const start=new THREE.Vector3(direction.x*4.6+side,.1,direction.z*4.6+side);
-      const end=new THREE.Vector3(destination.x-direction.x*5.25+side,.12,destination.z-direction.z*4.75+side);
-      const midX=Math.abs(destination.x)>8?destination.x*.52+side:destination.x+side;
-      const midZ=destination.z*.67+side;
+      const side=lane===0?-.17:.17;
+      const lateral=new THREE.Vector3(-direction.z,0,direction.x).multiplyScalar(side);
+      const start=new THREE.Vector3(direction.x*.83+lateral.x,3.34,direction.z*.83+lateral.z);
+      const drop=new THREE.Vector3(start.x,.12,start.z);
+      const railStart=new THREE.Vector3(direction.x*4.6+lateral.x,.12,direction.z*4.6+lateral.z);
+      const end=new THREE.Vector3(destination.x-direction.x*4.9+lateral.x,.12,destination.z-direction.z*4.9+lateral.z);
+      const midX=Math.abs(destination.x)>8?destination.x*.52+lateral.x:destination.x+lateral.x;
+      const midZ=destination.z*.67+lateral.z;
       const route=beveled([
-        start,new THREE.Vector3(midX,.1,start.z),
-        new THREE.Vector3(midX,.1,midZ),
+        start,drop,railStart,
+        new THREE.Vector3(midX,.12,railStart.z),
+        new THREE.Vector3(midX,.12,midZ),
         new THREE.Vector3(end.x,.12,midZ),end
-      ],.8);
-      const spine=put(root,new THREE.TubeGeometry(route,115,.061,6,false),track);
-      const shine=put(root,new THREE.TubeGeometry(route,115,.022,6,false),filament);
-      spine.castShadow=false;spine.receiveShadow=false;shine.castShadow=false;shine.receiveShadow=false;
-      for(let j=0;j<3;j++){
-        const reverse=lane===1;
-        const orb=put(root,new THREE.SphereGeometry(.19,13,9),reverse?incoming:outgoing);
-        const halo=put(root,new THREE.SphereGeometry(.48,12,9),reverse?coolHalo:warmHalo);
-        pulses.push({curve:route,orb,halo,offset:(j/3+i*.07)%1,reverse});
-      }
+      ],.65);
+      put(root,new THREE.TubeGeometry(route,110,.034,5,false),track);
+      put(root,new THREE.TubeGeometry(route,110,.012,5,false),filament);
+      const reverse=lane===1;
+      const orb=put(root,new THREE.SphereGeometry(.115,10,7),reverse?incoming:outgoing);
+      const halo=put(root,new THREE.SphereGeometry(.27,10,7),reverse?coolHalo:warmHalo);
+      pulses.push({curve:route,orb,halo,offset:(i*.091+lane*.47)%1,reverse});
     }
   }
-  // Camera stages match the eight flat editorial chapters; art stays opposite copy.
-  const views=[
-    {pos:[59,58,95],look:[0,1,0],side:13},
-    {pos:[37,21,-3],look:[23,1,-16],side:-8},
-    {pos:[-37,21,0],look:[-24,1,-15],side:8},
-    {pos:[38,20,37],look:[24,1,19],side:-8},
-    {pos:[-39,22,35],look:[-25,1,19],side:8},
-    {pos:[15,24,-58],look:[2,1,-39],side:-8},
-    {pos:[-15,22,58],look:[2,1,40],side:8},
-    {pos:[26,20,28],look:[0,2,0],side:-8},
+  // Camera motion is synchronized to the eight editorial beats.
+  // It translates along a gentle spline with a constant viewing direction:
+  // no alternating orbit, no sudden height changes, and no rapid spin.
+  const clamp=(v:number,a=0,b=1)=>Math.max(a,Math.min(b,v));
+  const focusPoints=[
+    new THREE.Vector3(0,1.25,0),
+    ...worlds.map(({group})=>group.position.clone().add(new THREE.Vector3(0,1.25,0)))
   ];
+  const focusPath=new THREE.CatmullRomCurve3(focusPoints,false,'centripetal',.25);
   let disposed=false;
   function update(progress:number,seconds:number){
     if(disposed)return;
-    const p=Math.max(0,Math.min(views.length-1,progress*(views.length-1)));
-    const i=Math.floor(p), t=smooth(0,1,p-i),from=views[i],to=views[Math.min(i+1,views.length-1)];
-    const xyz=(a:number[],b:number[])=>new THREE.Vector3(a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t);
-    camera.position.copy(xyz(from.pos,to.pos));
-    const center=xyz(from.look,to.look);
-    const screenRight=center.clone().sub(camera.position).normalize().cross(new THREE.Vector3(0,1,0)).normalize();
-    const framing=(from.side+(to.side-from.side)*t)*(innerWidth<740?.25:1);
-    camera.lookAt(center.addScaledVector(screenRight,framing));
-    if(!reduceMotion){
-      core.rotation.y=seconds*.09;wire.rotation.y=-seconds*.08;inner.rotation.y=-seconds*.05;
-      coreRing.rotation.z=Math.sin(seconds*.45)*.07;
-      glow.scale.setScalar(1+Math.sin(seconds*.64)*.045);
-      for(const q of pulses){
-        const travel=(seconds*.12+q.offset)%1;
-        q.orb.position.copy(q.curve.getPoint(q.reverse?1-travel:travel));
-        q.halo.position.copy(q.orb.position);
-      }
+    const chapterCount=focusPoints.length;
+    const chapterPhase=progress*chapterCount-.5;
+    const pathT=clamp(chapterPhase/(chapterCount-1));
+    const focus=focusPath.getPoint(pathT);
+    const activeChapter=Math.min(chapterCount-1,Math.floor(progress*chapterCount));
+    const framing=(activeChapter%2===0?5:-5)*(innerWidth<740?.14:1);
+    const framedFocus=focus.clone();framedFocus.x-=framing;
+    const distance=56+36*(1-smooth(0,.18,progress));
+    camera.position.set(framedFocus.x,framedFocus.y+distance*.42,framedFocus.z+distance);
+    camera.lookAt(framedFocus);
+
+    const centerPhase=progress*chapterCount;
+    const centerWeight=Math.max(
+      1-smooth(.35,1.05,Math.abs(centerPhase-.5)),
+      1-smooth(.35,1.05,Math.abs(centerPhase-(chapterCount-.5)))
+    );
+    coreRing.rotation.z=Math.sin(seconds*.18)*.014;
+    inner.scale.setScalar(1+Math.sin(seconds*.65)*.025);
+    glow.scale.setScalar(1+Math.sin(seconds*.4)*.025+centerWeight*.025);
+    (glow.material as THREE.MeshBasicMaterial).opacity=.025+centerWeight*.045;
+    for(let i=0;i<nodeRings.length;i++){
+      const distanceFromBeat=Math.abs(centerPhase-(i+1.5));
+      const weight=1-smooth(.28,.82,distanceFromBeat);
+      const halo=nodeRings[i];
+      (halo.material as THREE.MeshBasicMaterial).opacity=.035+weight*.24;
+      halo.scale.setScalar(1+weight*.018);
+    }
+    for(const q of pulses){
+      const travel=reduceMotion ? 0.5 : (seconds*.075+q.offset)%1;
+      q.orb.position.copy(q.curve.getPoint(q.reverse?1-travel:travel));
+      q.halo.position.copy(q.orb.position);
     }
     renderer.render(scene,camera);
   }
