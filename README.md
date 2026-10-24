@@ -2,10 +2,10 @@
 
 **Live site:** https://maxlightner.github.io/ramach-systems/
 
-Corporate presentation with a dark, outlined two-line RAMACH / SYSTEMS wordmark drawn as SVG strokes; a stable chapter-synchronized 3D environment, custom chapter glyphs, an owned-product strip, and a compact callback form.
+Corporate presentation with a dark, outlined two-line RAMACH / SYSTEMS wordmark drawn as SVG strokes; a depth-aware 3D camera that approaches each chapter mark, settles, then reveals the matching copy, custom chapter glyphs, an owned-product strip, and a compact callback form.
 
 ## Editorial / visual language
-Eight chapters each identify a specific building-industry problem, where it occurs, and which RAMACH product or technology addresses it. Future initiatives are explicitly presented as future development, not completed functionality. Seven story nodes follow a restrained, consistent camera path. A small central microchip connects directly to the nodes through thin chamfered circuit paths with restrained gold outbound and teal return pulses. The camera translates along a spline without alternating orbit or abrupt height changes.
+Eight chapters each identify a specific building-industry problem, where it occurs, and which RAMACH product or technology addresses it. Future initiatives are explicitly presented as future development, not completed functionality. Seven story nodes follow a deliberate 3D camera choreography: each approach changes camera position and distance, eases to a stop at the node, and reveals the associated text only after the camera settles. The camera follows reversible quadratic paths with a small vertical arc rather than a flat pan. A small central microchip connects directly to the nodes through thin chamfered circuit paths with restrained gold outbound and teal return pulses. The camera translates along a spline without alternating orbit or abrupt height changes.
 
 Chapter copy is normal accessible HTML/CSS, never 3D labels. The opposite side of the frame is reserved for the 3D object. Scroll progress selects the same eight beats used by the editorial copy. Camera focus transitions are centered on chapter boundaries; node halos emphasize the corresponding story beat.
 

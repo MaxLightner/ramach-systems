@@ -6,7 +6,7 @@ type PathPulse = { curve: THREE.CurvePath<THREE.Vector3>; orb: THREE.Mesh; halo:
 const ivory = 0xe7e3d8, ink = 0x152d30, gold = 0xb99d72, aqua = 0x79c5b7;
 const smooth = (a:number,b:number,v:number) => { const t = Math.max(0,Math.min(1,(v-a)/(b-a))); return t*t*(3-2*t); };
 
-export function createWorld(host:HTMLElement) {
+export function createWorld(host:HTMLElement, chapterAlignments:readonly ('left'|'right')[] = []) {
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const renderer = new THREE.WebGLRenderer({ antialias:true, alpha:true, powerPreference:'high-performance' });
   renderer.setClearColor(0x03090d,0);
@@ -254,48 +254,65 @@ export function createWorld(host:HTMLElement) {
       pulses.push({curve:route,orb,halo,offset:(i*.091+lane*.47)%1,reverse});
     }
   }
-  // Camera motion is synchronized to the eight editorial beats.
-  // It translates along a gentle spline with a constant viewing direction:
-  // no alternating orbit, no sudden height changes, and no rapid spin.
+  // Each chapter has a real 3D camera mark. It travels in depth, settles,
+  // and holds still before the matching editorial copy is allowed to appear.
   const clamp=(v:number,a=0,b=1)=>Math.max(a,Math.min(b,v));
-  const focusPoints=[
-    new THREE.Vector3(0,1.25,0),
-    ...worlds.map(({group})=>group.position.clone().add(new THREE.Vector3(0,1.25,0)))
+  const chapterTargets=[
+    new THREE.Vector3(0,1.65,0),
+    ...worlds.map(({group})=>group.position.clone().add(new THREE.Vector3(0,2.1,0)))
   ];
-  const focusPath=new THREE.CatmullRomCurve3(focusPoints,false,'centripetal',.25);
+  type CameraMark={position:THREE.Vector3;focus:THREE.Vector3};
+  const makeMark=(target:THREE.Vector3,index:number):CameraMark=>{
+    const radial=new THREE.Vector3(target.x,0,target.z);
+    if(radial.lengthSq()<.01)radial.set(0,0,1);else radial.normalize();
+    const right=new THREE.Vector3(radial.z,0,-radial.x);
+    const mobile=innerWidth<740;
+    const align=chapterAlignments[index]??(index%2===0?'right':'left');
+    const shift=mobile?0:(align==='right'?4.4:-4.4);
+    const focus=target.clone().addScaledVector(right,shift);
+    if(mobile)focus.y-=2.25;
+    const position=target.clone().addScaledVector(radial,mobile?14.2:15.5);
+    position.y=target.y+(mobile?8.6:7.7);
+    return {position,focus};
+  };
+  let marks=chapterTargets.map(makeMark);
+  const establishing:CameraMark={position:new THREE.Vector3(0,27,94),focus:new THREE.Vector3(0,1.5,0)};
+  function transitionCurve(from:THREE.Vector3,to:THREE.Vector3,height:number){
+    const control=from.clone().add(to).multiplyScalar(.5);
+    control.y+=height;
+    return new THREE.QuadraticBezierCurve3(from,control,to);
+  }
   let disposed=false;
   function update(progress:number,seconds:number){
     if(disposed)return;
-    const chapterCount=focusPoints.length;
-    const chapterPhase=progress*chapterCount-.5;
-    const pathT=clamp(chapterPhase/(chapterCount-1));
-    const focus=focusPath.getPoint(pathT);
-    const activeChapter=Math.min(chapterCount-1,Math.floor(progress*chapterCount));
-    const framing=(activeChapter%2===0?5:-5)*(innerWidth<740?.14:1);
-    const framedFocus=focus.clone();framedFocus.x-=framing;
-    const distance=56+36*(1-smooth(0,.18,progress));
-    camera.position.set(framedFocus.x,framedFocus.y+distance*.42,framedFocus.z+distance);
-    camera.lookAt(framedFocus);
+    const chapterCount=marks.length;
+    const chapterPhase=clamp(progress)*chapterCount;
+    const chapterIndex=Math.min(chapterCount-1,Math.floor(chapterPhase));
+    const local=chapterPhase-chapterIndex;
+    const from=chapterIndex===0?establishing:marks[chapterIndex-1];
+    const to=marks[chapterIndex];
+    const distance=from.position.distanceTo(to.position);
+    const travel=smooth(0,1,clamp(local/.78));
+    const cameraCurve=transitionCurve(from.position,to.position,Math.min(2.4,1.1+distance*.025));
+    const focusCurve=transitionCurve(from.focus,to.focus,.55);
+    camera.position.copy(cameraCurve.getPoint(travel));
+    camera.lookAt(focusCurve.getPoint(travel));
 
-    const centerPhase=progress*chapterCount;
-    const centerWeight=Math.max(
-      1-smooth(.35,1.05,Math.abs(centerPhase-.5)),
-      1-smooth(.35,1.05,Math.abs(centerPhase-(chapterCount-.5)))
-    );
+    const centerWeight=1-smooth(.12,.72,Math.abs(chapterPhase-.62));
     coreRing.rotation.z=Math.sin(seconds*.18)*.014;
-    inner.scale.setScalar(1+Math.sin(seconds*.65)*.025);
-    glow.scale.setScalar(1+Math.sin(seconds*.4)*.025+centerWeight*.025);
-    (glow.material as THREE.MeshBasicMaterial).opacity=.025+centerWeight*.045;
+    inner.scale.setScalar(1+Math.sin(seconds*.65)*.018);
+    glow.scale.setScalar(1+centerWeight*.035);
+    (glow.material as THREE.MeshBasicMaterial).opacity=.022+centerWeight*.035;
     for(let i=0;i<nodeRings.length;i++){
-      const distanceFromBeat=Math.abs(centerPhase-(i+1.5));
-      const weight=1-smooth(.28,.82,distanceFromBeat);
+      const distanceFromBeat=Math.abs(chapterPhase-(i+1+.68));
+      const weight=1-smooth(.12,.66,distanceFromBeat);
       const halo=nodeRings[i];
-      (halo.material as THREE.MeshBasicMaterial).opacity=.035+weight*.24;
+      (halo.material as THREE.MeshBasicMaterial).opacity=.025+weight*.2;
       halo.scale.setScalar(1+weight*.018);
     }
     for(const q of pulses){
-      const travel=reduceMotion ? 0.5 : (seconds*.075+q.offset)%1;
-      q.orb.position.copy(q.curve.getPoint(q.reverse?1-travel:travel));
+      const pulseTravel=reduceMotion ? 0.5 : (seconds*.075+q.offset)%1;
+      q.orb.position.copy(q.curve.getPoint(q.reverse?1-pulseTravel:pulseTravel));
       q.halo.position.copy(q.orb.position);
     }
     renderer.render(scene,camera);
@@ -304,6 +321,7 @@ export function createWorld(host:HTMLElement) {
     if(disposed)return;
     const w=Math.max(1,host.clientWidth),h=Math.max(1,host.clientHeight);
     camera.aspect=w/h;camera.fov=w<740?51:38;camera.updateProjectionMatrix();
+    marks=chapterTargets.map(makeMark);
     renderer.setPixelRatio(Math.min(devicePixelRatio,w<740?1:1.25));
     renderer.setSize(w,h,false);
   }

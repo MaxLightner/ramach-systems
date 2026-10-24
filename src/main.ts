@@ -80,6 +80,24 @@ const chapterIcons = [
   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="19" cy="19" r="2"/><circle cx="12" cy="12" r="2"/><path d="m11 6-5 11m7-11 5 11m-11 2h10M12 6v4"/></svg>'
 ] as const;
 
+const wordmarkGlyphPaths = {
+  R: ["M8 118V8H66C86 8 96 19 96 37C96 53 86 63 68 66L98 118H69L43 70H32V118Z","M32 30H64C72 30 76 33 76 39C76 45 72 48 64 48H32Z"],
+  A: ["M3 118L25 8H75L97 118H70L64 87H36L30 118Z","M41 62H59L54 35H46Z"],
+  M: ["M6 118V8H33L50 48L67 8H94V118H68V57L50 93L32 57V118Z"],
+  C: ["M93 25L77 8H29C14 8 7 16 7 31V95C7 110 14 118 29 118H77L93 101L77 83L69 93H34V33H69L77 43Z"],
+  H: ["M7 8H32V48H68V8H93V118H68V72H32V118H7Z"],
+  S: ["M88 18L74 8H27C14 8 7 16 7 29V40C7 52 15 59 28 63L69 75V94H31V82H7V98C7 111 15 118 28 118H72C85 118 93 110 93 97V81C93 68 86 62 72 58L31 46V32H69V43H93V28C93 22 91 20 88 18Z"],
+  Y: ["M5 8H34L50 38L66 8H95L64 61V118H36V61Z"],
+  T: ["M5 8H95V33H64V118H36V33H5Z"],
+  E: ["M8 8H94V32H34V49H81V73H34V94H94V118H8Z"]
+} as const;
+const wordmarkTopRow = [
+  {letter:"R",x:225},{letter:"A",x:355},{letter:"M",x:485},{letter:"A",x:615},{letter:"C",x:745},{letter:"H",x:875}
+].map(g=>({...g,letter:g.letter as keyof typeof wordmarkGlyphPaths}));
+const wordmarkBottomRow = [
+  {letter:"S",x:200},{letter:"Y",x:317},{letter:"S",x:434},{letter:"T",x:551},{letter:"E",x:668},{letter:"M",x:785},{letter:"S",x:902}
+].map(g=>({...g,letter:g.letter as keyof typeof wordmarkGlyphPaths}));
+
 const app=document.querySelector<HTMLDivElement>('#app')!;
 app.innerHTML = `
 <a class="skip-link" href="#journey">رفتن به محتوای اصلی</a>
@@ -94,9 +112,14 @@ app.innerHTML = `
 <main>
   <section class="opening" id="start" aria-label="معرفی راماچ سیستم">
     <div class="opening-center"><div class="opening-wordmark">
-      <svg class="opening-wordmark-svg" viewBox="0 0 1200 340" role="img" aria-label="RAMACH SYSTEMS" xmlns="http://www.w3.org/2000/svg">
-        <text class="wordmark-line wordmark-primary" x="50%" y="139" text-anchor="middle" pathLength="1000">RAMACH</text>
-        <text class="wordmark-line wordmark-secondary" x="50%" y="285" text-anchor="middle" pathLength="1000">SYSTEMS</text>
+      <svg class="opening-wordmark-svg" viewBox="0 0 1200 350" role="img" aria-label="RAMACH SYSTEMS" xmlns="http://www.w3.org/2000/svg">
+        <defs><linearGradient id="wordmark-stroke" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b99b6c"/><stop offset=".48" stop-color="#f0ede3"/><stop offset="1" stop-color="#8dc8b7"/></linearGradient></defs>
+        <g class="wordmark-row wordmark-row-primary" aria-hidden="true">
+          ${wordmarkTopRow.map((glyph,i)=>`<g class="wordmark-glyph" transform="translate(${glyph.x} 34)" style="--line-delay:.12s;--glyph-delay:${(i*.12).toFixed(2)}s">${wordmarkGlyphPaths[glyph.letter].map(d=>`<path d="${d}" pathLength="1000"/>`).join('')}</g>`).join('')}
+        </g>
+        <g class="wordmark-row wordmark-row-secondary" aria-hidden="true">
+          ${wordmarkBottomRow.map((glyph,i)=>`<g class="wordmark-glyph" transform="translate(${glyph.x} 190)" style="--line-delay:1.58s;--glyph-delay:${(i*.12).toFixed(2)}s">${wordmarkGlyphPaths[glyph.letter].map(d=>`<path d="${d}" pathLength="1000"/>`).join('')}</g>`).join('')}
+        </g>
       </svg>
     </div></div>
   </section>
@@ -140,7 +163,7 @@ app.innerHTML = `
         <p class="ending-label">آغاز یک همکاری</p>
         <h2>آینده را <em>با هم</em><br>می‌سازیم.</h2>
         <p>برای توسعه نرم‌افزار، طراحی تجربه دیجیتال یا ساخت راهکاری تازه برای صنعت ساختمان، گفت‌وگو را شروع کنیم.</p>
-        <a class="ending-cta" href="#callback-form"><span class="ending-cta-text">درخواست تماس</span><span class="ending-cta-icon" aria-hidden="true">↗</span></a>
+        <a class="ending-cta" href="#callback-form"><span class="ending-cta-text">درخواست تماس</span><span class="ending-cta-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18 18 6M7 6h11v11"/></svg></span></a>
       </div>
       <form class="callback-form" id="callback-form">
         <p class="callback-kicker">گفت‌وگوی اولیه</p>
@@ -181,12 +204,12 @@ const progressFill=document.querySelector<HTMLElement>('#progress-fill')!;
 const stageIndex=document.querySelector<HTMLElement>('#stage-index')!;
 const opening=document.querySelector<HTMLElement>('.opening')!;
 let world:World|null=null,requested=false;
-let target=0,displayed=0,last=performance.now(),active=0;
+let target=0,displayed=0,last=performance.now(),active=-1;
 let enabled=true;
 const clamp=(v:number,a=0,b=1)=>Math.max(a,Math.min(b,v));
 function requestWorld(){
   if(requested)return;requested=true;
-  import('./scene/world').then(({createWorld})=>{world=createWorld(worldEl);world.update(displayed,performance.now()*.001);})
+  import('./scene/world').then(({createWorld})=>{world=createWorld(worldEl,chapters.map(c=>c.align));world.update(displayed,performance.now()*.001);})
     .catch(error=>{console.error('WebGL scene unavailable',error);document.querySelector<HTMLElement>('#webgl-message')!.hidden=false;});
 }
 const observer=new IntersectionObserver(entries=>{if(entries.some(e=>e.isIntersecting))requestWorld();},{rootMargin:'300px 0px'});
@@ -212,8 +235,16 @@ function frame(now:number){
   displayed += (target-displayed)*(1-Math.exp(-delta*12));
   if(Math.abs(target-displayed)<0.00005)displayed=target;
   if(enabled){
-    const idx=Math.min(chapters.length-1,Math.floor(clamp(displayed)*chapters.length));
-    if(idx!==active){active=idx;articles.forEach((el,i)=>el.classList.toggle('is-active',i===idx));stageIndex.textContent=String(idx+1).padStart(2,'0');}
+    const chapterPhase=clamp(displayed)*chapters.length;
+    const idx=Math.min(chapters.length-1,Math.floor(chapterPhase));
+    const local=chapterPhase-idx;
+    // Reveal copy only after the camera has completed its move and eased to a stop.
+    const settledIndex=local>=.84?idx:-1;
+    if(settledIndex!==active){
+      active=settledIndex;
+      articles.forEach((el,i)=>el.classList.toggle('is-active',i===settledIndex));
+    }
+    stageIndex.textContent=String(idx+1).padStart(2,'0');
     progressFill.style.transform='scaleY('+displayed.toFixed(5)+')';
     world?.update(displayed,now*.001);
   }
