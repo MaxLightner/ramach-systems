@@ -244,11 +244,6 @@ const endingObserver=new IntersectionObserver(entries=>{
   endingSection.classList.toggle('is-visible',entries.some(e=>e.isIntersecting));
 },{threshold:0.08});
 endingObserver.observe(endingSection);
-const endingSection=document.querySelector<HTMLElement>('.ending')!;
-const endingObserver=new IntersectionObserver(entries=>{
-  endingSection.classList.toggle('is-visible',entries.some(e=>e.isIntersecting));
-},{threshold:0.08});
-endingObserver.observe(endingSection);
 function scrollTarget(){
   const rect=journey.getBoundingClientRect();
   const distance=Math.max(1,journey.offsetHeight-innerHeight);
