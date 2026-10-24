@@ -2,31 +2,31 @@ import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 
 type Node = { group: THREE.Group; color: THREE.Color };
-type PathPulse = { curve: THREE.CatmullRomCurve3; orb: THREE.Mesh; offset: number };
+type PathPulse = { curve: THREE.CatmullRomCurve3; orb: THREE.Mesh; halo: THREE.Mesh; offset: number; reverse: boolean };
 const ivory = 0xe7e3d8, ink = 0x152d30, gold = 0xb99d72, aqua = 0x79c5b7;
 const smooth = (a:number,b:number,v:number) => { const t = Math.max(0,Math.min(1,(v-a)/(b-a))); return t*t*(3-2*t); };
 
 export function createWorld(host:HTMLElement) {
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const renderer = new THREE.WebGLRenderer({ antialias:true, alpha:true, powerPreference:'high-performance' });
-  renderer.setClearColor(0x071315,0);
+  renderer.setClearColor(0x03090d,0);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.34;
+  renderer.toneMappingExposure = 1.17;
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   host.appendChild(renderer.domElement);
   const scene = new THREE.Scene();
-  scene.fog = new THREE.FogExp2(0x071315,0.009);
+  scene.fog = new THREE.FogExp2(0x03090d,0.006);
   const camera = new THREE.PerspectiveCamera(38,1,0.1,170);
   const root = new THREE.Group(); scene.add(root);
-  scene.add(new THREE.HemisphereLight(0xdcefe6,0x13272b,2.5));
-  const sun = new THREE.DirectionalLight(0xfff0d8,3.8);
+  scene.add(new THREE.HemisphereLight(0xb8d4d0,0x071318,1.45));
+  const sun = new THREE.DirectionalLight(0xffefd7,2.75);
   sun.position.set(-20,28,22); sun.castShadow=true; sun.shadow.mapSize.set(1536,1536);
   sun.shadow.camera.left=-45;sun.shadow.camera.right=45;sun.shadow.camera.top=45;sun.shadow.camera.bottom=-45;sun.shadow.camera.near=1;sun.shadow.camera.far=100;
   sun.shadow.bias=-0.0002;
   scene.add(sun);
-  const rim = new THREE.DirectionalLight(0x68ccca,2.4);rim.position.set(18,18,-18);scene.add(rim);
+  const rim = new THREE.DirectionalLight(0x63b7bd,1.75);rim.position.set(18,18,-18);scene.add(rim);
   const material = (color:number,metalness=0.3,roughness=0.42,extra:Record<string,unknown>={}) =>
     new THREE.MeshStandardMaterial({color,metalness,roughness,...extra});
   const dark=material(0x1b3235,.67,.3), stone=material(0xd9d5ca,.18,.68), concrete=material(0xa9b1ad,.18,.62);
@@ -52,10 +52,10 @@ export function createWorld(host:HTMLElement) {
     const mesh=put(parent,new THREE.TorusGeometry(r,tube,7,110),mat,0,y,0);mesh.rotation.x=Math.PI/2;return mesh;
   }
   const haloMat=new THREE.MeshBasicMaterial({color:0x77cebb,transparent:true,opacity:.2,depthWrite:false});
-  const floor=put(root,new THREE.PlaneGeometry(170,170),new THREE.MeshStandardMaterial({color:0x09191a,metalness:.05,roughness:.89}),0,-2.45,0);
+  const floor=put(root,new THREE.PlaneGeometry(170,170),new THREE.MeshStandardMaterial({color:0x050c10,metalness:.06,roughness:.92}),0,-2.45,0);
   floor.rotation.x=-Math.PI/2;
-  const grid = new THREE.GridHelper(106,53,0x35595a,0x234044);grid.position.y=-2.42;
-  (grid.material as THREE.Material).transparent=true;(grid.material as THREE.Material).opacity=.19;root.add(grid);
+  const grid = new THREE.GridHelper(158,79,0x28474c,0x1d3237);grid.position.y=-2.42;
+  (grid.material as THREE.Material).transparent=true;(grid.material as THREE.Material).opacity=.11;root.add(grid);
   const platform=(x:number,z:number,r=5.1):Node=>{
     const group=new THREE.Group();group.position.set(x,0,z);root.add(group);
     cyl(group,r,1.05,0,-1.33,0,dark,80);
@@ -67,13 +67,11 @@ export function createWorld(host:HTMLElement) {
     }
     return {group,color:new THREE.Color(aqua)};
   };
-  const worlds = [
-    {p:[-13,-7],r:5.25},
-    {p:[13,-7],r:5.15},
-    {p:[13,9],r:4.9},
-    {p:[0,-17],r:4.85},
-    {p:[-13,9],r:5.0},
-  ].map(a=>platform(a.p[0],a.p[1],a.r));
+  // Widely separated sites: each zone reads as an independent architectural vignette.
+  const nodePositions = [
+    [-24,-14], [24,-14], [24,18], [0,-35], [-24,18]
+  ] as const;
+  const worlds = nodePositions.map(([x,z],i)=>platform(x,z,[5.25,5.15,4.9,4.85,5.0][i]));
   const center=platform(0,0,4.35).group;
   // RAMACH intelligence core: a quiet sculptural object, not a computer processor.
   cyl(center,2.7,.16,0,.05,0,brass);
@@ -198,46 +196,71 @@ export function createWorld(host:HTMLElement) {
     for(const xx of [-.31,.31])rod(human,new THREE.Vector3(xx*.72,1.6,0),new THREE.Vector3(xx,1.03,.08),.062,cloth);
     if(hardhat){const hat=cyl(human,.3,.1,0,2.12,0,brass,18);hat.scale.z=.9;}
   }
-  // Architectural network paths, with soft traveling packets.
+  // Bi-directional luminous transfer: warm packets leave the hub, cool packets return.
   const pulses:PathPulse[]=[];
-  const routeMat=new THREE.MeshBasicMaterial({color:0x7cbdad,transparent:true,opacity:.72});
-  const softPathMat=new THREE.MeshBasicMaterial({color:0xc5ad83,transparent:true,opacity:.5});
+  const routeTrack = new THREE.MeshBasicMaterial({color:0x42796f,transparent:true,opacity:.72});
+  const routeFilament = new THREE.MeshBasicMaterial({color:0xb3ebdb,transparent:true,opacity:.85,toneMapped:false});
+  const sendMat = new THREE.MeshBasicMaterial({color:0xffdca4,toneMapped:false});
+  const returnMat = new THREE.MeshBasicMaterial({color:0x94f4e3,toneMapped:false});
+  const sendHalo = new THREE.MeshBasicMaterial({color:0xffd39b,transparent:true,opacity:.17,blending:THREE.AdditiveBlending,depthWrite:false,toneMapped:false});
+  const returnHalo = new THREE.MeshBasicMaterial({color:0x69e6d1,transparent:true,opacity:.18,blending:THREE.AdditiveBlending,depthWrite:false,toneMapped:false});
   const destinations=worlds.map(n=>n.group.position.clone());
   for(let i=0;i<destinations.length;i++){
     const p=destinations[i],dir=p.clone().normalize();
-    const a=dir.clone().multiplyScalar(3.95);a.y=-.23;
-    const end=p.clone().addScaledVector(dir,-4.9);end.y=-.22;
-    const curve=new THREE.CatmullRomCurve3([a,a.clone().lerp(end,.35).add(new THREE.Vector3(0,1.25,0)),a.clone().lerp(end,.74).add(new THREE.Vector3(0,.65,0)),end]);
-    const path=put(root,new THREE.TubeGeometry(curve,60,.045,7,false),softPathMat);
-    path.castShadow=false;path.receiveShadow=false;
-    for(let j=0;j<2;j++){const orb=put(root,new THREE.SphereGeometry(.10,10,8),j===0?whiteLight:routeMat);
-      pulses.push({curve,orb,offset:(i*.28+j*.5)%1});}
+    const start=dir.clone().multiplyScalar(4.15);start.y=.45;
+    const end=p.clone().addScaledVector(dir,-5.2);end.y=.55;
+    const length=start.distanceTo(end);
+    const curve=new THREE.CatmullRomCurve3([
+      start,
+      start.clone().lerp(end,.30).add(new THREE.Vector3(0,1.25+length*.023,0)),
+      start.clone().lerp(end,.71).add(new THREE.Vector3(0,.95+length*.025,0)),
+      end
+    ]);
+    const spine=put(root,new THREE.TubeGeometry(curve,100,.075,8,false),routeTrack);
+    spine.castShadow=false;spine.receiveShadow=false;
+    const filament=put(root,new THREE.TubeGeometry(curve,100,.022,6,false),routeFilament);
+    filament.castShadow=false;filament.receiveShadow=false;
+    for(let j=0;j<4;j++){
+      const reverse=j>=2;
+      const orb=put(root,new THREE.SphereGeometry(.145,12,10),reverse?returnMat:sendMat);
+      const halo=put(root,new THREE.SphereGeometry(.37,12,9),reverse?returnHalo:sendHalo);
+      pulses.push({curve,orb,halo,offset:((j%2)*.49+i*.137)%1,reverse});
+    }
   }
   const guides=new THREE.Group();root.add(guides);
   ring(guides,25,.015,-2.32,new THREE.MeshBasicMaterial({color:0x476568,transparent:true,opacity:.35}));
   ring(guides,31,.013,-2.32,new THREE.MeshBasicMaterial({color:0x2a5151,transparent:true,opacity:.25}));
+  // 'side' is camera-relative framing: positive puts the subject LEFT, negative RIGHT.
+  // This opposes the flat HTML captions at every narrative stop.
   const views=[
-    {pos:[30,24,39],look:[0,.5,0]},
-    {pos:[-23,11,3],look:[-13,1,-7]},
-    {pos:[24,12,-1],look:[13,1,-7]},
-    {pos:[23,11,18],look:[13,1,9]},
-    {pos:[-8,12,-29],look:[0,1,-17]},
-    {pos:[-24,12,20],look:[-13,1,9]},
-    {pos:[23,24,37],look:[0,.5,0]},
+    {pos:[57,55,90],look:[0,1,0],side:13},
+    {pos:[-43,21,5],look:[-24,1,-14],side:-8},
+    {pos:[44,21,6],look:[24,1,-14],side:8},
+    {pos:[45,21,44],look:[24,1,18],side:-8},
+    {pos:[-3,22,-67],look:[0,1,-35],side:8},
+    {pos:[-46,20,45],look:[-24,1,18],side:-8},
+    {pos:[58,56,87],look:[0,1,0],side:13},
   ];
   let disposed=false;
   function update(progress:number,seconds:number){
     if(disposed)return;
-    const p=Math.max(0,Math.min(.999999,progress))*(views.length-1);
+    const p=Math.max(0,Math.min(views.length-1,progress*views.length-.5));
     const i=Math.floor(p), t=smooth(0,1,p-i),from=views[i],to=views[Math.min(i+1,views.length-1)];
     const xyz=(a:number[],b:number[])=>new THREE.Vector3(a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t);
     camera.position.copy(xyz(from.pos,to.pos));
-    camera.lookAt(xyz(from.look,to.look));
+    const center=xyz(from.look,to.look);
+    const screenRight=center.clone().sub(camera.position).normalize().cross(new THREE.Vector3(0,1,0)).normalize();
+    const framing=(from.side+(to.side-from.side)*t)*(innerWidth<740?.25:1);
+    camera.lookAt(center.addScaledVector(screenRight,framing));
     if(!reduceMotion){
       core.rotation.y=seconds*.09;wire.rotation.y=-seconds*.08;inner.rotation.y=-seconds*.05;
       coreRing.rotation.z=Math.sin(seconds*.45)*.07;
       glow.scale.setScalar(1+Math.sin(seconds*.64)*.045);
-      for(const q of pulses)q.orb.position.copy(q.curve.getPoint((seconds*.085+q.offset)%1));
+      for(const q of pulses){
+        const travel=(seconds*.12+q.offset)%1;
+        q.orb.position.copy(q.curve.getPoint(q.reverse?1-travel:travel));
+        q.halo.position.copy(q.orb.position);
+      }
     }
     renderer.render(scene,camera);
   }

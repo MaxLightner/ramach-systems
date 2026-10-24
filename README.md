@@ -1,20 +1,22 @@
-# RAMACH SYSTEMS
+# RAMACH SYSTEMS — Cinematic Connected Architecture
 
-Interactive architectural-technology brand website.
+[Published website](https://maxlightner.github.io/ramach-systems/)
 
-**Website:** https://maxlightner.github.io/ramach-systems/
+**Stack:** TypeScript · Three.js · Vite · GitHub Pages.
 
-## Direction
+## Design and behavior
 
-- The opening is a quiet, flat architectural-line RAMACH mark: no 3D scene in the first viewport.
-- The first scroll reveals a **persistent, art-directed Three.js world** with five recognizable zones: architecture studio, construction site, owner oversight, data center, finance/operations.
-- The camera travels through a timeline controlled by **scroll in both directions**. Raw wheel delta never drives the camera. Frame-rate independent exponential damping produces soft, reversible movement.
-- Text is regular HTML/CSS on top of the scene, not 3D meshes. Typography is at least **9 CSS pixels** across breakpoints.
-- Final contact/CTA is the **only full-width static section after the 3D narrative**.
+The opening uses a *dark, otherwise empty* viewport. Actual architectural line strokes trace the six letterforms **RAMACH** before the systems caption appears. Navigation is not shown over the opening.
 
-## Stack
+As the visitor scrolls, a persistent real-time Three.js environment appears. The five physical environments (architectural studio, active construction site, owner oversight, data center, finance/operations) are deliberately widely separated and connected to the central RAMACH hub by illuminated, **bi-directional** data routes.
 
-TypeScript / Vite / Three.js, static GitHub Pages build. No backend, accounts, live app links, Blender bridges or streaming in this phase.
+Scroll position determines narrative target; an independent, frame-rate compensated damping function eases the virtual camera to that position. Reverse scrolling reverses camera travel. Flat HTML narrative headings and explanations crossfade over the viewport; camera framing places the model on the opposite side of the text on desktop. The closing call to action is flat.
+
+No authored CSS text is below **10 CSS pixels**.
+
+Models are intentionally stylized minimalist geometry, not photorealistic GLB assets. Current phase does **not** connect applications, authenticate users, stream live project data, or operate a real backend.
+
+## Build and deployment
 
 ```bash
 npm ci
@@ -23,20 +25,14 @@ npm run build
 npm run dev
 ```
 
-GitHub Actions publishes the Vite output on pushes to main. Do not change the Pages base unless the custom domain is configured.
+Pushes to `main` run tests, build Vite and deploy using the existing GitHub Pages Actions workflow. For custom domains, revise `BASE_PATH` and verified DNS configuration.
 
-## Components
+## Main modules
 
-- `src/main.ts` — editorial story, flat copy, scroll damping, chapter transitions
-- `src/scene/world.ts` — 3D world, sculptural central hub, architectural mini-environments, paths and reversible camera choreography
-- `src/styles.css` — brand art direction, intro line drawing, cinematic overlays, CTA and responsive layout
+- `src/main.ts`: editorial story, SVG line-writing, scroll damping, navigation and chapter transitions
+- `src/scene/world.ts`: world geometry, architecture vignettes, light flows, opposing camera compositions
+- `src/styles.css`: luxury brand art direction, responsive typography, opening/closing experiences
 
-The 3D objects are **stylized, procedural concept art**. They are not detailed photorealistic site assets or production digital twins. The phase does not connect real projects or users.
+## Next phase
 
-## Performance
-
-Lazy scene import when approaching the interactive section; capped pixel ratio on desktop and mobile; no external 3D model downloads; supports reduced-motion settings; canvas rendering is skipped when narrative is outside the viewport.
-
-## Next
-
-Replace the temporary GitHub Discussions contact with verified business contact. In later phases add site pages, high-fidelity 3D assets, product links and separate application subdomains after their production endpoints are verified.
+Visual QA on multiple devices; if needed, replace procedural models with bespoke art-directed meshes; later integrate app subdomains and authenticated 3D sessions separately. Contact currently points to GitHub Discussions until official company contact details are supplied.

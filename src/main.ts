@@ -26,15 +26,21 @@ app.innerHTML = `
 </header>
 <main>
   <section class="opening" id="start" aria-label="معرفی راماچ سیستم">
-    <div class="opening-grid" aria-hidden="true"></div>
     <div class="opening-center">
-      <div class="opening-mark">${mark}</div>
-      <div class="opening-brand" dir="ltr"><strong>RAMACH</strong><span>S Y S T E M S</span></div>
-      <div class="opening-thesis"><span class="hairline"></span><p>فناوری برای پیوند دادن دنیایی که می‌سازیم.</p><span class="hairline"></span></div>
+      <svg class="signature-logo" viewBox="0 0 1080 300" role="img" aria-label="RAMACH SYSTEMS" xmlns="http://www.w3.org/2000/svg">
+        <defs><linearGradient id="signature-ink" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#c3ae8b"/><stop offset=".45" stop-color="#eee7d8"/><stop offset="1" stop-color="#9fb5ac"/></linearGradient></defs>
+        <g class="signature-strokes" fill="none" stroke="url(#signature-ink)" stroke-width="4.1" stroke-linejoin="round" stroke-linecap="round">
+          <path style="--order:0" d="M44 237 V49 H116 C174 49 181 132 119 143 H44 M116 143 L190 237"/>
+          <path style="--order:1" d="M212 237 L276 49 L340 237 M234 173 H319"/>
+          <path style="--order:2" d="M376 237 V49 L449 162 L521 49 V237"/>
+          <path style="--order:3" d="M557 237 L622 49 L687 237 M579 173 H665"/>
+          <path style="--order:4" d="M840 78 C793 21 727 56 725 140 C722 226 802 264 844 207"/>
+          <path style="--order:5" d="M884 49 V237 M884 145 H1019 M1019 49 V237"/>
+        </g>
+        <path class="signature-accent" d="M44 260 H1019" fill="none" stroke="#aa916d" stroke-width=".8"/>
+      </svg>
+      <span class="signature-systems" dir="ltr">S Y S T E M S</span>
     </div>
-    <div class="opening-index" dir="ltr">ARCHITECTURE × INTELLIGENCE</div>
-    <a class="opening-scroll" href="#journey" aria-label="شروع تجربه اکوسیستم"><span>برای کشف اسکرول کنید</span><span class="scroll-icon">↓</span></a>
-    <div class="opening-counter" dir="ltr">INTRO / 00</div>
   </section>
   <section id="journey" class="journey" aria-label="سفر تعاملی در اکوسیستم راماچ">
     <div class="stage">
@@ -101,6 +107,9 @@ function scrollTarget(){
   target=clamp(-rect.top/distance);
   const introP=clamp(scrollY/(Math.max(1,opening.offsetHeight*.95)));
   opening.style.setProperty('--intro-scroll',introP.toFixed(4));
+  // Absolutely no navigation, decorative labels, or CTAs over the opening brand animation.
+  document.body.classList.toggle('has-entered',scrollY > opening.offsetHeight-innerHeight*.2);
+  document.body.classList.toggle('in-ending',document.querySelector<HTMLElement>('.ending')!.getBoundingClientRect().top < 82);
 }
 addEventListener('scroll',scrollTarget,{passive:true});
 addEventListener('resize',scrollTarget,{passive:true});
@@ -108,7 +117,7 @@ scrollTarget();
 function frame(now:number){
   const delta=Math.min(.06,Math.max(.001,(now-last)/1000));last=now;
   // Scroll sets a destination, never raw camera position. Exponential damping is frame-rate independent.
-  displayed += (target-displayed)*(1-Math.exp(-delta*5.4));
+  displayed += (target-displayed)*(1-Math.exp(-delta*3.1));
   if(Math.abs(target-displayed)<0.00005)displayed=target;
   if(enabled){
     const idx=Math.min(chapters.length-1,Math.floor(clamp(displayed)*chapters.length));
