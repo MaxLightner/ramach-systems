@@ -22,7 +22,7 @@ test('the opening is deliberately blank before a two-line outline logo begins dr
 });
 test('the camera makes real 3D approaches, then returns to the central chip for the brand reveal',()=>{
   assert.match(main,/const storyEnd=0\.82/);
-  assert.match(main,/const settledIndex=-1/);
+  assert.match(main,/let settledIndex=-1/);
   assert.match(main,/if\(local>=\.77\)settledIndex=idx/);
   assert.match(main,/else if\(local<\.16&&idx>0\)settledIndex=idx-1/);
   assert.match(main,/closingBrand\.classList\.toggle\('is-visible',displayed>=\.965\)/);
