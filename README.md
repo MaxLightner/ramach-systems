@@ -1,38 +1,24 @@
-# RAMACH SYSTEMS — Cinematic Connected Architecture
+# RAMACH SYSTEMS — Connected Built World
 
-[Published website](https://maxlightner.github.io/ramach-systems/)
+**Live site:** https://maxlightner.github.io/ramach-systems/
 
-**Stack:** TypeScript · Three.js · Vite · GitHub Pages.
+Corporate presentation with a dark, single-line SVG RAMACH SYSTEMS drawing; a persistent scroll-driven 3D environment and a flat, final contact call to action.
 
-## Design and behavior
+## Editorial / visual language
+Eight chapters each identify a specific building-industry problem, where it occurs, and which RAMACH product or technology addresses it. Future initiatives are explicitly presented as future development, not completed functionality. Six widely separated 3D nodes are symbolic minimalist sculptures, not toy rooms or miniature metaverse scenes. The central intelligence core connects the nodes with precise chamfered circuit paths, running gold outbound and teal return light pulses.
 
-The opening uses a *dark, otherwise empty* viewport. Actual architectural line strokes trace the six letterforms **RAMACH** before the systems caption appears. Navigation is not shown over the opening.
+Chapter copy is normal accessible HTML/CSS, never 3D labels. The opposite side of the frame is reserved for the 3D object. Scroll sets target progress; easing drives reversible camera movement without raw mouse-wheel jumps.
 
-As the visitor scrolls, a persistent real-time Three.js environment appears. The five physical environments (architectural studio, active construction site, owner oversight, data center, finance/operations) are deliberately widely separated and connected to the central RAMACH hub by illuminated, **bi-directional** data routes.
+**Hard typography constraint:** no authored text smaller than **9 CSS px** across desktop and mobile. The automated test audits authored CSS font sizes; UX also favors substantially larger readable editorial text.
 
-Scroll position determines narrative target; an independent, frame-rate compensated damping function eases the virtual camera to that position. Reverse scrolling reverses camera travel. Flat HTML narrative headings and explanations crossfade over the viewport; camera framing places the model on the opposite side of the text on desktop. The closing call to action is flat.
+## Stack / deployment
+Vite + TypeScript + Three.js, GitHub Pages through GitHub Actions. Responsive, progressive lazy-load of the single WebGL scene. All assets are generated with native geometry; no external GLB downloads, backend or logins.
 
-No authored CSS text is below **10 CSS pixels**.
-
-Models are intentionally stylized minimalist geometry, not photorealistic GLB assets. Current phase does **not** connect applications, authenticate users, stream live project data, or operate a real backend.
-
-## Build and deployment
-
-```bash
+```sh
 npm ci
 npm test
 npm run build
 npm run dev
 ```
 
-Pushes to `main` run tests, build Vite and deploy using the existing GitHub Pages Actions workflow. For custom domains, revise `BASE_PATH` and verified DNS configuration.
-
-## Main modules
-
-- `src/main.ts`: editorial story, SVG line-writing, scroll damping, navigation and chapter transitions
-- `src/scene/world.ts`: world geometry, architecture vignettes, light flows, opposing camera compositions
-- `src/styles.css`: luxury brand art direction, responsive typography, opening/closing experiences
-
-## Next phase
-
-Visual QA on multiple devices; if needed, replace procedural models with bespoke art-directed meshes; later integrate app subdomains and authenticated 3D sessions separately. Contact currently points to GitHub Discussions until official company contact details are supplied.
+Changes to main run tests, build and deploy via existing GitHub Pages workflow. Later milestones will integrate the three application subdomains and live Blender/mobility services, separately from this corporate site.

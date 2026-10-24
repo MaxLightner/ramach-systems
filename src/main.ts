@@ -4,13 +4,70 @@ import './styles.css';
 
 type World = ReturnType<typeof import('./scene/world').createWorld>;
 const chapters = [
-  {k:'00 / THE CONNECTED WORLD',eyebrow:'یک جهان، یک زبان مشترک',title:'وقتی همه چیز <em>متصل</em> می‌شود.',body:'دفتر طراحی، کارگاه، مالک و جریان اطلاعات، دیگر نقاط جدا از هم نیستند. راماچ سیستم برای پیوند دادن آن‌ها فناوری می‌سازد.',note:'THE RAMACH ECOSYSTEM',align:'right'},
-  {k:'01 / DESIGN INTELLIGENCE',eyebrow:'از ایده تا مدل',title:'معماری، فراتر از <em>یک نقشه.</em>',body:'ابزارهای طراحی، مدل‌سازی و تجسم فضایی، ایده را به یک زبان قابل فهم برای همه تبدیل می‌کنند؛ از میز معمار تا محیط واقعی.',note:'ARCHIYAR / KITCHYAR / DESIGN TECHNOLOGY',align:'left'},
-  {k:'02 / SITE CONNECTION',eyebrow:'فاصله دفتر و کارگاه',title:'آنچه طراحی شده، <em>آنجا دیده می‌شود.</em>',body:'واقعیت افزوده و ابزارهای دیجیتال، درک طرح و بررسی مسائل اجرا را به محل ساخت می‌آورند؛ جایی که هر تصمیم اهمیت دارد.',note:'SPATIAL COMPUTING / AR / XR',align:'right'},
-  {k:'03 / HUMAN DECISIONS',eyebrow:'دید یکپارچه برای تصمیم‌گیران',title:'هرکس در جای خودش. <em>همه در یک تصویر.</em>',body:'طراح، مجری و مالک به اطلاعات و دیدگاه‌های متفاوت نیاز دارند. فناوری باید این فاصله را کم کند، نه آنکه لایه دیگری از پیچیدگی بسازد.',note:'CONNECTED TEAMS / PROJECT VISIBILITY',align:'left'},
-  {k:'04 / DIGITAL FOUNDATION',eyebrow:'زیرساختی برای رشد',title:'داده‌ها باید <em>به هم برسند.</em>',body:'از یک مدل سه‌بعدی تا یک سامانه آنلاین، ما زیرساخت نرم‌افزاری، ارتباطات دیجیتال و تجربه‌های تعاملی را کنار هم طراحی می‌کنیم.',note:'SOFTWARE / WEBGL / CLOUD / AUTOMATION',align:'right'},
-  {k:'05 / SMART OPERATIONS',eyebrow:'فراتر از طراحی',title:'ساختن فقط <em>ساختمان نیست.</em>',body:'فرایند، هزینه، مدیریت و تصمیم‌گیری بخش دیگری از جهان ساخت هستند. مسیر توسعه راماچ، ابزارهایی برای هوشمندتر شدن همین عملیات است.',note:'PROCESS / FINANCE / INTELLIGENCE',align:'left'},
-  {k:'06 / RAMACH SYSTEMS',eyebrow:'فناوری برای دنیای ساخته‌شده',title:'ما ارتباط را <em>طراحی می‌کنیم.</em>',body:'توسعه نرم‌افزار، فناوری معماری، واقعیت افزوده، هوش مصنوعی و طراحی وب‌سایت‌های تخصصی معماری؛ تخصص‌های متفاوت با یک نگاه مشترک.',note:'SOFTWARE · SPATIAL · AI · ARCHITECTURAL WEB',align:'right'}
+  {
+    "k": "00 / RAMACH SYSTEMS",
+    "eyebrow": "راماچ چه مسئله‌ای را حل می‌کند؟",
+    "title": "ساختمان را افراد مختلف می‌سازند؛ <em>اطلاعاتشان جداست.</em>",
+    "body": "<span class='problem-context'>طراح در دفتر است، مجری در کارگاه و مالک در جای دیگر؛ نقشه‌ها و تصمیم‌ها میان آن‌ها پراکنده می‌مانند.</span><span class='solution-context'><strong>راهکار راماچ</strong> نرم‌افزار و فناوری‌هایی می‌سازیم که افراد، مدل‌ها و فرایندهای ساختمان را به هم متصل کنند.</span>",
+    "note": "THE CONNECTED BUILT WORLD",
+    "align": "right"
+  },
+  {
+    "k": "01 / DESIGN ↔ SITE",
+    "eyebrow": "مشکل در کارگاه",
+    "title": "نقشه درست است؛ <em>اجرا همیشه مطابق آن نیست.</em>",
+    "body": "<span class='problem-context'>اختلاف وقتی رخ می‌دهد که نیروی کار باید خط‌های نقشه را به دیوار و بازشوی واقعی تبدیل کند.</span><span class='solution-context'><strong>راهکار راماچ</strong> آرچیار را برای دیدن و بررسی طرح در مقیاس واقعی در محل پروژه توسعه می‌دهیم.</span>",
+    "note": "ARCHITECTURE / REAL WORLD",
+    "align": "left"
+  },
+  {
+    "k": "02 / REMOTE COORDINATION",
+    "eyebrow": "مشکل در هماهنگی",
+    "title": "معمار، مجری و مالک <em>کنار هم نیستند.</em>",
+    "body": "<span class='problem-context'>پرسش کارگاه به طراح می‌رسد و تغییرات باید به کارفرما هم نشان داده شوند؛ هرکس در مکانی متفاوت است.</span><span class='solution-context'><strong>راهکار راماچ</strong> زیرساخت مشاهده مشترک مدل و ارتباط موبایل، وب و نرم‌افزار طراحی را توسعه می‌دهیم.</span>",
+    "note": "PEOPLE / SHARED MODEL",
+    "align": "right"
+  },
+  {
+    "k": "03 / SPATIAL EXPERIENCE",
+    "eyebrow": "مشکل پیش از اجرا",
+    "title": "تصور فضا، <em>معادل دیدن آن نیست.</em>",
+    "body": "<span class='problem-context'>ابعاد کابینت، محل دیوار یا چیدمان مبلمان روی نقشه برای همه قابل درک نیست.</span><span class='solution-context'><strong>راهکار راماچ</strong> با چیدو، کیچیار و آرچیار طرح را در فضای واقعی نشان می‌دهیم تا تصمیم پیش از اجرا آسان‌تر شود.</span>",
+    "note": "CHIDO / KITCHYAR / ARCHIYAR",
+    "align": "left"
+  },
+  {
+    "k": "04 / DATA BRIDGE",
+    "eyebrow": "مشکل میان نرم‌افزارها",
+    "title": "مدل نباید <em>بین ابزارها گم شود.</em>",
+    "body": "<span class='problem-context'>وقتی یک فایل در Blender تغییر می‌کند، نسخه موبایل یا مرورگر ممکن است اطلاعات قبلی را نشان دهد.</span><span class='solution-context'><strong>راهکار راماچ</strong> ارتباط و همگام‌سازی مدل‌ها میان محیط طراحی، اپلیکیشن و وب را در دست توسعه داریم.</span>",
+    "note": "BLENDER / WEB / MOBILE",
+    "align": "right"
+  },
+  {
+    "k": "05 / OPERATIONS",
+    "eyebrow": "مشکل در مدیریت پروژه",
+    "title": "هزینه‌های پراکنده، <em>کنترل را دشوار می‌کنند.</em>",
+    "body": "<span class='problem-context'>حساب افراد، پرداخت‌ها و تصمیم‌های اجرایی در دفترها و پیام‌های جدا ثبت می‌شوند.</span><span class='solution-context'><strong>راهکار راماچ</strong> ابزارهای ثبت و مدیریت مالی و اجرایی را توسعه می‌دهیم تا پیگیری پروژه روشن‌تر شود.</span>",
+    "note": "FINANCE / PROJECT PROCESS",
+    "align": "left"
+  },
+  {
+    "k": "06 / ARCHITECTURAL WEB",
+    "eyebrow": "مشکل در معرفی پروژه",
+    "title": "ساختمان خوب با <em>یک گالری معمولی</em> شناخته نمی‌شود.",
+    "body": "<span class='problem-context'>سایت‌های آماده اغلب هویت دفتر معماری، کیفیت فضا و داستان طراحی را منتقل نمی‌کنند.</span><span class='solution-context'><strong>راهکار راماچ</strong> سایت‌های اختصاصی معماری با روایت بصری، انیمیشن هدفمند و تجربه سه‌بعدی طراحی می‌کنیم.</span>",
+    "note": "WEB EXPERIENCE / ARCHITECTURE",
+    "align": "right"
+  },
+  {
+    "k": "07 / NEXT INTELLIGENCE",
+    "eyebrow": "مسیر توسعه آینده",
+    "title": "داده ساختمان باید <em>به تصمیم هوشمند</em> برسد.",
+    "body": "<span class='problem-context'>اطلاعات نقشه، اجرا و مدیریت زیاد است؛ تحلیل و تصمیم‌گیری هنوز زمان‌بر است.</span><span class='solution-context'><strong>مسیر آینده راماچ</strong> طراحی هوشمند، تحلیل مبتنی بر AI و اتوماسیون ساختمان حوزه‌های توسعه آینده‌اند؛ نه امکانات آماده امروز.</span>",
+    "note": "AI / AUTOMATION / FUTURE",
+    "align": "left"
+  }
 ] as const;
 const mark='<svg viewBox="0 0 380 310" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path class="mark-line line-a" d="M59 252V56H206C286 56 317 147 253 183L208 203H133"/><path class="mark-line line-b" d="M132 251V117H207C246 117 251 170 205 171H133"/><path class="mark-line line-c" d="M221 196L314 252"/><path class="mark-line line-d" d="M59 271H314"/><circle class="mark-dot" cx="314" cy="252" r="5"/><circle class="mark-dot" cx="59" cy="56" r="5"/></svg>';
 const app=document.querySelector<HTMLDivElement>('#app')!;
@@ -19,7 +76,7 @@ app.innerHTML = `
 <header class="site-header">
   <a class="brand" href="#start" dir="ltr" aria-label="RAMACH SYSTEMS — ابتدا"><span class="brand-symbol">R<span class="brand-slash">/</span></span><span class="brand-words">RAMACH<small>SYSTEMS</small></span></a>
   <nav aria-label="ناوبری اصلی" class="site-nav" id="nav">
-    <a href="#journey">اکوسیستم</a><a href="#services">تخصص‌ها</a><a href="#contact">همکاری</a>
+    <a href="#journey">اکوسیستم</a><a href="#journey">تخصص‌ها</a><a href="#contact">همکاری</a>
   </nav>
   <span class="header-status" dir="ltr"><i></i> BUILT WORLD / DIGITAL FUTURE</span>
   <button type="button" class="menu-toggle" aria-label="باز کردن منو" aria-controls="nav" aria-expanded="false"><span></span><span></span></button>
@@ -39,7 +96,7 @@ app.innerHTML = `
         </g>
         <path class="signature-accent" d="M44 260 H1019" fill="none" stroke="#aa916d" stroke-width=".8"/>
       </svg>
-      <span class="signature-systems" dir="ltr">S Y S T E M S</span>
+      <span class="signature-systems" dir="ltr">SYSTEMS</span>
     </div>
   </section>
   <section id="journey" class="journey" aria-label="سفر تعاملی در اکوسیستم راماچ">
@@ -58,7 +115,7 @@ app.innerHTML = `
           <span class="chapter-note" dir="ltr">${c.note}</span>
         </article>`).join('')}
       </div>
-      <div class="stage-bottom"><span class="stage-instruction">↓ اسکرول برای حرکت · ↑ برای بازگشت</span><span class="stage-number" dir="ltr"><b id="stage-index">01</b> / 07</span></div>
+      <div class="stage-bottom"><span class="stage-instruction">↓ اسکرول برای حرکت · ↑ برای بازگشت</span><span class="stage-number" dir="ltr"><b id="stage-index">01</b> / 08</span></div>
       <div class="chapter-progress" aria-hidden="true"><span id="progress-fill"></span></div>
       <div class="webgl-message" id="webgl-message" hidden>نمای سه‌بعدی در این مرورگر بارگذاری نشد؛ محتوای معرفی شرکت همچنان در دسترس است.</div>
     </div>

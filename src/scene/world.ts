@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 
 type Node = { group: THREE.Group; color: THREE.Color };
-type PathPulse = { curve: THREE.CatmullRomCurve3; orb: THREE.Mesh; halo: THREE.Mesh; offset: number; reverse: boolean };
+type PathPulse = { curve: THREE.CurvePath<THREE.Vector3>; orb: THREE.Mesh; halo: THREE.Mesh; offset: number; reverse: boolean };
 const ivory = 0xe7e3d8, ink = 0x152d30, gold = 0xb99d72, aqua = 0x79c5b7;
 const smooth = (a:number,b:number,v:number) => { const t = Math.max(0,Math.min(1,(v-a)/(b-a))); return t*t*(3-2*t); };
 
@@ -12,7 +12,7 @@ export function createWorld(host:HTMLElement) {
   renderer.setClearColor(0x03090d,0);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.17;
+  renderer.toneMappingExposure = 1.0;
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   host.appendChild(renderer.domElement);
@@ -20,13 +20,13 @@ export function createWorld(host:HTMLElement) {
   scene.fog = new THREE.FogExp2(0x03090d,0.006);
   const camera = new THREE.PerspectiveCamera(38,1,0.1,170);
   const root = new THREE.Group(); scene.add(root);
-  scene.add(new THREE.HemisphereLight(0xb8d4d0,0x071318,1.45));
-  const sun = new THREE.DirectionalLight(0xffefd7,2.75);
+  scene.add(new THREE.HemisphereLight(0xb8d4d0,0x071318,.82));
+  const sun = new THREE.DirectionalLight(0xffefd7,1.85);
   sun.position.set(-20,28,22); sun.castShadow=true; sun.shadow.mapSize.set(1536,1536);
   sun.shadow.camera.left=-45;sun.shadow.camera.right=45;sun.shadow.camera.top=45;sun.shadow.camera.bottom=-45;sun.shadow.camera.near=1;sun.shadow.camera.far=100;
   sun.shadow.bias=-0.0002;
   scene.add(sun);
-  const rim = new THREE.DirectionalLight(0x63b7bd,1.75);rim.position.set(18,18,-18);scene.add(rim);
+  const rim = new THREE.DirectionalLight(0x63b7bd,.85);rim.position.set(18,18,-18);scene.add(rim);
   const material = (color:number,metalness=0.3,roughness=0.42,extra:Record<string,unknown>={}) =>
     new THREE.MeshStandardMaterial({color,metalness,roughness,...extra});
   const dark=material(0x1b3235,.67,.3), stone=material(0xd9d5ca,.18,.68), concrete=material(0xa9b1ad,.18,.62);
@@ -56,190 +56,180 @@ export function createWorld(host:HTMLElement) {
   floor.rotation.x=-Math.PI/2;
   const grid = new THREE.GridHelper(158,79,0x28474c,0x1d3237);grid.position.y=-2.42;
   (grid.material as THREE.Material).transparent=true;(grid.material as THREE.Material).opacity=.11;root.add(grid);
-  const platform=(x:number,z:number,r=5.1):Node=>{
-    const group=new THREE.Group();group.position.set(x,0,z);root.add(group);
-    cyl(group,r,1.05,0,-1.33,0,dark,80);
-    cyl(group,r+.1,.16,0,-.72,0,brass,80);
-    cyl(group,r-.08,.14,0,-.60,0,stone,80);
-    ring(group,r-.30,.035,-.51,windowGlow);
-    for(let n=0;n<26;n++){const a=n/26*Math.PI*2;
-      box(group,.28,.06,.045,Math.cos(a)*(r-.6),-.48,Math.sin(a)*(r-.6),brass,.008).rotation.y=-a;
-    }
-    return {group,color:new THREE.Color(aqua)};
-  };
-  // Widely separated sites: each zone reads as an independent architectural vignette.
-  const nodePositions = [
-    [-24,-14], [24,-14], [24,18], [0,-35], [-24,18]
-  ] as const;
-  const worlds = nodePositions.map(([x,z],i)=>platform(x,z,[5.25,5.15,4.9,4.85,5.0][i]));
-  const center=platform(0,0,4.35).group;
-  // RAMACH intelligence core: a quiet sculptural object, not a computer processor.
-  cyl(center,2.7,.16,0,.05,0,brass);
-  cyl(center,2.4,.15,0,.17,0,dark);
-  const core=put(center,new THREE.IcosahedronGeometry(1.74,1),material(0x668e87,.64,.16,{transparent:true,opacity:.92}),0,3.4,0);
-  const inner=put(center,new THREE.IcosahedronGeometry(1.03,1),whiteLight,0,3.4,0);
-  const wire=put(center,new THREE.IcosahedronGeometry(1.82,1),new THREE.MeshBasicMaterial({color:0xc6f7df,wireframe:true,transparent:true,opacity:.65}),0,3.4,0);
-  const coreRing=new THREE.Group();coreRing.position.y=3.4; center.add(coreRing);
-  ring(coreRing,2.58,.025,-.01,brass);ring(coreRing,2.23,.018,.35,windowGlow);
-  for(let i=0;i<6;i++){const a=i*Math.PI/3;const start=new THREE.Vector3(Math.cos(a)*2.7,.4,Math.sin(a)*2.7);
-    const end=new THREE.Vector3(Math.cos(a)*1.65,2.35,Math.sin(a)*1.65);
-    rod(center,start,end,.035,brass);
+  // A gallery of symbolic, architectural problems; no literal toy buildings or avatars.
+  const metal=material(0xa58e73,.88,.26), charcoal=material(0x15242b,.62,.39);
+  const smoked=new THREE.MeshPhysicalMaterial({color:0x82a4a6,metalness:.28,roughness:.17,transmission:.2,transparent:true,opacity:.33,depthWrite:false,side:THREE.DoubleSide});
+  const signal=material(0x7bcbb9,.26,.27,{emissive:0x349684,emissiveIntensity:.75});
+  const ghost=new THREE.MeshBasicMaterial({color:0x82d3c9,transparent:true,opacity:.16,depthWrite:false,side:THREE.DoubleSide});
+  const mutedGlass=material(0x38575a,.44,.3);
+  function wireRectangle(parent:THREE.Object3D,w:number,d:number,y:number,mat:THREE.Material){
+    const v=[new THREE.Vector3(-w/2,y,-d/2),new THREE.Vector3(w/2,y,-d/2),new THREE.Vector3(w/2,y,d/2),new THREE.Vector3(-w/2,y,d/2)];
+    for(let i=0;i<4;i++)rod(parent,v[i],v[(i+1)%4],.028,mat);
   }
-  const glow=put(center,new THREE.SphereGeometry(3.4,30,16),haloMat,0,3.4,0);
-  glow.scale.y=.84;
-  // ARCHITECT: open-plan studio with cantilever, drawing surface and glazing.
+  function galleryNode(x:number,z:number){
+    const group=new THREE.Group();group.position.set(x,0,z);root.add(group);
+    box(group,9.2,.12,8.3,0,-.72,0,charcoal,.025);
+    wireRectangle(group,9.4,8.5,-.59,metal);
+    const corners=[[-4.55,-4.12],[4.55,-4.12],[-4.55,4.12],[4.55,4.12]];
+    for(const [a,b] of corners)box(group,.22,.026,.26,a,-.5,b,signal);
+    return group;
+  }
+  // Six widely-spaced story nodes, with visual hierarchy and negative space.
+  const nodePositions=[[23,-16],[-24,-15],[24,19],[-25,19],[2,-39],[2,40]] as const;
+  const worlds=nodePositions.map(([x,z])=>({group:galleryNode(x,z)}));
+  const center=new THREE.Group();root.add(center);
+  box(center,8.7,.14,8.7,0,-.7,0,charcoal,.04);
+  wireRectangle(center,9.2,9.2,-.59,metal);
+  for(let i=0;i<4;i++){
+    const a=i*Math.PI/2+.25;
+    const x=Math.cos(a)*3.1,z=Math.sin(a)*3.1;
+    rod(center,new THREE.Vector3(x,-.42,z),new THREE.Vector3(x*.45,2.7,z*.45),.036,metal);
+  }
+  const core=put(center,new THREE.OctahedronGeometry(1.75,0),material(0x527779,.62,.14,{emissive:0x153c39,emissiveIntensity:.5}),0,3.05,0);
+  const inner=put(center,new THREE.OctahedronGeometry(.86,0),whiteLight,0,3.05,0);
+  const wire=put(center,new THREE.OctahedronGeometry(2.0,0),new THREE.MeshBasicMaterial({color:0xa4d2c7,wireframe:true,transparent:true,opacity:.54}),0,3.05,0);
+  const coreRing=new THREE.Group();coreRing.position.y=3.05;center.add(coreRing);
+  ring(coreRing,2.6,.021,0,metal);ring(coreRing,2.3,.019,.15,signal);
+  const glow=put(center,new THREE.SphereGeometry(3.6,28,18),new THREE.MeshBasicMaterial({color:0x61cbb6,transparent:true,opacity:.045,depthWrite:false,blending:THREE.AdditiveBlending}),0,3.05,0);
+  // 01 — A section of a building. The ghost blueprint is misaligned with the actual frame.
   {
     const g=worlds[0].group;
-    box(g,7.1,.30,5.2,-.1,.05,0,concrete,.055);
-    for(const x of [-3.3,3.0])for(const z of [-2.28,2.24])box(g,.10,3.65,.10,x,1.88,z,brass);
-    box(g,7.65,.16,5.6,-.1,3.77,0,dark,.06);
-    const roof=box(g,3.7,.08,5.62,1.82,3.9,0,stone,.035);roof.rotation.z=-.07;
-    for(const z of [-2.27,2.27])box(g,6.8,3.1,.045,-.1,1.9,z,glass);
-    for(const x of [-3.29,2.98])box(g,.045,3.1,4.55,x,1.9,0,glass);
-    for(let i=0;i<7;i++)box(g,.028,2.94,.05,-3.07+i*.95,1.95,-2.25,brass);
-    box(g,2.7,.14,1.3,-.8,1.0,-.05,stone,.07);
-    for(const x of [-1.95,.35])for(const z of [-.52,.42])box(g,.06,.96,.06,x,.55,z,dark);
-    const monitor=box(g,1.4,.91,.06,-.68,1.70,-.56,dark,.035);monitor.rotation.x=-.12;
-    box(g,1.21,.69,.01,-.68,1.73,-.525,windowGlow);
-    for(let i=0;i<5;i++)box(g,.72+i*.15,.025,.018,-.68,1.55+i*.10,-.5,whiteLight);
-    box(g,1.6,.035,.95,1.26,1.25,.55,glass);
-    box(g,.6,.42,.54,1.25,1.47,.55,stone);
-    box(g,.25,.69,.35,.83,1.62,.3,dark);
-    box(g,.2,.9,.24,1.65,1.72,.45,stone);
-    box(g,1.8,.045,.025,1.24,1.27,-.0,brass);
-    for(let i=0;i<8;i++)box(g,1.5,.014,.012,1.23,1.28,.1+i*.095,brass);
-    // architectural roll drawings and a floorplan tucked under glass
-    for(let i=0;i<3;i++){const roll=cyl(g,.09,1.1,-2.12+i*.26,.74,1.6,stone,12);roll.rotation.z=Math.PI/2;}
+    for(const x of [-2.8,2.8])for(const z of [-2.1,2.1])rod(g,new THREE.Vector3(x,-.4,z),new THREE.Vector3(x,4,z),.07,metal);
+    for(const y of [1.5,4])wireRectangle(g,5.6,4.2,y,stone);
+    box(g,3.45,2.7,.07,-1.06,1.0,-2.1,smoked);
+    box(g,2.0,2.0,.04,.8,2.2,2.15,ghost);
+    box(g,2.0,.035,.025,.8,3.28,2.15,signal);
+    const misplaced=box(g,3.45,.025,2.4,-.55,2.9,-1.25,ghost);
+    misplaced.rotation.z=.055;
+    for(const y of [.9,1.15,1.4])box(g,.04,.04,3.7,2.99,y,0,signal);
   }
-  // BUILD: exposed slabs, columns, partial glazing, crane and a field technician.
+  // 02 — Three separated participants and a single floating shared plane.
   {
     const g=worlds[1].group;
-    const footprint=[[-2.7,-2.15],[2.5,-2.15],[-2.7,2.05],[2.5,2.05]];
-    for(let f=0;f<3;f++)box(g,6.4,.23,5.2,-.13,.15+f*1.55,0,concrete,.04);
-    for(const [x,z] of footprint)box(g,.25,4.9,.25,x,2.5,z,stone);
-    for(let f=1;f<3;f++){
-      for(let i=0;i<6;i++){box(g,.08,1.18,.08,-2.6+i*1.02,.85+(f-1)*1.55,-2.08,brass);}
+    const positions=[[-2.7,-1.55],[2.5,-1.55],[.1,2.4]];
+    for(const [x,z] of positions){
+      cyl(g,.64,.12,x,-.35,z,metal,38);
+      rod(g,new THREE.Vector3(x,.05,z),new THREE.Vector3(x,1.75,z),.037,metal);
+      put(g,new THREE.OctahedronGeometry(.34),smoked,x,2.12,z);
+      rod(g,new THREE.Vector3(x,2.25,z),new THREE.Vector3(x*.22,3.08,z*.22),.026,signal);
     }
-    for(let i=0;i<7;i++)box(g,.05,.9,.065,-2.6+i*.81,4.94,-1.95,brass);
-    box(g,2.85,1.38,.1,1.08,.85,2.05,glass);
-    // Site gantry crane: visible in silhouette.
-    rod(g,new THREE.Vector3(3.1,-.25,-2.55),new THREE.Vector3(3.1,7.55,-2.55),.095,brass);
-    rod(g,new THREE.Vector3(.55,7.55,-2.55),new THREE.Vector3(4.15,7.55,-2.55),.12,brass);
-    rod(g,new THREE.Vector3(2.95,6.85,-2.55),new THREE.Vector3(.55,7.55,-2.55),.035,brass);
-    rod(g,new THREE.Vector3(3.4,6.85,-2.55),new THREE.Vector3(4.15,7.55,-2.55),.035,brass);
-    rod(g,new THREE.Vector3(.78,7.50,-2.55),new THREE.Vector3(.78,5.1,-2.55),.015,whiteLight);
-    box(g,.43,.38,.36,.78,4.91,-2.55,brass,.04);
-    person(g,-3.35,.05,.55,0x9dd1b4,true);
-    box(g,1.5,.07,.9,-3.0,.15,1.9,dark);
+    box(g,4.0,.075,2.35,0,3.35,0,smoked,.015);
+    wireRectangle(g,3.8,2.2,3.39,signal);
+    for(let i=0;i<3;i++)box(g,.035,.025,1.2,-1.15+i*1.15,3.44,0,metal);
   }
-  // OWNER: glazed observation room and digital project overview.
+  // 03 — Minimal room outline and its floating AR overlay.
   {
     const g=worlds[2].group;
-    cyl(g,3.05,.12,0,.15,0,dark,64);
-    for(let i=0;i<6;i++){const a=i*Math.PI/3;
-      const x=Math.cos(a)*3.0,z=Math.sin(a)*3.0;
-      box(g,.10,3.1,.10,x,1.78,z,brass);
-    }
-    cyl(g,3.1,.12,0,3.38,0,stone,64);
-    const band=ring(g,3.08,.045,3.32,brass);band.rotation.z=.006;
-    for(let i=0;i<6;i++){const a=i*Math.PI/3,b=(i+1)*Math.PI/3;
-      const v1=new THREE.Vector3(Math.cos(a)*3,1.78,Math.sin(a)*3),v2=new THREE.Vector3(Math.cos(b)*3,1.78,Math.sin(b)*3);
-      const panel=box(g,v1.distanceTo(v2),2.92,.038,(v1.x+v2.x)/2,1.76,(v1.z+v2.z)/2,glass);
-      panel.rotation.y=-Math.atan2(v2.z-v1.z,v2.x-v1.x);
-    }
-    cyl(g,1.55,.11,0,1.05,0,stone);
-    cyl(g,1.44,.012,0,1.12,0,windowGlow);
-    const project=box(g,1.25,.67,.95,0,1.57,0,stone,.02);
-    project.rotation.y=.3;
-    for(let f=0;f<3;f++)box(g,1.35,.042,1.02,0,1.32+f*.28,0,brass);
-    person(g,1.8,.12,.65,0xe9e3d5,false);
-    box(g,1.35,1.45,.04,-1.85,1.96,0,windowGlow,.02).rotation.y=-.15;
-    for(let i=0;i<5;i++)box(g,.85,.025,.04,-1.82,1.47+i*.24,.06,whiteLight);
+    for(const x of [-2.8,2.8])for(const z of [-2.25,2.25])
+      rod(g,new THREE.Vector3(x,-.42,z),new THREE.Vector3(x,3.4,z),.046,stone);
+    wireRectangle(g,5.6,4.5,3.4,stone);
+    const transparentWall=box(g,5.5,3.7,.025,0,1.5,-2.23,smoked);
+    transparentWall.rotation.y=.06;
+    box(g,2.45,2.5,.025,.75,1.13,-2.19,ghost);
+    wireRectangle(g,4.25,3.25,1.1,signal);
+    for(let i=0;i<3;i++)box(g,.04,2.8,.025,-2.2+i*2.2,1.18,-2.12,signal);
+    ring(g,2.0,.018,1.65,signal);
   }
-  // DATA: server hall with light matrices and a structural illuminated spine.
+  // 04 — Data synchronization: independent glass layers traversed by a signal.
   {
     const g=worlds[3].group;
-    box(g,7.15,.28,5.1,0,.06,0,dark,.04);
-    for(let side of [-1,1])for(let i=0;i<4;i++){
-      const x=side*1.65,z=-2+i*1.31;
-      box(g,1.16,3.3,1.02,x,1.83,z,dark,.08);
-      box(g,.89,2.98,.05,x,1.85,z+.52,muted,.035);
-      for(let k=0;k<9;k++)box(g,.56,.045,.052,x,0.58+k*.31,z+.56,k%3===0?whiteLight:brass,.013);
-      cyl(g,.045,.03,x-.34,3.22,z+.55,windowGlow,14);
+    for(let i=0;i<7;i++){
+      const x=-2.95+i*.98;
+      box(g,.11,3.1,.12,x,1.15,-1.28,charcoal);
+      box(g,.065,3.65,3.5,x,1.3,0,i===3?smoked:mutedGlass);
+      box(g,.12,.05,3.4,x,3.2,0,metal);
+      box(g,.12,.06,2.7,x,.35,0,signal);
     }
-    box(g,.15,4.25,.15,0,2.2,0,brass);
-    const ringLight=ring(g,1.27,.04,4.3,windowGlow);
-    ringLight.scale.z=.7;
-    for(let i=0;i<5;i++)box(g,5.8,.045,.045,0,4.1,-2+i,brass);
+    rod(g,new THREE.Vector3(-3.6,2,-.8),new THREE.Vector3(3.6,2,-.8),.048,signal);
+    for(let i=0;i<5;i++)put(g,new THREE.OctahedronGeometry(.13),whiteLight,-2.7+i*1.35,2.0,-.8);
   }
-  // FINANCE / OPERATIONS: physical information sculpture; no coins or clipart.
+  // 05 — Scattered ledgers converge into one readable plane; not coins or cartoons.
   {
     const g=worlds[4].group;
-    cyl(g,2.6,.17,0,.14,0,dark);
-    for(let i=0;i<7;i++){
-      const h=.68+i*.4, x=-2.22+i*.75,z=-.15+Math.sin(i*.65)*.5;
-      box(g,.39,h,.48,x,h/2+.28,z,i===6?brass:stone,.035);
-      box(g,.42,.065,.53,x,h+.3,z,windowGlow,.014);
+    for(let i=0;i<5;i++){
+      const x=-2.8+i*1.4;
+      const h=.5+i*.45;
+      box(g,1.05,.065,2.3,x,h,0,smoked,.01);
+      box(g,.74,.029,.08,x,h+.045,-.64,metal);
+      box(g,.58,.029,.08,x,h+.045,-.24,signal);
     }
-    const points=[[-2.25,1.4,.8],[-1.4,1.75,.65],[-.6,2.1,.8],[.2,2.55,.72],[1.13,3.2,.85],[2.13,3.45,1.0]];
-    for(let i=0;i<points.length-1;i++)rod(g,new THREE.Vector3(...points[i] as [number,number,number]),new THREE.Vector3(...points[i+1] as [number,number,number]),.05,whiteLight);
-    const arc=put(g,new THREE.TorusGeometry(3.1,.055,8,64,Math.PI*1.33),brass,0,2,0);arc.rotation.x=Math.PI/2;arc.rotation.z=.8;
-    box(g,4.7,.15,.12,0,4.2,-2.2,dark);
-    for(let k=0;k<4;k++)box(g,.12,2.2,.12,-2+k*1.35,3.1,-2.2,brass);
+    wireRectangle(g,6.9,4.25,3.45,metal);
+    box(g,6.65,.06,4.05,0,3.42,0,ghost);
+    for(let i=0;i<7;i++)box(g,5.75,.018,.02,0,3.49,-1.6+i*.49,signal);
   }
-  function person(parent:THREE.Object3D,x:number,y:number,z:number,tint:number,hardhat:boolean){
-    const human=new THREE.Group();human.position.set(x,y,z);parent.add(human);
-    const cloth=material(tint,.13,.64);
-    cyl(human,.22,.9,0,1.25,0,cloth,12);
-    const head=put(human,new THREE.SphereGeometry(.20,16,12),stone,0,1.93,0);head.castShadow=true;
-    for(const xx of [-.13,.13])rod(human,new THREE.Vector3(xx,.8,0),new THREE.Vector3(xx,.2,.07),.085,dark);
-    for(const xx of [-.31,.31])rod(human,new THREE.Vector3(xx*.72,1.6,0),new THREE.Vector3(xx,1.03,.08),.062,cloth);
-    if(hardhat){const hat=cyl(human,.3,.1,0,2.12,0,brass,18);hat.scale.z=.9;}
+  // 06 — Architecture becomes a responsive digital gallery, shown as a single portal.
+  {
+    const g=worlds[5].group;
+    for(const x of [-3.3,3.3])
+      rod(g,new THREE.Vector3(x,-.5,-.55),new THREE.Vector3(x,5.0,-.55),.085,metal);
+    for(const y of [-.3,5.0])
+      rod(g,new THREE.Vector3(-3.3,y,-.55),new THREE.Vector3(3.3,y,-.55),.085,metal);
+    box(g,6.2,4.9,.045,0,2.2,-.57,smoked);
+    box(g,3.5,2.3,.15,-.7,1.1,-.43,stone,.025);
+    box(g,2.55,.1,.95,-.65,2.1,-.15,metal);
+    box(g,2.7,2.2,.032,1.55,2.45,-.32,ghost);
+    for(let i=0;i<5;i++)box(g,1.75,.022,.03,1.35,3.2-i*.35,-.26,signal);
   }
-  // Bi-directional luminous transfer: warm packets leave the hub, cool packets return.
+  // Engraved 90° routes with short 45° chamfers, not arcs or floating cables.
+  // Gold packets depart the hub; cyan packets return, on discrete paired lanes.
   const pulses:PathPulse[]=[];
-  const routeTrack = new THREE.MeshBasicMaterial({color:0x42796f,transparent:true,opacity:.72});
-  const routeFilament = new THREE.MeshBasicMaterial({color:0xb3ebdb,transparent:true,opacity:.85,toneMapped:false});
-  const sendMat = new THREE.MeshBasicMaterial({color:0xffdca4,toneMapped:false});
-  const returnMat = new THREE.MeshBasicMaterial({color:0x94f4e3,toneMapped:false});
-  const sendHalo = new THREE.MeshBasicMaterial({color:0xffd39b,transparent:true,opacity:.17,blending:THREE.AdditiveBlending,depthWrite:false,toneMapped:false});
-  const returnHalo = new THREE.MeshBasicMaterial({color:0x69e6d1,transparent:true,opacity:.18,blending:THREE.AdditiveBlending,depthWrite:false,toneMapped:false});
-  const destinations=worlds.map(n=>n.group.position.clone());
-  for(let i=0;i<destinations.length;i++){
-    const p=destinations[i],dir=p.clone().normalize();
-    const start=dir.clone().multiplyScalar(4.15);start.y=.45;
-    const end=p.clone().addScaledVector(dir,-5.2);end.y=.55;
-    const length=start.distanceTo(end);
-    const curve=new THREE.CatmullRomCurve3([
-      start,
-      start.clone().lerp(end,.30).add(new THREE.Vector3(0,1.25+length*.023,0)),
-      start.clone().lerp(end,.71).add(new THREE.Vector3(0,.95+length*.025,0)),
-      end
-    ]);
-    const spine=put(root,new THREE.TubeGeometry(curve,100,.075,8,false),routeTrack);
-    spine.castShadow=false;spine.receiveShadow=false;
-    const filament=put(root,new THREE.TubeGeometry(curve,100,.022,6,false),routeFilament);
-    filament.castShadow=false;filament.receiveShadow=false;
-    for(let j=0;j<4;j++){
-      const reverse=j>=2;
-      const orb=put(root,new THREE.SphereGeometry(.145,12,10),reverse?returnMat:sendMat);
-      const halo=put(root,new THREE.SphereGeometry(.37,12,9),reverse?returnHalo:sendHalo);
-      pulses.push({curve,orb,halo,offset:((j%2)*.49+i*.137)%1,reverse});
+  const track = new THREE.MeshBasicMaterial({color:0x31504e,transparent:true,opacity:.8,depthWrite:false});
+  const filament = new THREE.MeshBasicMaterial({color:0x508b7f,transparent:true,opacity:.52,depthWrite:false,toneMapped:false});
+  const outgoing = new THREE.MeshBasicMaterial({color:0xffdda3,toneMapped:false});
+  const incoming = new THREE.MeshBasicMaterial({color:0x9effe6,toneMapped:false});
+  const warmHalo = new THREE.MeshBasicMaterial({color:0xffcf83,transparent:true,opacity:.28,blending:THREE.AdditiveBlending,depthWrite:false,toneMapped:false});
+  const coolHalo = new THREE.MeshBasicMaterial({color:0x87ffe4,transparent:true,opacity:.3,blending:THREE.AdditiveBlending,depthWrite:false,toneMapped:false});
+  // Generate crisp segments; corner bevels preserve the board-routing geometry.
+  function beveled(points:THREE.Vector3[],cut:number){
+    const out:THREE.Vector3[]=[points[0].clone()];
+    for(let i=1;i<points.length-1;i++){
+      const p=points[i],prev=points[i-1],next=points[i+1];
+      const length1=p.distanceTo(prev),length2=p.distanceTo(next);
+      if(length1<.03||length2<.03)continue;
+      const step=Math.min(cut,length1*.33,length2*.33);
+      out.push(p.clone().lerp(prev,step/length1),p.clone().lerp(next,step/length2));
+    }
+    out.push(points[points.length-1].clone());
+    const route=new THREE.CurvePath<THREE.Vector3>();
+    for(let i=0;i<out.length-1;i++)if(out[i].distanceTo(out[i+1])>.02)
+      route.add(new THREE.LineCurve3(out[i],out[i+1]));
+    return route;
+  }
+  for(let i=0;i<worlds.length;i++){
+    const destination=worlds[i].group.position;
+    const direction=destination.clone().normalize();
+    for(let lane=0;lane<2;lane++){
+      const side=lane===0?-.21:.21;
+      const start=new THREE.Vector3(direction.x*4.6+side,.1,direction.z*4.6+side);
+      const end=new THREE.Vector3(destination.x-direction.x*5.25+side,.12,destination.z-direction.z*4.75+side);
+      const midX=Math.abs(destination.x)>8?destination.x*.52+side:destination.x+side;
+      const midZ=destination.z*.67+side;
+      const route=beveled([
+        start,new THREE.Vector3(midX,.1,start.z),
+        new THREE.Vector3(midX,.1,midZ),
+        new THREE.Vector3(end.x,.12,midZ),end
+      ],.8);
+      const spine=put(root,new THREE.TubeGeometry(route,115,.061,6,false),track);
+      const shine=put(root,new THREE.TubeGeometry(route,115,.022,6,false),filament);
+      spine.castShadow=false;spine.receiveShadow=false;shine.castShadow=false;shine.receiveShadow=false;
+      for(let j=0;j<3;j++){
+        const reverse=lane===1;
+        const orb=put(root,new THREE.SphereGeometry(.19,13,9),reverse?incoming:outgoing);
+        const halo=put(root,new THREE.SphereGeometry(.48,12,9),reverse?coolHalo:warmHalo);
+        pulses.push({curve:route,orb,halo,offset:(j/3+i*.07)%1,reverse});
+      }
     }
   }
-  const guides=new THREE.Group();root.add(guides);
-  ring(guides,25,.015,-2.32,new THREE.MeshBasicMaterial({color:0x476568,transparent:true,opacity:.35}));
-  ring(guides,31,.013,-2.32,new THREE.MeshBasicMaterial({color:0x2a5151,transparent:true,opacity:.25}));
-  // 'side' is camera-relative framing: positive puts the subject LEFT, negative RIGHT.
-  // This opposes the flat HTML captions at every narrative stop.
+  // Camera stages match the eight flat editorial chapters; art stays opposite copy.
   const views=[
-    {pos:[57,55,90],look:[0,1,0],side:13},
-    {pos:[-43,21,5],look:[-24,1,-14],side:-8},
-    {pos:[44,21,6],look:[24,1,-14],side:8},
-    {pos:[45,21,44],look:[24,1,18],side:-8},
-    {pos:[-3,22,-67],look:[0,1,-35],side:8},
-    {pos:[-46,20,45],look:[-24,1,18],side:-8},
-    {pos:[58,56,87],look:[0,1,0],side:13},
+    {pos:[59,58,95],look:[0,1,0],side:13},
+    {pos:[37,21,-3],look:[23,1,-16],side:-8},
+    {pos:[-37,21,0],look:[-24,1,-15],side:8},
+    {pos:[38,20,37],look:[24,1,19],side:-8},
+    {pos:[-39,22,35],look:[-25,1,19],side:8},
+    {pos:[15,24,-58],look:[2,1,-39],side:-8},
+    {pos:[-15,22,58],look:[2,1,40],side:8},
+    {pos:[26,20,28],look:[0,2,0],side:-8},
   ];
   let disposed=false;
   function update(progress:number,seconds:number){
