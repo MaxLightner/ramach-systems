@@ -139,54 +139,74 @@ app.innerHTML = `
           <span class="chapter-note" dir="ltr">${c.note}</span>
         </article>`).join('')}
       </div>
+      <div class="closing-brand" id="closing-brand" aria-hidden="true"><span class="closing-brand-main">RAMACH</span><span class="closing-brand-sub">SYSTEMS</span></div>
       <div class="stage-bottom"><span class="stage-instruction">↓ اسکرول برای حرکت · ↑ برای بازگشت</span><span class="stage-number" dir="ltr"><b id="stage-index">01</b> / 08</span></div>
       <div class="chapter-progress" aria-hidden="true"><span id="progress-fill"></span></div>
       <div class="webgl-message" id="webgl-message" hidden>نمای سه‌بعدی در این مرورگر بارگذاری نشد؛ محتوای معرفی شرکت همچنان در دسترس است.</div>
     </div>
   </section>
-  <section class="ecosystem-strip" aria-label="محصولات اکوسیستم راماچ">
-    <div class="ecosystem-strip-head">
-      <span>محصولات اکوسیستم</span>
-      <span dir="ltr">BUILT AROUND REAL WORKFLOWS</span>
-    </div>
-    <div class="ecosystem-marquee" aria-label="Archiyar, Chido, Kitchyar, Kamcheh, Mizato">
-      <div class="ecosystem-track">
-        <span>ARCHIYAR <i>SPATIAL DESIGN</i></span><span>CHIDO <i>FURNITURE AR</i></span><span>KITCHYAR <i>KITCHEN AR</i></span><span>KAMCHEH <i>CONSTRUCTION OPS</i></span><span>MIZATO <i>HOSPITALITY TECH</i></span>
-        <span aria-hidden="true">ARCHIYAR <i>SPATIAL DESIGN</i></span><span aria-hidden="true">CHIDO <i>FURNITURE AR</i></span><span aria-hidden="true">KITCHYAR <i>KITCHEN AR</i></span><span aria-hidden="true">KAMCHEH <i>CONSTRUCTION OPS</i></span><span aria-hidden="true">MIZATO <i>HOSPITALITY TECH</i></span>
+  <section class="ending" id="contact" aria-label="ارتباط و همکاری">
+    <div class="ecosystem-strip" aria-label="نوار محصولات راماچ">
+      <div class="ecosystem-marquee" aria-label="RAMACH, Archiyar, Chido, Kitchyar, Kamcheh, Mizato">
+        <div class="ecosystem-track">
+          <span class="ticker-brand ticker-ramach">RAMACH SYSTEMS</span><span class="ticker-separator">✦</span>
+          <span class="ticker-brand">ARCHIYAR</span><span class="ticker-separator">✦</span>
+          <span class="ticker-brand">CHIDO</span><span class="ticker-separator">✦</span>
+          <span class="ticker-brand">KITCHYAR</span><span class="ticker-separator">✦</span>
+          <span class="ticker-brand">KAMCHEH</span><span class="ticker-separator">✦</span>
+          <span class="ticker-brand">MIZATO</span><span class="ticker-separator">✦</span>
+          <span class="ticker-brand ticker-ramach" aria-hidden="true">RAMACH SYSTEMS</span><span class="ticker-separator" aria-hidden="true">✦</span>
+          <span class="ticker-brand" aria-hidden="true">ARCHIYAR</span><span class="ticker-separator" aria-hidden="true">✦</span>
+          <span class="ticker-brand" aria-hidden="true">CHIDO</span><span class="ticker-separator" aria-hidden="true">✦</span>
+          <span class="ticker-brand" aria-hidden="true">KITCHYAR</span><span class="ticker-separator" aria-hidden="true">✦</span>
+          <span class="ticker-brand" aria-hidden="true">KAMCHEH</span><span class="ticker-separator" aria-hidden="true">✦</span>
+          <span class="ticker-brand" aria-hidden="true">MIZATO</span><span class="ticker-separator" aria-hidden="true">✦</span>
+        </div>
       </div>
     </div>
-  </section>
-  <section class="ending" id="contact">
-    <div class="ending-detail" dir="ltr"><span>RAMACH SYSTEMS</span><span>LET'S CONNECT WHAT MATTERS</span></div>
-    <div class="ending-layout">
-      <div class="ending-inner">
-        <p class="ending-label">آغاز یک همکاری</p>
-        <h2>آینده را <em>با هم</em><br>می‌سازیم.</h2>
-        <p>برای توسعه نرم‌افزار، طراحی تجربه دیجیتال یا ساخت راهکاری تازه برای صنعت ساختمان، گفت‌وگو را شروع کنیم.</p>
-        <a class="ending-cta" href="#callback-form"><span class="ending-cta-text">درخواست تماس</span><span class="ending-cta-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18 18 6M7 6h11v11"/></svg></span></a>
-      </div>
-      <form class="callback-form" id="callback-form">
-        <p class="callback-kicker">گفت‌وگوی اولیه</p>
-        <h3>شماره‌ات را بگذار</h3>
-        <p class="callback-description">برای هماهنگی یک گفت‌وگوی کوتاه درباره پروژه یا همکاری.</p>
-        <label for="callback-phone">شماره تماس</label>
-        <input id="callback-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="مثلاً 0912 000 0000" pattern="[0-9۰-۹٠-٩+() \-]{8,22}" minlength="8" maxlength="22" required>
-        <label for="callback-topic">موضوع گفت‌وگو</label>
-        <select id="callback-topic" name="topic">
-          <option value="general">آشنایی و همکاری</option>
-          <option value="architecture">معماری و ساخت‌وساز</option>
-          <option value="spatial">فناوری فضایی و AR</option>
-          <option value="digital">وب و نرم‌افزار</option>
-        </select>
-        <button class="callback-submit" type="submit">درخواست تماس <span aria-hidden="true">↗</span></button>
-        <p class="callback-status" id="callback-status" role="status" aria-live="polite">ارسال درخواست پس از اتصال مقصد دریافت تماس فعال می‌شود؛ فعلاً اطلاعات شما ذخیره یا ارسال نمی‌شود.</p>
-      </form>
+    <div class="ending-center">
+      <button class="ending-cta" id="open-callback" type="button" aria-haspopup="dialog" aria-controls="callback-overlay">
+        <span class="ending-cta-text">شروع همکاری</span>
+        <span class="ending-cta-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18 18 6M7 6h11v11"/></svg></span>
+      </button>
     </div>
-    <footer class="site-footer">
-      <span>© ${new Date().getFullYear()} RAMACH SYSTEMS</span>
-      <span>SOFTWARE · SPATIAL TECHNOLOGY · AI · WEB</span>
-      <a href="#start">بازگشت به بالا ↑</a>
+    <footer class="site-footer" aria-label="پیوندهای سایت">
+      <span class="footer-copy" dir="ltr">© 2026 RAMACH SYSTEMS</span>
+      <nav class="footer-links" aria-label="پیوندهای اصلی">
+        <a href="#journey">محصولات</a>
+        <a href="#articles" data-coming-soon="مقالات">مقالات</a>
+        <a href="#register" data-coming-soon="ثبت‌نام">ثبت‌نام</a>
+        <a href="#start">درباره راماچ</a>
+        <a href="#contact" id="footer-contact">تماس</a>
+      </nav>
+      <div class="footer-social" aria-label="شبکه‌های اجتماعی">
+        <span class="footer-social-label">شبکه‌ها</span>
+        <button type="button" class="social-placeholder" data-coming-soon="LinkedIn" aria-label="LinkedIn">in</button>
+        <button type="button" class="social-placeholder" data-coming-soon="Instagram" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="18" cy="6" r="1" fill="currentColor" stroke="none"/></svg></button>
+      </div>
+      <span class="footer-notice" id="footer-notice" role="status" aria-live="polite"></span>
     </footer>
+    <div class="callback-overlay" id="callback-overlay" hidden>
+      <div class="callback-dialog" role="dialog" aria-modal="true" aria-labelledby="callback-title" tabindex="-1">
+        <button class="callback-close" type="button" aria-label="بستن فرم">×</button>
+        <form class="callback-form" id="callback-form">
+          <p class="callback-kicker">گفت‌وگوی اولیه</p>
+          <h3 id="callback-title">شماره‌ات را بگذار</h3>
+          <p class="callback-description">برای هماهنگی یک گفت‌وگوی کوتاه درباره پروژه یا همکاری.</p>
+          <label for="callback-phone">شماره تماس</label>
+          <input id="callback-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="مثلاً 0912 000 0000" pattern="[0-9۰-۹٠-٩+() \-]{8,22}" minlength="8" maxlength="22" required>
+          <label for="callback-topic">موضوع گفت‌وگو</label>
+          <select id="callback-topic" name="topic">
+            <option value="general">آشنایی و همکاری</option>
+            <option value="architecture">معماری و ساخت‌وساز</option>
+            <option value="spatial">فناوری فضایی و AR</option>
+            <option value="digital">وب و نرم‌افزار</option>
+          </select>
+          <button class="callback-submit" type="submit">درخواست تماس <span aria-hidden="true">↗</span></button>
+          <p class="callback-status" id="callback-status" role="status" aria-live="polite">ارسال درخواست پس از اتصال مقصد دریافت تماس فعال می‌شود؛ فعلاً اطلاعات شما ذخیره یا ارسال نمی‌شود.</p>
+        </form>
+      </div>
+    </div>
   </section>
 </main>`;
 
@@ -203,7 +223,10 @@ const articles=[...document.querySelectorAll<HTMLElement>('.chapter')];
 const progressFill=document.querySelector<HTMLElement>('#progress-fill')!;
 const stageIndex=document.querySelector<HTMLElement>('#stage-index')!;
 const opening=document.querySelector<HTMLElement>('.opening')!;
+const closingBrand=document.querySelector<HTMLElement>('#closing-brand')!;
+const storyEnd=0.82;
 let world:World|null=null,requested=false;
+window.setTimeout(()=>document.body.classList.add('logo-drawing'),680);
 let target=0,displayed=0,last=performance.now(),active=-1;
 let enabled=true;
 const clamp=(v:number,a=0,b=1)=>Math.max(a,Math.min(b,v));
@@ -216,6 +239,11 @@ const observer=new IntersectionObserver(entries=>{if(entries.some(e=>e.isInterse
 observer.observe(journey);
 const visibilityObserver=new IntersectionObserver(entries=>{enabled=entries.some(e=>e.isIntersecting);journey.classList.toggle('is-in-view',enabled);},{rootMargin:'150px'});
 visibilityObserver.observe(journey);
+const endingSection=document.querySelector<HTMLElement>('.ending')!;
+const endingObserver=new IntersectionObserver(entries=>{
+  endingSection.classList.toggle('is-visible',entries.some(e=>e.isIntersecting));
+},{threshold:0.08});
+endingObserver.observe(endingSection);
 const endingSection=document.querySelector<HTMLElement>('.ending')!;
 const endingObserver=new IntersectionObserver(entries=>{
   endingSection.classList.toggle('is-visible',entries.some(e=>e.isIntersecting));
@@ -240,15 +268,21 @@ function frame(now:number){
   displayed += (target-displayed)*(1-Math.exp(-delta*12));
   if(Math.abs(target-displayed)<0.00005)displayed=target;
   if(enabled){
-    const chapterPhase=clamp(displayed)*chapters.length;
+    const storyProgress=clamp(displayed/storyEnd);
+    const chapterPhase=storyProgress*chapters.length;
     const idx=Math.min(chapters.length-1,Math.floor(chapterPhase));
     const local=chapterPhase-idx;
-    // Reveal copy only after the camera has completed its move and eased to a stop.
-    const settledIndex=local>=.84?idx:-1;
+    let settledIndex=-1;
+    if(displayed<storyEnd){
+      if(local>=.77)settledIndex=idx;
+      else if(local<.16&&idx>0)settledIndex=idx-1;
+    }
     if(settledIndex!==active){
       active=settledIndex;
       articles.forEach((el,i)=>el.classList.toggle('is-active',i===settledIndex));
     }
+    closingBrand.classList.toggle('is-visible',displayed>=.965);
+    journey.classList.toggle('is-returning',displayed>=storyEnd);
     stageIndex.textContent=String(idx+1).padStart(2,'0');
     progressFill.style.transform='scaleY('+displayed.toFixed(5)+')';
     world?.update(displayed,now*.001);
@@ -258,6 +292,36 @@ function frame(now:number){
 requestAnimationFrame(frame);
 const callbackForm=document.querySelector<HTMLFormElement>('#callback-form')!;
 const callbackStatus=document.querySelector<HTMLElement>('#callback-status')!;
+const callbackOverlay=document.querySelector<HTMLElement>('#callback-overlay')!;
+const callbackDialog=document.querySelector<HTMLElement>('.callback-dialog')!;
+const openCallback=document.querySelector<HTMLButtonElement>('#open-callback')!;
+const closeCallback=document.querySelector<HTMLButtonElement>('.callback-close')!;
+const footerContact=document.querySelector<HTMLAnchorElement>('#footer-contact')!;
+const footerNotice=document.querySelector<HTMLElement>('#footer-notice')!;
+function showCallback(){
+  callbackOverlay.hidden=false;
+  requestAnimationFrame(()=>{callbackOverlay.classList.add('is-open');callbackDialog.focus();});
+  document.body.classList.add('modal-open');
+}
+function hideCallback(){
+  callbackOverlay.classList.remove('is-open');
+  callbackOverlay.hidden=true;
+  document.body.classList.remove('modal-open');
+  openCallback.focus();
+}
+openCallback.addEventListener('click',showCallback);
+footerContact.addEventListener('click',event=>{event.preventDefault();showCallback();});
+closeCallback.addEventListener('click',hideCallback);
+callbackOverlay.addEventListener('click',event=>{if(event.target===callbackOverlay)hideCallback();});
+document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!callbackOverlay.hidden)hideCallback();});
+document.querySelectorAll<HTMLElement>('[data-coming-soon]').forEach(item=>item.addEventListener('click',event=>{
+  event.preventDefault();
+  const label=item.dataset.comingSoon??'این بخش';
+  footerNotice.textContent=label==='LinkedIn'||label==='Instagram'
+    ? 'نشانی رسمی شبکه‌های اجتماعی هنوز تنظیم نشده است.'
+    : 'بخش «'+label+'» هنوز آماده انتشار نیست.';
+  footerNotice.classList.add('is-visible');
+}));
 callbackForm.addEventListener('submit',async event=>{
   event.preventDefault();
   if(!callbackForm.reportValidity())return;
