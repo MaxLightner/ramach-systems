@@ -84,18 +84,9 @@ app.innerHTML = `
 <main>
   <section class="opening" id="start" aria-label="معرفی راماچ سیستم">
     <div class="opening-center"><div class="opening-wordmark">
-      <svg class="signature-logo" viewBox="0 0 1080 300" role="img" aria-label="RAMACH SYSTEMS" xmlns="http://www.w3.org/2000/svg">
-        <defs><linearGradient id="signature-ink" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#c3ae8b"/><stop offset=".45" stop-color="#eee7d8"/><stop offset="1" stop-color="#9fb5ac"/></linearGradient></defs>
-        <g class="signature-strokes" fill="none" stroke="url(#signature-ink)" stroke-width="4.1" stroke-linejoin="round" stroke-linecap="round">
-          <path style="--order:0" d="M44 237 V49 H116 C174 49 181 132 119 143 H44 M116 143 L190 237"/>
-          <path style="--order:1" d="M212 237 L276 49 L340 237 M234 173 H319"/>
-          <path style="--order:2" d="M376 237 V49 L449 162 L521 49 V237"/>
-          <path style="--order:3" d="M557 237 L622 49 L687 237 M579 173 H665"/>
-          <path style="--order:4" d="M840 78 C793 21 727 56 725 140 C722 226 802 264 844 207"/>
-          <path style="--order:5" d="M884 49 V237 M884 145 H1019 M1019 49 V237"/>
-        </g>
-        <path class="signature-accent" d="M44 260 H1019" fill="none" stroke="#aa916d" stroke-width=".8"/>
-      </svg>
+      <div class="signature-ramach" dir="ltr" role="img" aria-label="RAMACH">
+        <span aria-hidden="true" style="--letter-index:0">R</span><span aria-hidden="true" style="--letter-index:1">A</span><span aria-hidden="true" style="--letter-index:2">M</span><span aria-hidden="true" style="--letter-index:3">A</span><span aria-hidden="true" style="--letter-index:4">C</span><span aria-hidden="true" style="--letter-index:5">H</span>
+      </div>
       <span class="opening-systems" dir="ltr">SYSTEMS</span>
     </div></div>
   </section>
@@ -126,7 +117,7 @@ app.innerHTML = `
       <p class="ending-label">آغاز یک همکاری</p>
       <h2>آینده را <em>با هم</em><br>می‌سازیم.</h2>
       <p>برای توسعه یک نرم‌افزار، طراحی تجربه دیجیتال یا ساخت راهکاری تازه برای صنعت ساختمان، گفت‌وگو را شروع کنیم.</p>
-      <a class="ending-cta" href="https://github.com/MaxLightner/ramach-systems/discussions" target="_blank" rel="noopener noreferrer">شروع گفت‌وگو <span aria-hidden="true">↗</span></a>
+      <a class="ending-cta" href="https://github.com/MaxLightner/ramach-systems/discussions" target="_blank" rel="noopener noreferrer"><span class="ending-cta-text">شروع گفت‌وگو</span><span class="ending-cta-icon" aria-hidden="true">↗</span></a>
     </div>
     <footer class="site-footer"><span>© ${new Date().getFullYear()} RAMACH SYSTEMS</span><span>SOFTWARE · SPATIAL TECHNOLOGY · AI · WEB</span><a href="#start">بازگشت به بالا ↑</a></footer>
   </section>
@@ -154,9 +145,9 @@ function requestWorld(){
   import('./scene/world').then(({createWorld})=>{world=createWorld(worldEl);world.update(displayed,performance.now()*.001);})
     .catch(error=>{console.error('WebGL scene unavailable',error);document.querySelector<HTMLElement>('#webgl-message')!.hidden=false;});
 }
-const observer=new IntersectionObserver(entries=>{if(entries.some(e=>e.isIntersecting))requestWorld();},{rootMargin:'800px'});
+const observer=new IntersectionObserver(entries=>{if(entries.some(e=>e.isIntersecting))requestWorld();},{rootMargin:'300px 0px'});
 observer.observe(journey);
-const visibilityObserver=new IntersectionObserver(entries=>{enabled=entries.some(e=>e.isIntersecting);},{rootMargin:'150px'});
+const visibilityObserver=new IntersectionObserver(entries=>{enabled=entries.some(e=>e.isIntersecting);journey.classList.toggle('is-in-view',enabled);},{rootMargin:'150px'});
 visibilityObserver.observe(journey);
 function scrollTarget(){
   const rect=journey.getBoundingClientRect();
@@ -174,7 +165,7 @@ scrollTarget();
 function frame(now:number){
   const delta=Math.min(.06,Math.max(.001,(now-last)/1000));last=now;
   // Scroll sets a destination, never raw camera position. Exponential damping is frame-rate independent.
-  displayed += (target-displayed)*(1-Math.exp(-delta*3.1));
+  displayed += (target-displayed)*(1-Math.exp(-delta*12));
   if(Math.abs(target-displayed)<0.00005)displayed=target;
   if(enabled){
     const idx=Math.min(chapters.length-1,Math.floor(clamp(displayed)*chapters.length));

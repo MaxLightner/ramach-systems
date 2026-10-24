@@ -13,7 +13,7 @@ export function createWorld(host:HTMLElement) {
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.0;
-  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.enabled = false;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   host.appendChild(renderer.domElement);
   const scene = new THREE.Scene();
@@ -22,7 +22,7 @@ export function createWorld(host:HTMLElement) {
   const root = new THREE.Group(); scene.add(root);
   scene.add(new THREE.HemisphereLight(0xb8d4d0,0x071318,.82));
   const sun = new THREE.DirectionalLight(0xffefd7,1.85);
-  sun.position.set(-20,28,22); sun.castShadow=true; sun.shadow.mapSize.set(1536,1536);
+  sun.position.set(-20,28,22); sun.castShadow=false; sun.shadow.mapSize.set(512,512);
   sun.shadow.camera.left=-45;sun.shadow.camera.right=45;sun.shadow.camera.top=45;sun.shadow.camera.bottom=-45;sun.shadow.camera.near=1;sun.shadow.camera.far=100;
   sun.shadow.bias=-0.0002;
   scene.add(sun);
@@ -35,7 +35,7 @@ export function createWorld(host:HTMLElement) {
   const whiteLight=material(0xe7fff4,.3,.23,{emissive:0x8be7ce,emissiveIntensity:2.1});
   const muted=material(0x476466,.44,.4);
   function put(parent:THREE.Object3D, geo:THREE.BufferGeometry, mat:THREE.Material, x=0,y=0,z=0) {
-    const mesh = new THREE.Mesh(geo,mat); mesh.position.set(x,y,z);mesh.castShadow=true;mesh.receiveShadow=true;parent.add(mesh);return mesh;
+    const mesh = new THREE.Mesh(geo,mat); mesh.position.set(x,y,z);mesh.castShadow=false;mesh.receiveShadow=false;parent.add(mesh);return mesh;
   }
   function box(parent:THREE.Object3D,w:number,h:number,d:number,x:number,y:number,z:number,mat:THREE.Material,r=0) {
     return put(parent,r?new RoundedBoxGeometry(w,h,d,2,Math.min(r,w/2,h/2,d/2)):new THREE.BoxGeometry(w,h,d),mat,x,y,z);
@@ -58,7 +58,7 @@ export function createWorld(host:HTMLElement) {
   (grid.material as THREE.Material).transparent=true;(grid.material as THREE.Material).opacity=.11;root.add(grid);
   // A gallery of symbolic, architectural problems; no literal toy buildings or avatars.
   const metal=material(0xa58e73,.88,.26), charcoal=material(0x15242b,.62,.39);
-  const smoked=new THREE.MeshPhysicalMaterial({color:0x82a4a6,metalness:.28,roughness:.17,transmission:.2,transparent:true,opacity:.33,depthWrite:false,side:THREE.DoubleSide});
+  const smoked=new THREE.MeshStandardMaterial({color:0x82a4a6,metalness:.28,roughness:.3,transparent:true,opacity:.33,depthWrite:false,side:THREE.DoubleSide});
   const signal=material(0x7bcbb9,.26,.27,{emissive:0x349684,emissiveIntensity:.75});
   const ghost=new THREE.MeshBasicMaterial({color:0x82d3c9,transparent:true,opacity:.16,depthWrite:false,side:THREE.DoubleSide});
   const mutedGlass=material(0x38575a,.44,.3);
@@ -234,7 +234,7 @@ export function createWorld(host:HTMLElement) {
   let disposed=false;
   function update(progress:number,seconds:number){
     if(disposed)return;
-    const p=Math.max(0,Math.min(views.length-1,progress*views.length-.5));
+    const p=Math.max(0,Math.min(views.length-1,progress*(views.length-1)));
     const i=Math.floor(p), t=smooth(0,1,p-i),from=views[i],to=views[Math.min(i+1,views.length-1)];
     const xyz=(a:number[],b:number[])=>new THREE.Vector3(a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t);
     camera.position.copy(xyz(from.pos,to.pos));
