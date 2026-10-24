@@ -165,7 +165,7 @@ function scrollTarget(){
   const introP=clamp(scrollY/(Math.max(1,opening.offsetHeight*.95)));
   opening.style.setProperty('--intro-scroll',introP.toFixed(4));
   // Absolutely no navigation, decorative labels, or CTAs over the opening brand animation.
-  document.body.classList.toggle('has-entered',scrollY > opening.offsetHeight-innerHeight*.2);
+  document.body.classList.toggle('has-entered',scrollY>=opening.offsetHeight-2);
   document.body.classList.toggle('in-ending',document.querySelector<HTMLElement>('.ending')!.getBoundingClientRect().top < 82);
 }
 addEventListener('scroll',scrollTarget,{passive:true});

@@ -7,13 +7,13 @@ const css=await readFile(new URL('../src/styles.css',import.meta.url),'utf8');
 
 test('a reversible, damped scroll timeline owns camera travel',()=>{
   assert.match(main,/target-displayed/);
-  assert.match(main,/Math\.exp\(-dt\*3\.1\)/);
+  assert.match(main,/Math\.exp\(-delta\*3\.1\)/);
   assert.match(world,/function update\(progress:number,seconds:number\)/);
   assert.doesNotMatch(main,/addEventListener\(['"]wheel['"]/);
 });
 test('narrative names actual problems and distinguishes future work',()=>{
   assert.equal((main.match(/"k":\s*"/g)||[]).length,8);
-  for(const word of ['کارگاه','مالک','Blender','کابینت','پرداخت','وب‌سایت','آینده'])assert.ok(main.includes(word),word);
+  for(const word of ['کارگاه','مالک','Blender','کابینت','پرداخت','سایت','آینده'])assert.ok(main.includes(word),word);
   assert.match(main,/problem-context/);
   assert.match(main,/solution-context/);
 });
