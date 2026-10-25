@@ -208,7 +208,7 @@ app.innerHTML = `
       </div>
     </div>
   </section>
-</main>`;
+</main><div class="cursor-aura" aria-hidden="true"></div>`;
 
 const menu = document.querySelector<HTMLButtonElement>('.menu-toggle')!;
 const nav = document.querySelector<HTMLElement>('.site-nav')!;
@@ -226,10 +226,109 @@ const opening=document.querySelector<HTMLElement>('.opening')!;
 const closingBrand=document.querySelector<HTMLElement>('#closing-brand')!;
 const storyEnd=0.82;
 let world:World|null=null,requested=false;
-window.setTimeout(()=>document.body.classList.add('logo-drawing'),680);
+// The logo begins after the document, styles, and fonts have finished loading.
+async function beginLogoAfterLoad(){
+  if(document.readyState!=='complete')await new Promise<void>(resolve=>addEventListener('load',()=>resolve(),{once:true}));
+  if(document.fonts)await document.fonts.ready;
+  await new Promise<void>(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>resolve())));
+  window.setTimeout(()=>document.body.classList.add('logo-drawing'),950);
+}
+void beginLogoAfterLoad();
 let target=0,displayed=0,last=performance.now(),active=-1;
+const cursorAura=document.querySelector<HTMLElement>('.cursor-aura')!;
+let mouseX=-500,mouseY=-500,haloX=-500,haloY=-500;
+addEventListener('pointermove',event=>{
+  if(event.pointerType!=='mouse')return;
+  mouseX=event.clientX;mouseY=event.clientY;
+  document.body.classList.add('cursor-glow-enabled');
+},{passive:true});
+addEventListener('pointerleave',()=>document.body.classList.remove('cursor-glow-enabled'));
 let enabled=true;
 const clamp=(v:number,a=0,b=1)=>Math.max(a,Math.min(b,v));
+// Eight chapter landings plus the final return-to-core landing.
+const stageStops=[...chapters.map((_,i)=>storyEnd*(i+.96)/chapters.length),.983];
+const cameraArrivalThreshold=.001;
+const minimumReadMs=2150;
+let currentStop=-1;
+let awaitingArrival=false;
+let holdUntil=0;
+let programmaticScroll=false;
+let idleSnapTimer=0;
+let wheelAccum=0;
+let lastWheelAt=0;
+const prefersReducedMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const stageRect=()=>journey.getBoundingClientRect();
+const stageDistance=()=>Math.max(1,journey.offsetHeight-innerHeight);
+function stageIsActive(){
+  const r=stageRect();
+  return r.top<=20&&r.bottom>innerHeight-20;
+}
+function nearestStopIndex(progress:number){
+  let best=0,dist=Infinity;
+  for(let i=0;i<stageStops.length;i++){
+    const d=Math.abs(progress-stageStops[i]);
+    if(d<dist){dist=d;best=i;}
+  }
+  return best;
+}
+function goToStop(index:number){
+  currentStop=Math.max(0,Math.min(stageStops.length-1,index));
+  const destination=stageStops[currentStop];
+  target=destination;
+  awaitingArrival=true;
+  holdUntil=Infinity;
+  clearTimeout(idleSnapTimer);
+  programmaticScroll=true;
+  const top=journey.getBoundingClientRect().top+scrollY+destination*stageDistance();
+  window.scrollTo({top,behavior:'instant'});
+  programmaticScroll=false;
+}
+function stageStep(direction:number){
+  if(!stageIsActive())return false;
+  if(awaitingArrival||performance.now()<holdUntil)return true;
+  if(direction>0&&currentStop>=stageStops.length-1)return false;
+  if(direction<0&&currentStop<=0){currentStop=-1;return false;}
+  if(currentStop<0){
+    const physical=clamp(-stageRect().top/stageDistance());
+    currentStop=physical>.045?nearestStopIndex(physical):-1;
+  }
+  goToStop(currentStop+direction);
+  return true;
+}
+addEventListener('wheel',event=>{
+  if(event.ctrlKey||document.body.classList.contains('modal-open'))return;
+  if(!stageIsActive())return;
+  if((event.target as Element)?.closest?.('input,textarea,select,[contenteditable]'))return;
+  const now=performance.now();
+  if(now-lastWheelAt>240)wheelAccum=0;
+  lastWheelAt=now;
+  wheelAccum+=event.deltaY;
+  if(Math.abs(wheelAccum)<24&&now>=holdUntil&&!awaitingArrival){event.preventDefault();return;}
+  const handled=stageStep(wheelAccum>0?1:-1);
+  if(handled)event.preventDefault();
+  wheelAccum=0;
+},{passive:false});
+let touchY=0;
+journey.addEventListener('touchstart',event=>{
+  if(event.touches.length===1)touchY=event.touches[0].clientY;
+},{passive:true});
+journey.addEventListener('touchmove',event=>{
+  if(event.touches.length!==1||!stageIsActive()||document.body.classList.contains('modal-open'))return;
+  const dy=touchY-event.touches[0].clientY;
+  if((dy>0&&currentStop<stageStops.length-1)||(dy<0&&currentStop>0)||awaitingArrival||performance.now()<holdUntil)
+    event.preventDefault();
+},{passive:false});
+journey.addEventListener('touchend',event=>{
+  if(!event.changedTouches.length)return;
+  const dy=touchY-event.changedTouches[0].clientY;
+  if(Math.abs(dy)>35)stageStep(dy>0?1:-1);
+},{passive:true});
+addEventListener('keydown',event=>{
+  if(event.altKey||event.ctrlKey||event.metaKey||document.body.classList.contains('modal-open'))return;
+  if((event.target as Element)?.closest?.('a,button,input,textarea,select,[contenteditable]'))return;
+  const direction=['ArrowDown','PageDown',' '].includes(event.key)?1:['ArrowUp','PageUp'].includes(event.key)?-1:0;
+  if(direction&&stageStep(direction))event.preventDefault();
+});
 function requestWorld(){
   if(requested)return;requested=true;
   import('./scene/world').then(({createWorld})=>{world=createWorld(worldEl,chapters.map(c=>c.align));world.update(displayed,performance.now()*.001);})
@@ -247,7 +346,18 @@ endingObserver.observe(endingSection);
 function scrollTarget(){
   const rect=journey.getBoundingClientRect();
   const distance=Math.max(1,journey.offsetHeight-innerHeight);
-  target=clamp(-rect.top/distance);
+  const physical=clamp(-rect.top/distance);
+  if(!programmaticScroll){
+    if(!awaitingArrival&&performance.now()>=holdUntil)target=physical;
+    if(stageIsActive()&&!awaitingArrival&&performance.now()>=holdUntil){
+      // Scrollbar dragging and history restoration still snap to a camera mark.
+      clearTimeout(idleSnapTimer);
+      idleSnapTimer=window.setTimeout(()=>{
+        if(stageIsActive()&&Math.abs(target-stageStops[nearestStopIndex(target)])>.003)
+          goToStop(nearestStopIndex(target));
+      },160);
+    }
+  }
   const introP=clamp(scrollY/(Math.max(1,opening.offsetHeight*.95)));
   opening.style.setProperty('--intro-scroll',introP.toFixed(4));
   // Absolutely no navigation, decorative labels, or CTAs over the opening brand animation.
@@ -259,9 +369,18 @@ addEventListener('resize',scrollTarget,{passive:true});
 scrollTarget();
 function frame(now:number){
   const delta=Math.min(.06,Math.max(.001,(now-last)/1000));last=now;
+  if(!prefersReducedMotion){
+    const k=1-Math.exp(-delta*8);
+    haloX+=(mouseX-haloX)*k;haloY+=(mouseY-haloY)*k;
+    cursorAura.style.transform='translate3d('+haloX.toFixed(1)+'px,'+haloY.toFixed(1)+'px,0) translate(-50%,-50%)';
+  }
   // Scroll sets a destination, never raw camera position. Exponential damping is frame-rate independent.
   displayed += (target-displayed)*(1-Math.exp(-delta*12));
   if(Math.abs(target-displayed)<0.00005)displayed=target;
+  if(awaitingArrival&&Math.abs(target-displayed)<=cameraArrivalThreshold){
+    awaitingArrival=false;
+    holdUntil=now+minimumReadMs;
+  }
   if(enabled){
     const storyProgress=clamp(displayed/storyEnd);
     const chapterPhase=storyProgress*chapters.length;

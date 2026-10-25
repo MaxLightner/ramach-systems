@@ -22,3 +22,11 @@ npm run dev
 ```
 
 Changes to main run tests, build and deploy via existing GitHub Pages workflow. Later milestones will integrate the three application subdomains and live Blender/mobility services, separately from this corporate site.
+
+## Interaction changes (Oct 2026)
+
+- The opening SVG outline starts after the window `load` event, font readiness, two painted frames and a 950 ms pause; a low-intensity blue halo remains on the otherwise dark opening. The logo is not visible before this trigger.
+- The scroll-controlled camera now moves between 8 explicit chapter stops plus a final return-to-hub stop, rather than stopping between nodes. Wheel, keyboard and touch are supported; each landing holds for 2.15 seconds after arrival before another move is accepted. Dragging the scrollbar also snaps to a nearby stop.
+- Desktop GPU pulses use larger unlit emissive particles with glowing tails and increased travel speed. A desktop reduced-motion preference intentionally freezes motion. Chrome / mobile visual parity requires browser-specific verification.
+- Desktop pointer movement creates a low-opacity halo; it is disabled on coarse pointers and for reduced motion.
+- Footer text is explicitly enlarged to 15 CSS px (14 CSS px on narrow screens), with no authored CSS font declaration below 13 CSS px.
