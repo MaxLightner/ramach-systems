@@ -168,18 +168,28 @@ app.innerHTML = `
       </div>
     </div>
     <div class="ending-center">
+      <div class="ending-statement">
+        <span class="ending-statement-mark" aria-hidden="true"></span>
+        <p class="ending-statement-label">راماچ سیستم / از ایده تا ابزار</p>
+        <h2>فناوری برای<br><span>کارِ واقعی.</span></h2>
+        <p class="ending-statement-body">ابزارهایی که فقط نمایش نمی‌دهند؛ به طراحی، اجرا، مدیریت و تصمیم‌گیری کمک می‌کنند.</p>
+      </div>
       <button class="ending-cta" id="open-callback" type="button" aria-haspopup="dialog" aria-controls="callback-overlay">
         <span class="ending-cta-text">شروع همکاری</span>
         <span class="ending-cta-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18 18 6M7 6h11v11"/></svg></span>
       </button>
     </div>
+    <div class="ending-directory-head" id="product-directory">
+      <h3>محصولات و خدمات</h3>
+      <span dir="ltr">RAMACH / DIRECTORY</span>
+    </div>
     <nav class="ending-product-links" aria-label="محصولات و خدمات راماچ">
-      <a class="ending-product-link" href="./catalog.html?product=archiyar" aria-label="آرچیار، صفحه محصول"><span dir="ltr">ARCHIYAR</span><span class="ending-product-arrow" aria-hidden="true">↗</span></a>
-      <a class="ending-product-link" href="./catalog.html?product=chido" aria-label="چیدو، صفحه محصول"><span dir="ltr">CHIDO</span><span class="ending-product-arrow" aria-hidden="true">↗</span></a>
-      <a class="ending-product-link" href="./catalog.html?product=kitchyar" aria-label="کیچیار، صفحه محصول"><span dir="ltr">KITCHYAR</span><span class="ending-product-arrow" aria-hidden="true">↗</span></a>
-      <a class="ending-product-link" href="./catalog.html?product=kamcheh" aria-label="کمچه، صفحه محصول"><span dir="ltr">KAMCHEH</span><span class="ending-product-arrow" aria-hidden="true">↗</span></a>
-      <a class="ending-product-link" href="./catalog.html?product=mizato" aria-label="میزاتو، صفحه محصول"><span dir="ltr">MIZATO</span><span class="ending-product-arrow" aria-hidden="true">↗</span></a>
-      <a class="ending-product-link ending-product-link-service" href="./catalog.html?product=websites" aria-label="خدمات طراحی سایت تخصصی"><span>طراحی سایت تخصصی</span><span class="ending-product-arrow" aria-hidden="true">↗</span></a>
+      <a class="ending-product-link" href="./catalog.html?product=archiyar" aria-label="آرچیار، صفحه محصول"><span class="ending-product-index" dir="ltr">01</span><span class="ending-product-title"><strong dir="ltr">ARCHIYAR</strong><small>معماری و واقعیت افزوده</small></span><span class="ending-product-arrow" aria-hidden="true">↗</span></a>
+      <a class="ending-product-link" href="./catalog.html?product=chido" aria-label="چیدو، صفحه محصول"><span class="ending-product-index" dir="ltr">02</span><span class="ending-product-title"><strong dir="ltr">CHIDO</strong><small>مبلمان و تجربه فضایی</small></span><span class="ending-product-arrow" aria-hidden="true">↗</span></a>
+      <a class="ending-product-link" href="./catalog.html?product=kitchyar" aria-label="کیچیار، صفحه محصول"><span class="ending-product-index" dir="ltr">03</span><span class="ending-product-title"><strong dir="ltr">KITCHYAR</strong><small>طراحی آشپزخانه</small></span><span class="ending-product-arrow" aria-hidden="true">↗</span></a>
+      <a class="ending-product-link" href="./catalog.html?product=kamcheh" aria-label="کمچه، صفحه محصول"><span class="ending-product-index" dir="ltr">04</span><span class="ending-product-title"><strong dir="ltr">KAMCHEH</strong><small>مدیریت عملیات ساخت</small></span><span class="ending-product-arrow" aria-hidden="true">↗</span></a>
+      <a class="ending-product-link" href="./catalog.html?product=mizato" aria-label="میزاتو، صفحه محصول"><span class="ending-product-index" dir="ltr">05</span><span class="ending-product-title"><strong dir="ltr">MIZATO</strong><small>سامانه رستوران</small></span><span class="ending-product-arrow" aria-hidden="true">↗</span></a>
+      <a class="ending-product-link ending-product-link-service" href="./catalog.html?product=websites" aria-label="خدمات طراحی سایت تخصصی"><span class="ending-product-index" dir="ltr">06</span><span class="ending-product-title"><strong>طراحی سایت تخصصی</strong><small>وب‌سایت و تجربه تعاملی</small></span><span class="ending-product-arrow" aria-hidden="true">↗</span></a>
     </nav>
     <footer class="site-footer" aria-label="پیوندهای سایت">
       <span class="footer-copy" dir="ltr">© 2026 RAMACH SYSTEMS</span>

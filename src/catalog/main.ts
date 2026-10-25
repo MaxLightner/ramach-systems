@@ -83,6 +83,7 @@ const raw=new URLSearchParams(location.search).get('product')??'archiyar';
 const selected=(keys as string[]).includes(raw)?raw as ProductKey:'archiyar';
 const product=catalog[selected];
 document.title=product.fa+' | RAMACH SYSTEMS';
+document.documentElement.dataset.product=selected;
 const root=document.querySelector<HTMLDivElement>('#catalog-app');
 if(!root)throw new Error('Missing catalog container');
 
@@ -142,11 +143,12 @@ const cta=product.link
  : `<span class="catalog-unavailable">نسخه آنلاین عمومی هنوز منتشر نشده است</span>`;
 root.innerHTML=`
 <div class="catalog-background" aria-hidden="true"></div>
+<a class="catalog-skip" href="#catalog-main">رفتن به محتوای اصلی</a>
 <header class="catalog-header">
  <a href="./index.html" class="catalog-brand" dir="ltr"><b>R<span>/</span></b> RAMACH SYSTEMS</a>
  <a href="./index.html#contact" class="catalog-home">بازگشت به راماچ <span aria-hidden="true">↗</span></a>
 </header>
-<main class="catalog-container">
+<main class="catalog-container" id="catalog-main">
  <div class="catalog-meta"><span>RAMACH / PRODUCTS & SERVICES</span><span class="catalog-phase">${product.phase}</span></div>
  <div class="catalog-hero">
   <div class="catalog-copy">
@@ -158,8 +160,19 @@ root.innerHTML=`
    <div class="catalog-actions">${cta}<a href="./index.html#contact" class="catalog-secondary">گفت‌وگو درباره همکاری <span aria-hidden="true">←</span></a></div>
   </div>
   <div class="catalog-visual" aria-hidden="true">
-   <div class="catalog-orbit catalog-orbit-a"></div><div class="catalog-orbit catalog-orbit-b"></div>
-   <div class="catalog-monogram" dir="ltr">${product.en.split(' ').map(word=>word[0]).join('')}</div>
+   <div class="catalog-visual-head"><span>RAMACH / SYSTEM SPECIMEN</span><span>0${keys.indexOf(selected)+1} / 06</span></div>
+   <div class="catalog-diagram">
+     <div class="catalog-diagram-cross catalog-diagram-cross-a"></div>
+     <div class="catalog-diagram-cross catalog-diagram-cross-b"></div>
+     <div class="catalog-diagram-halo"></div>
+     <div class="catalog-diagram-rail catalog-diagram-rail-x"></div>
+     <div class="catalog-diagram-rail catalog-diagram-rail-y"></div>
+     <div class="catalog-monogram" dir="ltr">${product.en.split(' ').map(word=>word[0]).join('')}</div>
+     <span class="catalog-diagram-point catalog-diagram-point-a">01</span>
+     <span class="catalog-diagram-point catalog-diagram-point-b">02</span>
+     <span class="catalog-diagram-point catalog-diagram-point-c">03</span>
+   </div>
+   <div class="catalog-visual-foot"><span>BRIEF / ${product.en}</span><span>RAMACH SYSTEMS · 2026</span></div>
   </div>
  </div>
  <section class="catalog-capabilities" aria-label="حوزه‌ها و قابلیت‌ها">

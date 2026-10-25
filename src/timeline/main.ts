@@ -37,8 +37,9 @@ function render(){
  const cards=visible.length?visible.map(eventCard).join(''):'<p class="timeline-empty">در این نما رویدادی وجود ندارد. فیلتر یا نقش را تغییر دهید.</p>';
  root!.innerHTML=`
  <div class="timeline-shell">
+  <a class="timeline-skip" href="#timeline-main">رفتن به محتوای اصلی</a>
   <header class="timeline-header"><a href="./catalog.html?product=websites#timeline-plugin">بازگشت به خدمات طراحی سایت <span aria-hidden="true">↗</span></a><a class="timeline-brand" href="./index.html" dir="ltr">RAMACH SYSTEMS</a></header>
-  <main class="timeline-main">
+  <main class="timeline-main" id="timeline-main">
    <div class="timeline-kicker" dir="ltr">MOJARRAD CORE / PROJECT TIMELINE</div>
    <div class="timeline-hero"><div><h1>تایم‌لاین پروژه ساختمانی</h1><p>مراحل اجرا، گزارش‌های رسمی و تصمیم‌ها در یک تاریخچه منظم؛ با نمای متفاوت برای مدیر و کارفرما.</p></div><span class="timeline-demo-badge">دموی تعاملی / داده فرضی</span></div>
    <div class="timeline-notice" role="note"><b>این نسخه فقط نمایش عمومی است.</b> رویدادها ساختگی‌اند و هیچ اطلاعاتی ذخیره یا ارسال نمی‌شود. نسخه وردپرسی اصلی برای هر پروژه احراز هویت و کنترل دسترسی دارد.</div>
