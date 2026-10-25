@@ -1,6 +1,7 @@
 import '@fontsource-variable/vazirmatn';
 import '@fontsource-variable/manrope';
 import './styles.css';
+import '../ui/finish.css';
 
 type ProductKey='archiyar'|'chido'|'kitchyar'|'kamcheh'|'mizato'|'websites';
 type ProductInfo={

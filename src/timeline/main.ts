@@ -1,6 +1,7 @@
 import '@fontsource-variable/vazirmatn';
 import '@fontsource-variable/manrope';
 import './styles.css';
+import '../ui/finish.css';
 
 // Public UI demonstration only; not the authenticated WordPress plugin and no real data.
 type Viewer='manager'|'owner';
