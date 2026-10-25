@@ -1,0 +1,18 @@
+{
+ "schemaVersion":1,
+ "projectId":"550e8400-e29b-41d4-a716-446655440000",
+ "name":"اتاق نمونه آرچیار",
+ "revision":0,
+ "coordinateSystem":{"id":"archyar-project-v1","units":"m","upAxis":"Y","groundPlane":"XZ","handedness":"right","origin":[0,0,0],"headingReference":"confirmed-floor-heading"},
+ "originFloorId":"550e8400-e29b-41d4-a716-446655440001",
+ "floors":[{"id":"550e8400-e29b-41d4-a716-446655440001","name":"طبقه همکف","elevation":0,"ceilingHeight":3,"visible":true}],
+ "objects":[
+  {"schemaVersion":1,"id":"550e8400-e29b-41d4-a716-446655440002","kind":"wall","floorId":"550e8400-e29b-41d4-a716-446655440001","revision":0,"name":"دیوار جنوبی","parameters":{"start":[0,0],"end":[4,0],"baseElevation":0,"thickness":0.15,"height":3}},
+  {"schemaVersion":1,"id":"550e8400-e29b-41d4-a716-446655440004","kind":"wall","floorId":"550e8400-e29b-41d4-a716-446655440001","revision":0,"name":"دیوار غربی","parameters":{"start":[0,3],"end":[0,0],"baseElevation":0,"thickness":0.15,"height":3}},
+  {"schemaVersion":1,"id":"550e8400-e29b-41d4-a716-446655440005","kind":"wall","floorId":"550e8400-e29b-41d4-a716-446655440001","revision":0,"name":"دیوار شمالی","parameters":{"start":[4,3],"end":[0,3],"baseElevation":0,"thickness":0.15,"height":3}},
+  {"schemaVersion":1,"id":"550e8400-e29b-41d4-a716-446655440006","kind":"wall","floorId":"550e8400-e29b-41d4-a716-446655440001","revision":0,"name":"دیوار شرقی","parameters":{"start":[4,0],"end":[4,3],"baseElevation":0,"thickness":0.15,"height":3}},
+  {"schemaVersion":1,"id":"550e8400-e29b-41d4-a716-446655440003","kind":"opening","floorId":"550e8400-e29b-41d4-a716-446655440001","hostId":"550e8400-e29b-41d4-a716-446655440002","revision":0,"name":"پنجره اتاق","parameters":{"style":"fixed","width":1.2,"height":1.4,"sill":0.9,"hostT":0.5,"archRise":0,"openFraction":0,"mirrored":false}},
+  {"schemaVersion":1,"id":"550e8400-e29b-41d4-a716-446655440007","kind":"opening","floorId":"550e8400-e29b-41d4-a716-446655440001","hostId":"550e8400-e29b-41d4-a716-446655440004","revision":0,"name":"درب اتاق","parameters":{"style":"door","width":0.9,"height":2.1,"sill":0,"hostT":0.52}},
+  {"schemaVersion":1,"id":"550e8400-e29b-41d4-a716-446655440008","kind":"floor","floorId":"550e8400-e29b-41d4-a716-446655440001","revision":0,"name":"کف اتاق","parameters":{"width":4,"height":0.1,"depth":3},"transform":{"position":[2,0,1.5],"rotation":[0,0,0,1],"scale":[1,1,1]}}
+ ]
+}
