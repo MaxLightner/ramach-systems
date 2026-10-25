@@ -45,3 +45,9 @@ The multi-page Vite build now also produces `archyar.html`. In the current GitHu
 The static site does **not** host a relay, create sessions, or grant real editing privileges. A server with role verification, event ordering, and persistence must be deployed before browser-to-phone or Blender live collaboration can work. The locally editable example must not be mistaken for shared project editing.
 
 This is the first web integration layer; the Android Java adapter and Blender live network sender remain separate work.
+
+### QR auto-join and web editor roles
+
+When the trusted repository variable `ARCHYAR_RELAY_WS` is configured to the deployed WSS endpoint, the website build embeds `VITE_ARCHYAR_RELAY_WS`. QR links with a session/token join automatically and remove the token from browser history. With no configured endpoint, relay/server entry remains manual.
+
+The relay determines Viewer, Editor or Owner by verifying the bearer token. Viewers cannot edit in-session. Editors and owners can submit wall-height changes using a revision-checked HTTPS PATCH, with the server broadcasting the accepted object update. These edits do not yet propagate into an already open Blender or Android workspace.

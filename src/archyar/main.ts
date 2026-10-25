@@ -23,11 +23,11 @@ app.innerHTML=`
  <div class="ax-section"><span class="ax-label">دوربین</span><div class="ax-segment">
  <button id="free-camera" type="button" class="is-active">آزاد</button>
  <button id="follow-camera" type="button" disabled>دنبال‌کردن منبع</button></div><p id="camera-info" class="ax-hint">در حالت آزاد، با ماوس یا لمس زاویه دید را تغییر دهید.</p></div>
- <div class="ax-section"><span class="ax-label">تغییرات محلی</span>
+ <div class="ax-section"><span class="ax-label">ویرایش مدل</span>
  <label class="ax-field" for="object-picker">انتخاب آبجکت</label><select id="object-picker"><option value="">ابتدا پروژه‌ای بارگذاری کنید</option></select>
  <label class="ax-field" for="object-height">ارتفاع دیوار (متر)</label><input id="object-height" type="number" min="0.3" max="12" step="0.01" disabled>
  <div class="ax-actions"><button id="apply-edit" class="ax-btn ax-outline" type="button" disabled>اعمال در پیش‌نمایش</button><button id="export-json" class="ax-btn ax-outline" type="button" disabled>ذخیره JSON</button></div>
- <p class="ax-hint">ویرایش فعلاً فقط در همین مرورگر اعمال می‌شود؛ انتشار تغییرات روی پروژه مشترک بعد از فعال‌شدن سرویس و مجوز Editor امکان‌پذیر است.</p></div>
+ <p class="ax-hint" id="edit-info">ویرایش بدون اتصال فقط محلی است؛ نشست‌های Editor و Owner پس از تأیید سرور امکان ویرایش خواهند داشت.</p></div>
  <div class="ax-section ax-connect"><span class="ax-label">اتصال زنده</span><p class="ax-hint">نشست‌های واقعی با سرویس جداگانه متصل می‌شوند؛ GitHub Pages سرور زنده نیست.</p>
  <label class="ax-field" for="relay-address">آدرس WebSocket سرویس</label><input id="relay-address" type="url" placeholder="wss://…">
  <label class="ax-field" for="session-id">شناسه نشست</label><input id="session-id" type="text" placeholder="UUID">
@@ -50,6 +50,19 @@ let socket:WebSocket|null=null;
 let joined=false;
 let sessionId='';
 let lastEventSequence=-1;
+let connectedRole:'viewer'|'editor'|'owner'|null=null;
+const editorInfo=byId('edit-info');
+function refreshEditorControls(){
+ const obj=current?.objects.find(o=>o.id===picker.value);
+ const viewerOnly=connectedRole==='viewer';
+ const enabled=obj?.kind==='wall'&&!obj.locked&&!viewerOnly;
+ heightInput.disabled=!enabled;applyBtn.disabled=!enabled;
+ editorInfo.textContent=viewerOnly
+  ?'این نشست فقط مجوز مشاهده دارد؛ امکان ویرایش مدل وجود ندارد.'
+  :connectedRole==='editor'||connectedRole==='owner'
+  ?'تغییرات پس از تأیید سرور برای تمام بینندگان نشست ارسال می‌شوند.'
+  :'بدون اتصال، تغییرات فقط در همین مرورگر اعمال می‌شوند.';
+}
 function notify(message:string,kind:'ok'|'error'|'info'='info'){
  notice.textContent=message;notice.dataset.kind=kind;
 }
@@ -74,6 +87,7 @@ function setProject(project:ArchProject){
  current.objects.filter(o=>o.kind==='wall').forEach(o=>picker.add(new Option(o.name||'Wall '+o.id.slice(0,6),o.id)));
  exportBtn.disabled=false;
  heightInput.disabled=true;applyBtn.disabled=true;
+ refreshEditorControls();
 }
 byId('load-demo').addEventListener('click',async()=>{
  try{
@@ -92,11 +106,10 @@ byId<HTMLInputElement>('file-upload').addEventListener('change',async e=>{
 });
 picker.addEventListener('change',()=>{
  const obj=current?.objects.find(o=>o.id===picker.value);
- if(obj?.kind==='wall'){
-  heightInput.value=String(obj.parameters.height);heightInput.disabled=false;applyBtn.disabled=false;
- }else{heightInput.disabled=true;applyBtn.disabled=true;}
+ if(obj?.kind==='wall')heightInput.value=String(obj.parameters.height);
+ refreshEditorControls();
 });
-applyBtn.addEventListener('click',()=>{
+applyBtn.addEventListener('click',async()=>{
  if(!current)return;
  const height=Number(heightInput.value);
  if(!Number.isFinite(height)||height<.3||height>12){notify('ارتفاع باید بین ۰٫۳ و ۱۲ متر باشد.','error');return;}
@@ -109,6 +122,32 @@ applyBtn.addEventListener('click',()=>{
  const next=structuredClone(current);
  const target=next.objects.find(o=>o.id===obj.id)!;
  target.parameters.height=height;target.revision++;next.revision++;
+ if(socket&&socket.readyState===WebSocket.OPEN){
+  if(connectedRole!=='editor'&&connectedRole!=='owner'){
+   notify('این نشست فقط دسترسی مشاهده دارد.','error');return;
+  }
+  const serverUrl=byId<HTMLInputElement>('relay-address').value.trim();
+  const token=byId<HTMLInputElement>('session-token').value.trim();
+  try{
+   const server=new URL(serverUrl);
+   server.protocol=server.protocol==='wss:'?'https:':'http:';
+   server.pathname=server.pathname.replace(/\/ws\/?$/,'');
+   const endpoint=server.toString().replace(/\/$/,'')+'/api/sessions/'+sessionId+'/objects';
+   applyBtn.disabled=true;
+   const res=await fetch(endpoint,{method:'PATCH',headers:{
+    'Content-Type':'application/json','Authorization':'Bearer '+token
+   },body:JSON.stringify({baseRevision:current.revision,operation:'upsert',object:target})});
+   if(!res.ok){
+    notify(res.status===409
+     ?'نسخه پروژه در سرور تغییر کرده است؛ ابتدا نسخه جدید را دریافت کنید.'
+     :'ویرایش در سرور پذیرفته نشد (HTTP '+res.status+').','error');
+    return;
+   }
+   notify('تغییر روی سرور ثبت شد و برای بینندگان ارسال می‌شود.','ok');
+  }catch(e){notify('ارتباط ویرایش برقرار نشد: '+String(e),'error')}
+  finally{refreshEditorControls()}
+  return;
+ }
  try{setProject(next);picker.value=obj.id;picker.dispatchEvent(new Event('change'));notify('تغییر در پیش‌نمایش محلی اعمال شد.','ok')}
  catch(e){notify(String(e),'error')}
 });
@@ -131,7 +170,15 @@ function applyRemote(message:unknown){
  const ev=message as Record<string,unknown>;
  const type=typeof ev.eventType==='string'?ev.eventType:ev.type;
  const payload=ev.payload as Record<string,unknown>|undefined;
- if(type==='project.snapshot'){
+ if(type==='session.joined'){
+  const role=payload?.role;
+  if(role==='viewer'||role==='editor'||role==='owner'){
+   connectedRole=role;joined=true;
+   connectionState.textContent=role==='viewer'?'نشست زنده · مشاهده':'نشست زنده · ویرایش';
+   refreshEditorControls();
+  }
+ }
+ else if(type==='project.snapshot'){
   const project=payload?.project??ev.project;
   if(!project)return;
   try{setProject(parseProject(project));notify('مدل نشست دریافت شد.','ok')}
@@ -144,7 +191,7 @@ function applyRemote(message:unknown){
    viewer.setPose(pose);followBtn.disabled=false;
    byId('camera-info').textContent='منبع: '+pose.source+' · فریم '+pose.sequence;
    // Follow by default when the first valid remote camera pose arrives.
-   if(!joined){joined=true;setFollowing(true)}
+   if(!viewer.isFollowing())setFollowing(true)
   }catch{notify('اطلاعات دوربین دریافتی معتبر نیست.','error')}
  }
  else if((type==='object.upsert'||type==='object.delete')&&current){
@@ -162,11 +209,14 @@ function applyRemote(message:unknown){
    next.objects=next.objects.filter(o=>o.id!==id);
   }
   next.revision++;
-  try{setProject(next);lastEventSequence=eventId}catch(e){notify('تغییر دریافتی رد شد: '+String(e),'error')}
+  const selected=picker.value;
+  try{setProject(next);picker.value=selected;picker.dispatchEvent(new Event('change'));lastEventSequence=eventId}
+  catch(e){notify('تغییر دریافتی رد شد: '+String(e),'error')}
  }
 }
-byId('join-session').addEventListener('click',()=>{
- if(socket){socket.close();socket=null;}
+function joinSession(){
+ if(socket){socket.onclose=null;socket.close();socket=null;}
+ connectedRole=null;refreshEditorControls();
  const raw=byId<HTMLInputElement>('relay-address').value.trim();
  const token=byId<HTMLInputElement>('session-token').value.trim();
  const session=byId<HTMLInputElement>('session-id').value.trim();
@@ -180,10 +230,11 @@ byId('join-session').addEventListener('click',()=>{
   socket.onopen=()=>{socket?.send(JSON.stringify({type:'session.join',sessionId:session,token,role:'viewer'}));notify('درخواست ورود به نشست ارسال شد.')};
   socket.onmessage=event=>{try{applyRemote(JSON.parse(event.data as string))}catch{notify('پیام ناشناخته از سرویس دریافت شد.','error')}};
   socket.onerror=()=>notify('اتصال به سرویس برقرار نشد.','error');
-  socket.onclose=()=>{connectionState.textContent='ارتباط قطع شد';followBtn.disabled=true;setFollowing(false)};
+  socket.onclose=()=>{connectedRole=null;refreshEditorControls();connectionState.textContent='ارتباط قطع شد';followBtn.disabled=true;setFollowing(false)};
   connectionState.textContent='در حال اتصال';
  }catch(e){notify(String(e),'error')}
-});
+}
+byId('join-session').addEventListener('click',joinSession);
 const args=new URLSearchParams(location.search);
 if(args.has('session'))byId<HTMLInputElement>('session-id').value=args.get('session')||'';
 const defaultRelay=import.meta.env.VITE_ARCHYAR_RELAY_WS as string|undefined;
@@ -193,4 +244,8 @@ if(args.has('token'))byId<HTMLInputElement>('session-token').value=args.get('tok
 if(args.has('token')){
  args.delete('token');
  history.replaceState(null,'',location.pathname+(args.size?'?'+args.toString():'')+location.hash);
+}
+if(defaultRelay&&args.has('session')&&byId<HTMLInputElement>('session-token').value){
+ // Auto-join only a trusted relay configured at build time, never arbitrary URL parameters.
+ joinSession();
 }

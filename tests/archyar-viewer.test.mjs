@@ -39,6 +39,17 @@ test('no fabricated live session success and no unauthenticated remote edits',()
  assert.match(main,/type:'session.join'/);
  assert.match(main,/sessionId:session,token,role:'viewer'/);
  assert.match(main,/history\.replaceState/);
- assert.match(main,/ویرایش فعلاً فقط در همین مرورگر/);
+ assert.match(main,/ویرایش بدون اتصال فقط محلی است/);
+ assert.match(main,/connectedRole!=='editor'&&connectedRole!=='owner'/);
  assert.doesNotMatch(main,/socket\?\.send\(JSON\.stringify\(\{type:'object.upsert'/);
+});
+
+test('trusted QR auto-join and role-confirmed web edit operations',()=>{
+ assert.match(main,/VITE_ARCHYAR_RELAY_WS/);
+ assert.match(main,/if\(defaultRelay&&args.has\('session'\)/);
+ assert.match(main,/type==='session.joined'/);
+ assert.match(main,/connectedRole==='viewer'/);
+ assert.match(main,/baseRevision:current.revision,operation:'upsert'/);
+ assert.match(main,/method:'PATCH'/);
+ assert.match(main,/res.status===409/);
 });
