@@ -131,8 +131,8 @@ applyBtn.addEventListener('click',async()=>{
   try{
    const server=new URL(serverUrl);
    server.protocol=server.protocol==='wss:'?'https:':'http:';
-   server.pathname=server.pathname.replace(/\\/ws\\/?$/,'');
-   const endpoint=server.toString().replace(/\\/$/,'')+'/api/sessions/'+sessionId+'/objects';
+   server.pathname=server.pathname.replace(/\/ws\/?$/,'');
+   const endpoint=server.toString().replace(/\/$/,'')+'/api/sessions/'+sessionId+'/objects';
    applyBtn.disabled=true;
    const res=await fetch(endpoint,{method:'PATCH',headers:{
     'Content-Type':'application/json','Authorization':'Bearer '+token
