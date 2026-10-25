@@ -1100,3 +1100,53 @@ body.logo-drawing .opening-wordmark::before{
     animation:none;stroke-dashoffset:0;filter:none;
   }
 }
+
+
+/* RAMACH FIX — minimum font is 13px, NOT an instruction to enlarge it to 16px. */
+.site-footer .footer-copy,
+.site-footer .footer-links a,
+.site-footer .footer-social-label,
+.site-footer .social-placeholder,
+.site-footer .footer-notice{
+  font-size:13px !important;
+}
+@media(max-width:700px){
+  .site-footer .footer-copy,
+  .site-footer .footer-links a,
+  .site-footer .footer-social-label,
+  .site-footer .social-placeholder,
+  .site-footer .footer-notice{
+    font-size:13px !important;
+  }
+}
+/* Real per-path Web Animations now own SVG drawing, not overlapping CSS animations. */
+body.logo-drawing .opening-wordmark-svg .wordmark-glyph path{
+  animation:none;
+}
+
+
+/* Restore the user-requested live cinematic site even if desktop Chrome happens
+   to inherit a system-wide reduced-motion flag. Explicit ?reduceMotion=1 still
+   opts out and is reflected in .motion-paused. */
+@media(prefers-reduced-motion:reduce){
+  body:not(.motion-paused) .chapter{
+    transition:opacity .58s cubic-bezier(.2,.7,.1,1),
+               transform .68s cubic-bezier(.16,1,.3,1),
+               visibility 0s linear .58s;
+  }
+  body:not(.motion-paused) .chapter.is-active{
+    transition-delay:0s,0s,0s;
+  }
+  body:not(.motion-paused) .chapter.is-active h1,
+  body:not(.motion-paused) .chapter.is-active .chapter-body{
+    animation:chapterRise .65s cubic-bezier(.16,1,.3,1) both;
+  }
+  body:not(.motion-paused) .ecosystem-track{
+    animation:ramachTicker 32s linear infinite;
+  }
+  body:not(.motion-paused) .closing-brand{
+    transition:opacity .72s ease,transform .9s cubic-bezier(.16,1,.3,1),visibility 0s linear .72s;
+  }
+}
+body.motion-paused .ecosystem-track{animation:none}
+body.motion-paused .chapter{transition:none}

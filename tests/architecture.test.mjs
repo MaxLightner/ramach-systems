@@ -11,12 +11,15 @@ test('the opening is deliberately blank before a two-line outline logo begins dr
   assert.match(main,/const wordmarkGlyphPaths = \{/);
   assert.match(main,/wordmarkTopRow\.map/);
   assert.match(main,/wordmarkBottomRow\.map/);
-  assert.match(main,/pathLength="1000"/);
+  assert.match(main,/path\.getTotalLength\(\)\+2/);
+  assert.match(main,/path\.animate\(/);
+  assert.doesNotMatch(main,/pathLength="1000"/);
   assert.doesNotMatch(main,/<text class="wordmark-line/);
   assert.match(main,/async function beginLogoAfterLoad\(\)/);
   assert.match(main,/document\.readyState!=='complete'/);
   assert.match(main,/await document\.fonts\.ready/);
-  assert.match(main,/window\.setTimeout\(\(\)=>document\.body\.classList\.add\('logo-drawing'\),950\)/);
+  assert.match(main,/window\.setTimeout\(\(\)=>\{/);
+  assert.match(main,/document\.body\.classList\.add\('logo-drawing'\)/);
   assert.match(css,/\.opening\{[\s\S]*?background:#03090d/);
   assert.match(css,/\.opening\{[\s\S]*?radial-gradient\(ellipse 40% 35%/);
   assert.match(css,/\.opening::before\{[\s\S]*?display:block!important/);
@@ -121,14 +124,16 @@ test('the scroll camera takes 2.5 seconds with a pronounced ease-in/out and reta
   assert.match(main,/if\(direction&&stageStep\(direction\)\)event\.preventDefault\(\)/);
   assert.match(main,/goToStop\(nearestStopIndex\(target\)\)/);
 });
-test('a 4-second SVG stroke reveal includes font/load readiness and preserves reduced-motion settings',()=>{
-  assert.match(main,/--line-delay:1\.90s/);
-  assert.match(main,/await document\.fonts\.ready/);
-  assert.match(css,/drawGlyphFinal 1\.45s cubic-bezier/);
-  // 1.90 second start + six 0.12 second offsets + 1.45 second stroke = 4.07 seconds.
-  const expectedFinish=1.90+6*.12+1.45;
-  assert.ok(expectedFinish>=3.0);
-  assert.match(css,/prefers-reduced-motion:reduce[\s\S]*?body\.logo-drawing \.opening-wordmark-svg \.wordmark-glyph path/);
+test('the SVG logo actually draws via measured path lengths for more than three seconds',()=>{
+  assert.match(main,/path\.getTotalLength\(\)\+2/);
+  assert.match(main,/path\.style\.strokeDasharray=String\(length\)/);
+  assert.match(main,/path\.style\.strokeDashoffset=String\(length\)/);
+  assert.match(main,/path\.animate\(/);
+  assert.match(main,/duration:1950/);
+  assert.match(main,/secondLine\?1530:0/);
+  assert.match(main,/document\.body\.classList\.add\('logo-drawing'\)/);
+  assert.ok(1530+6*165+1950>=3000);
+  assert.match(css,/body\.logo-drawing \.opening-wordmark-svg \.wordmark-glyph path\{\s*animation:none/);
 });
 test('many independently randomized light points use one GPU draw call, not dozens of spheres',()=>{
   assert.match(world,/const dotsPerLane=innerWidth<740\?3:7/);
@@ -152,16 +157,29 @@ test('cursor aura is subtle, non-interactive and disabled for touch or reduced-m
   assert.match(css,/\.cursor-aura\{[\s\S]*?pointer-events:none/);
   assert.match(css,/@media\(pointer:coarse\),\(prefers-reduced-motion:reduce\)/);
 });
-test('footer typography is legible on desktop and mobile with a 13px absolute floor',()=>{
-  assert.match(css,/\.site-footer \.footer-copy\{\s*font:600 16px/);
-  assert.match(css,/\.site-footer \.footer-links a\{\s*font-size:16px/);
-  assert.match(css,/@media\(max-width:700px\)\{[\s\S]*?\.site-footer \.footer-links a\{font-size:15px/);
+test('no authored font below 13px; footer displays 13px rather than being inflated to 16px',()=>{
+  const footerOverride=css.slice(css.lastIndexOf('/* RAMACH FIX — minimum font'));
+  assert.match(footerOverride,/\.site-footer \.footer-copy,/);
+  assert.match(footerOverride,/\.site-footer \.footer-links a,/);
+  assert.match(footerOverride,/font-size:13px !important/);
+  assert.doesNotMatch(footerOverride,/font-size:16px/);
   const declarations=[...css.matchAll(/(?:font-size|font)\s*:\s*([^;}]+)/g)].map(m=>m[1]);
-  for(const value of declarations){
-    for(const match of value.matchAll(/(\d+(?:\.\d+)?)px/g)){
-      assert.ok(Number(match[1])>=13,value);
-    }
-  }
+  for(const value of declarations)for(const m of value.matchAll(/(\d+(?:\.\d+)?)px/g))
+    assert.ok(Number(m[1])>=13,value);
+});
+test('mouse wheel physically animates the page with the 3D camera, no instant teleport',()=>{
+  assert.doesNotMatch(main,/destination\*stageDistance\(\)/);
+  assert.match(main,/displayed\*stageDistance\(\)/);
+  assert.match(main,/if\(transitioning\)\{\s*const t=clamp\(\(now-transitionStarted\)\/cameraTravelMs\)/);
+  assert.match(main,/const easeInOutCubic=/);
+  assert.match(main,/addEventListener\('wheel',event=>/);
+  assert.match(main,/holdUntil=now\+minimumReadMs/);
+});
+test('full animations are on unless the user explicitly requests reducedMotion=1',()=>{
+  assert.match(main,/get\('reduceMotion'\)==='1'/);
+  assert.match(world,/get\('reduceMotion'\)==='1'/);
+  assert.doesNotMatch(main,/prefersReducedMotion=matchMedia/);
+  assert.doesNotMatch(world,/reduceMotion = matchMedia/);
 });
 test('the 3D scene keeps its rendering workload restrained and respects reduced motion',()=>{
   assert.match(world,/renderer\.shadowMap\.enabled = false/);

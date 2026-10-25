@@ -115,7 +115,7 @@ app.innerHTML = `
       <svg class="opening-wordmark-svg" viewBox="0 0 1200 350" role="img" aria-label="RAMACH SYSTEMS" xmlns="http://www.w3.org/2000/svg">
         <defs><linearGradient id="wordmark-stroke" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b99b6c"/><stop offset=".48" stop-color="#f0ede3"/><stop offset="1" stop-color="#8dc8b7"/></linearGradient></defs>
         <g class="wordmark-row wordmark-row-primary" aria-hidden="true">
-          ${wordmarkTopRow.map((glyph,i)=>`<g class="wordmark-glyph" transform="translate(${glyph.x} 34)" style="--line-delay:.12s;--glyph-delay:${(i*.12).toFixed(2)}s">${wordmarkGlyphPaths[glyph.letter].map(d=>`<path d="${d}" pathLength="1000"/>`).join('')}</g>`).join('')}
+          ${wordmarkTopRow.map((glyph,i)=>`<g class="wordmark-glyph" transform="translate(${glyph.x} 34)" style="--line-delay:.12s;--glyph-delay:${(i*.12).toFixed(2)}s">${wordmarkGlyphPaths[glyph.letter].map(d=>`<path d="${d}"/>`).join('')}</g>`).join('')}
         </g>
         <g class="wordmark-row wordmark-row-secondary" aria-hidden="true">
           ${wordmarkBottomRow.map((glyph,i)=>`<g class="wordmark-glyph" transform="translate(${glyph.x} 190)" style="--line-delay:1.90s;--glyph-delay:${(i*.12).toFixed(2)}s">${wordmarkGlyphPaths[glyph.letter].map(d=>`<path d="${d}" pathLength="1000"/>`).join('')}</g>`).join('')}
@@ -226,12 +226,36 @@ const opening=document.querySelector<HTMLElement>('.opening')!;
 const closingBrand=document.querySelector<HTMLElement>('#closing-brand')!;
 const storyEnd=0.82;
 let world:World|null=null,requested=false;
-// The logo begins after the document, styles, and fonts have finished loading.
+// Drive SVG stroke drawing with Web Animations and actual measured path lengths.
+// CSS reduced-motion overrides previously hid every animation in some desktop browsers.
 async function beginLogoAfterLoad(){
   if(document.readyState!=='complete')await new Promise<void>(resolve=>addEventListener('load',()=>resolve(),{once:true}));
   if(document.fonts)await document.fonts.ready;
   await new Promise<void>(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>resolve())));
-  window.setTimeout(()=>document.body.classList.add('logo-drawing'),950);
+  window.setTimeout(()=>{
+    const glyphs=[...document.querySelectorAll<SVGGElement>('.opening-wordmark-svg .wordmark-glyph')];
+    glyphs.forEach((glyph,index)=>{
+      const secondLine=index>=6;
+      const offset=secondLine?index-6:index;
+      const delay=(secondLine?1530:0)+offset*165;
+      glyph.querySelectorAll<SVGPathElement>('path').forEach(path=>{
+        const length=Math.max(1,path.getTotalLength()+2);
+        path.style.animation='none';
+        path.style.strokeDasharray=String(length);
+        path.style.strokeDashoffset=String(length);
+        path.style.opacity='1';
+        if(new URLSearchParams(location.search).get('reduceMotion')==='1'){
+          path.style.strokeDashoffset='0';
+        }else{
+          path.animate(
+            [{strokeDashoffset:String(length)},{strokeDashoffset:'0'}],
+            {duration:1950,delay,easing:'cubic-bezier(.65,.02,.2,1)',fill:'forwards'}
+          );
+        }
+      });
+    });
+    document.body.classList.add('logo-drawing');
+  },950);
 }
 void beginLogoAfterLoad();
 let target=0,displayed=0,last=performance.now(),active=-1;
@@ -259,7 +283,11 @@ let programmaticScroll=false;
 let idleSnapTimer=0;
 let wheelAccum=0;
 let lastWheelAt=0;
-const prefersReducedMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
+// RAMACH is an animation-led experience: core motion is on unless explicitly disabled
+// via the reduce-motion query argument; desktop OS preferences must not silently
+// turn all cinematic scenes into instant jumps.
+const prefersReducedMotion=new URLSearchParams(location.search).get('reduceMotion')==='1';
+document.body.classList.toggle('motion-paused',prefersReducedMotion);
 const stageRect=()=>journey.getBoundingClientRect();
 const stageDistance=()=>Math.max(1,journey.offsetHeight-innerHeight);
 function stageIsActive(){
@@ -285,10 +313,8 @@ function goToStop(index:number){
   awaitingArrival=true;
   holdUntil=Infinity;
   clearTimeout(idleSnapTimer);
-  programmaticScroll=true;
-  const top=journey.getBoundingClientRect().top+scrollY+destination*stageDistance();
-  window.scrollTo({top,behavior:'instant'});
-  programmaticScroll=false;
+  // Do not teleport the physical scrollbar here. The animation frame moves
+  // the browser scrollbar and 3D camera together over the full 2.5 seconds.
 }
 function stageStep(direction:number){
   if(!stageIsActive())return false;
@@ -386,6 +412,11 @@ function frame(now:number){
   if(transitioning){
     const t=clamp((now-transitionStarted)/cameraTravelMs);
     displayed=transitionFrom+(transitionTo-transitionFrom)*easeInOutCubic(t);
+    // Keep sticky section positioning and 3D camera progress on one timeline.
+    // No instant scrollTop change on wheel, so movement cannot look like a cut.
+    programmaticScroll=true;
+    window.scrollTo({top:journey.getBoundingClientRect().top+scrollY+displayed*stageDistance(),behavior:'instant'});
+    programmaticScroll=false;
     if(t>=1){transitioning=false;displayed=transitionTo;}
   }else if(awaitingArrival && prefersReducedMotion){
     displayed=target;
@@ -394,6 +425,12 @@ function frame(now:number){
     if(Math.abs(target-displayed)<0.00005)displayed=target;
   }
   if(awaitingArrival&&!transitioning&&Math.abs(target-displayed)<=cameraArrivalThreshold){
+    // Reduced-motion opt-out still needs to land on the requested native scroll mark.
+    if(prefersReducedMotion){
+      programmaticScroll=true;
+      window.scrollTo({top:journey.getBoundingClientRect().top+scrollY+target*stageDistance(),behavior:'instant'});
+      programmaticScroll=false;
+    }
     awaitingArrival=false;
     holdUntil=now+minimumReadMs;
   }

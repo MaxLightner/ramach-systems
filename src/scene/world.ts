@@ -7,7 +7,9 @@ const ivory = 0xe7e3d8, ink = 0x152d30, gold = 0xb99d72, aqua = 0x79c5b7;
 const smooth = (a:number,b:number,v:number) => { const t = Math.max(0,Math.min(1,(v-a)/(b-a))); return t*t*(3-2*t); };
 
 export function createWorld(host:HTMLElement, chapterAlignments:readonly ('left'|'right')[] = []) {
-  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // The scene's core signal animation is on by default, including desktop Chrome.
+// Explicit reduceMotion=1 preserves the user's choice to disable motion.
+  const reduceMotion = new URLSearchParams(location.search).get('reduceMotion')==='1';
   const renderer = new THREE.WebGLRenderer({ antialias:true, alpha:true, powerPreference:'high-performance' });
   renderer.setClearColor(0x03090d,0);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
