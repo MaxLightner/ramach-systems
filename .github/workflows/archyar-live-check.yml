@@ -1,0 +1,25 @@
+name: Archyar live relay contract checks
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "server/archyar-live/**"
+      - ".github/workflows/archyar-live-check.yml"
+  push:
+    branches: [main]
+    paths:
+      - "server/archyar-live/**"
+      - ".github/workflows/archyar-live-check.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  relay:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - run: deno check --config server/archyar-live/deno.json server/archyar-live/main.ts
+      - run: deno test --allow-env --config server/archyar-live/deno.json server/archyar-live/main_test.ts
