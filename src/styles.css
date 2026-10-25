@@ -1150,3 +1150,65 @@ body.logo-drawing .opening-wordmark-svg .wordmark-glyph path{
 }
 body.motion-paused .ecosystem-track{animation:none}
 body.motion-paused .chapter{transition:none}
+
+
+/* RAMACH 07 — loading ring -> blue underglow -> actual outlined wordmark. */
+.opening{position:relative;isolation:isolate}
+.opening-center{position:relative;z-index:2}
+.opening-blue-halo{
+  position:absolute;z-index:1;pointer-events:none;
+  left:50%;top:62%;width:min(76vw,840px);height:min(25vw,230px);
+  transform:translate(-50%,-50%) scale(.88);
+  border-radius:50%;opacity:.34;
+  background:radial-gradient(ellipse at 50% 50%,
+    rgba(63,158,222,.28) 0%,rgba(42,127,185,.18) 27%,
+    rgba(32,100,160,.075) 51%,transparent 75%);
+  filter:blur(30px);mix-blend-mode:screen;
+  transition:opacity 2.4s ease,transform 3s cubic-bezier(.16,1,.3,1);
+}
+body.loader-complete .opening-blue-halo{opacity:.57;transform:translate(-50%,-50%) scale(1.07)}
+.opening-loader{
+  position:absolute;z-index:8;top:50%;left:50%;
+  display:grid;place-items:center;width:70px;height:70px;
+  transform:translate(-50%,-50%) scale(1);
+  opacity:1;visibility:visible;pointer-events:none;
+  transition:opacity .35s ease,transform .45s ease,visibility 0s linear .35s;
+}
+.opening-loader-ring{
+  display:block;width:35px;height:35px;box-sizing:border-box;border-radius:50%;
+  border:2px solid rgba(114,174,193,.18);
+  border-top-color:#b9e7ef;border-right-color:#66b6d3;
+  box-shadow:0 0 18px rgba(61,153,192,.13),inset 0 0 9px rgba(79,161,205,.075);
+  animation:ramachLoadingSpin 1.04s linear infinite;
+}
+@keyframes ramachLoadingSpin{to{transform:rotate(360deg)}}
+body.loader-complete .opening-loader{
+  opacity:0;visibility:hidden;
+  transform:translate(-50%,-50%) scale(.84);
+}
+@media(max-width:700px){
+  .opening-blue-halo{
+    top:60%;width:94vw;height:38vw;filter:blur(24px)
+  }
+}
+/* Minimum remains 13 CSS px; utility copy is a discreet 14, not 16. */
+.site-footer .footer-copy,
+.site-footer .footer-links a,
+.site-footer .footer-social-label,
+.site-footer .social-placeholder,
+.site-footer .footer-notice{
+  font-size:14px !important;
+}
+.stage-instruction,.stage-number,.stage-top,.header-status,
+.chapter-eyebrow,.chapter-note,.callback-status{
+  font-size:max(13px,1em);
+}
+@media(max-width:700px){
+  .site-footer .footer-copy,
+  .site-footer .footer-links a,
+  .site-footer .footer-social-label,
+  .site-footer .social-placeholder,
+  .site-footer .footer-notice{
+    font-size:14px !important;
+  }
+}

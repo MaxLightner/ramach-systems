@@ -111,6 +111,8 @@ app.innerHTML = `
 </header>
 <main>
   <section class="opening" id="start" aria-label="معرفی راماچ سیستم">
+    <div class="opening-blue-halo" aria-hidden="true"></div>
+    <div class="opening-loader" role="status" aria-label="در حال آماده‌سازی سایت"><span class="opening-loader-ring" aria-hidden="true"></span></div>
     <div class="opening-center"><div class="opening-wordmark">
       <svg class="opening-wordmark-svg" viewBox="0 0 1200 350" role="img" aria-label="RAMACH SYSTEMS" xmlns="http://www.w3.org/2000/svg">
         <defs><linearGradient id="wordmark-stroke" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b99b6c"/><stop offset=".48" stop-color="#f0ede3"/><stop offset="1" stop-color="#8dc8b7"/></linearGradient></defs>
@@ -233,7 +235,9 @@ async function beginLogoAfterLoad(){
   if(document.fonts)await document.fonts.ready;
   await new Promise<void>(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>resolve())));
   window.setTimeout(()=>{
-    const glyphs=[...document.querySelectorAll<SVGGElement>('.opening-wordmark-svg .wordmark-glyph')];
+    document.body.classList.add('loader-complete');
+    window.setTimeout(()=>{
+      const glyphs=[...document.querySelectorAll<SVGGElement>('.opening-wordmark-svg .wordmark-glyph')];
     glyphs.forEach((glyph,index)=>{
       const secondLine=index>=6;
       const offset=secondLine?index-6:index;
@@ -254,8 +258,9 @@ async function beginLogoAfterLoad(){
         }
       });
     });
-    document.body.classList.add('logo-drawing');
-  },950);
+      document.body.classList.add('logo-drawing');
+    },430);
+  },1150);
 }
 void beginLogoAfterLoad();
 let target=0,displayed=0,last=performance.now(),active=-1;

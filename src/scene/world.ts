@@ -238,27 +238,36 @@ export function createWorld(host:HTMLElement, chapterAlignments:readonly ('left'
   // Thin board traces plus a *single* GPU point-cloud for all moving light packets.
   // Previous implementations created separate orb/halo/trail meshes per signal;
   // this version renders up to 98 independently phased dots in ONE draw call.
-  const track=new THREE.MeshBasicMaterial({color:0x36585a,transparent:true,opacity:.62,depthWrite:false});
-  const filament=new THREE.MeshBasicMaterial({color:0x69bca9,transparent:true,opacity:.61,depthWrite:false,toneMapped:false});
+  const track=new THREE.MeshBasicMaterial({color:0x36585a,transparent:true,opacity:.58,depthWrite:false});
+  const filament=new THREE.MeshBasicMaterial({color:0x91ebd3,transparent:true,opacity:.92,depthWrite:false,toneMapped:false});
+  const traceGlow=new THREE.MeshBasicMaterial({
+    color:0x65e9ce,transparent:true,opacity:.14,
+    blending:THREE.AdditiveBlending,depthWrite:false,depthTest:true,toneMapped:false
+  });
   const signalDots:SignalParticle[]=[];
   let randomSeed=0x52414d41; // Stable pseudo-random motion; never randomize every frame.
   const random=()=>{randomSeed=(1664525*randomSeed+1013904223)>>>0;return randomSeed/4294967296;};
-  function beveled(points:THREE.Vector3[],cut:number){
-    const out:THREE.Vector3[]=[points[0].clone()];
-    for(let i=1;i<points.length-1;i++){
-      const p=points[i],prev=points[i-1],next=points[i+1];
-      const length1=p.distanceTo(prev),length2=p.distanceTo(next);
-      if(length1<.03||length2<.03)continue;
-      const step=Math.min(cut,length1*.33,length2*.33);
-      out.push(p.clone().lerp(prev,step/length1),p.clone().lerp(next,step/length2));
-    }
-    out.push(points[points.length-1].clone());
+  // True rounded PCB traces: linear straights joined by quadratic corners.
+  // CurvePath preserves precise on-track particle positioning, unlike a low-poly polyline.
+  function roundedRoute(points:THREE.Vector3[],radius:number){
     const route=new THREE.CurvePath<THREE.Vector3>();
-    for(let i=0;i<out.length-1;i++)if(out[i].distanceTo(out[i+1])>.02)
-      route.add(new THREE.LineCurve3(out[i],out[i+1]));
+    let cursor=points[0].clone();
+    for(let i=1;i<points.length-1;i++){
+      const corner=points[i],prev=points[i-1],next=points[i+1];
+      const distanceIn=corner.distanceTo(prev),distanceOut=corner.distanceTo(next);
+      if(distanceIn<.04||distanceOut<.04)continue;
+      const cut=Math.min(radius,distanceIn*.34,distanceOut*.34);
+      const entry=corner.clone().lerp(prev,cut/distanceIn);
+      const exit=corner.clone().lerp(next,cut/distanceOut);
+      if(cursor.distanceTo(entry)>.008)route.add(new THREE.LineCurve3(cursor,entry));
+      route.add(new THREE.QuadraticBezierCurve3(entry,corner.clone(),exit));
+      cursor=exit;
+    }
+    const last=points[points.length-1];
+    if(cursor.distanceTo(last)>.008)route.add(new THREE.LineCurve3(cursor,last.clone()));
     return route;
   }
-  const dotsPerLane=innerWidth<740?3:7;
+  const dotsPerLane=innerWidth<740?6:11;
   for(let i=0;i<worlds.length;i++){
     const destination=worlds[i].group.position;
     const direction=destination.clone().normalize();
@@ -271,18 +280,19 @@ export function createWorld(host:HTMLElement, chapterAlignments:readonly ('left'
       const end=new THREE.Vector3(destination.x-direction.x*4.9+lateral.x,.12,destination.z-direction.z*4.9+lateral.z);
       const midX=Math.abs(destination.x)>8?destination.x*.52+lateral.x:destination.x+lateral.x;
       const midZ=destination.z*.67+lateral.z;
-      const route=beveled([
+      const route=roundedRoute([
         start,drop,railStart,
         new THREE.Vector3(midX,.12,railStart.z),
         new THREE.Vector3(midX,.12,midZ),
         new THREE.Vector3(end.x,.12,midZ),end
-      ],.65);
-      put(root,new THREE.TubeGeometry(route,90,.028,4,false),track);
-      put(root,new THREE.TubeGeometry(route,90,.010,4,false),filament);
+      ],.83);
+      put(root,new THREE.TubeGeometry(route,128,.046,8,false),track);
+      put(root,new THREE.TubeGeometry(route,128,.078,8,false),traceGlow);
+      put(root,new THREE.TubeGeometry(route,128,.016,8,false),filament);
       for(let dot=0;dot<dotsPerLane;dot++){
         signalDots.push({
           curve:route,reverse:lane===1,channel:lane===1?1:0,
-          offset:(dot+random()*.65)/dotsPerLane,
+          offset:(dot+random()*.85)/dotsPerLane,
           speed:.095+random()*.16
         });
       }
@@ -305,7 +315,7 @@ export function createWorld(host:HTMLElement, chapterAlignments:readonly ('left'
     const dx=(x+0.5-spriteSize/2)/(spriteSize/2);
     const dy=(y+0.5-spriteSize/2)/(spriteSize/2);
     const radius=Math.hypot(dx,dy);
-    const a=Math.pow(Math.max(0,1-radius),1.05);
+    const a=Math.exp(-4.4*radius*radius)*Math.max(0,1-radius*radius);
     const j=(y*spriteSize+x)*4;
     pixels[j]=255;pixels[j+1]=255;pixels[j+2]=255;pixels[j+3]=Math.round(255*a);
   }
@@ -314,13 +324,23 @@ export function createWorld(host:HTMLElement, chapterAlignments:readonly ('left'
   const signalsGeometry=new THREE.BufferGeometry();
   signalsGeometry.setAttribute('position',new THREE.BufferAttribute(signalPositions,3).setUsage(THREE.DynamicDrawUsage));
   signalsGeometry.setAttribute('color',new THREE.BufferAttribute(signalColors,3));
-  const signalsMaterial=new THREE.PointsMaterial({
-    color:0xffffff,map:sprite,vertexColors:true,size:innerWidth<740?4.0:5.0,
-    sizeAttenuation:false,transparent:true,opacity:1,
-    blending:THREE.AdditiveBlending,depthWrite:false,toneMapped:false
+  // Soft halo + crisp micro-point share one dynamic position buffer and sprite.
+  // Two draw calls for every dot together, independent of particle count.
+  const glowPointsMaterial=new THREE.PointsMaterial({
+    color:0xffffff,map:sprite,vertexColors:true,size:innerWidth<740?9:11,
+    sizeAttenuation:false,transparent:true,opacity:.27,
+    blending:THREE.AdditiveBlending,depthWrite:false,depthTest:false,toneMapped:false
   });
+  const signalsMaterial=new THREE.PointsMaterial({
+    color:0xffffff,map:sprite,vertexColors:true,size:innerWidth<740?2.4:3.0,
+    sizeAttenuation:false,transparent:true,opacity:.93,
+    blending:THREE.AdditiveBlending,depthWrite:false,depthTest:false,toneMapped:false
+  });
+  const signalsGlow=new THREE.Points(signalsGeometry,glowPointsMaterial);
+  signalsGlow.frustumCulled=false;signalsGlow.renderOrder=1;
+  root.add(signalsGlow);
   const signalsCloud=new THREE.Points(signalsGeometry,signalsMaterial);
-  signalsCloud.frustumCulled=false; // The positions are dynamic; the static bounding sphere would hide signals.
+  signalsCloud.frustumCulled=false; // Dynamic positions cannot use a static bounding sphere.
   signalsCloud.renderOrder=2;
   root.add(signalsCloud);
   const scratchSignal=new THREE.Vector3();
@@ -416,11 +436,15 @@ export function createWorld(host:HTMLElement, chapterAlignments:readonly ('left'
   const ro=new ResizeObserver(resize);ro.observe(host);resize();
   return {update,resize,dispose(){
     disposed=true;ro.disconnect();
+    const geometries=new Set<THREE.BufferGeometry>();
+    const materials=new Set<THREE.Material>();
     scene.traverse(o=>{if(o instanceof THREE.Mesh || o instanceof THREE.Line || o instanceof THREE.Points){
-      o.geometry.dispose();
+      geometries.add(o.geometry);
       const mats=Array.isArray(o.material)?o.material:[o.material];
-      for(const mat of mats)mat.dispose();
+      for(const mat of mats)materials.add(mat);
     }});
+    for(const geo of geometries)geo.dispose();
+    for(const mat of materials)mat.dispose();
     sprite.dispose();renderer.dispose();renderer.domElement.remove();
   }};
 }

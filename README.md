@@ -55,3 +55,11 @@ The relay determines Viewer, Editor or Owner by verifying the bearer token. View
 ## Fix: motion parity and font floor (October 25)
 
 The core issue was the prior wheel handler instantly moving `scrollTop` to the next stop before the 2.5-second camera animation finished, making wheel navigation look like a cut. Physical scroll and Three.js camera progress now share one 2.5-second easing timeline. Dragging the scrollbar still changes camera position directly. Previously, the browser's `prefers-reduced-motion` flag could independently disable all CSS logo animations, 3D camera movement and data signals; core cinematic motion now runs by default, with explicit `?reduceMotion=1` for opting out. SVG paths animate through measured `getTotalLength()` and Web Animations rather than overridden CSS keyframes. Footer link and utility text is 13 CSS px, not the previously oversized 16px; all authored font values are audited to remain at or above 13 CSS px.
+
+## RAMACH visual polish — 2026-10-25
+
+- Opening order: a lightweight, CSS-only circular loader on top of the dark hero; after page/font readiness it remains briefly visible, fades out over 350ms, then the real vector SVG stroke-draw begins. A subtle blue light bed sits behind the logo throughout.
+- Light path positions retain the existing design but change from chamfered polyline corners to quadratic Bezier round-overs. Three concentric lightweight tubes per route provide core, additive cyan glow and readable structure. Eight radial segments remove visibly angular tube facets.
+- Signals use a shared sprite and **two** GPU point clouds (small bright core, wide faint halo) referencing one dynamic buffer. The desktop has 154 points and mobile 84; no per-particle mesh or post-processing bloom. The 32×32 procedural sprite is about 4 KiB; signal motion and speed remain deterministic and diverse.
+- Footer typography is 14 CSS px on mobile and desktop, preserving the site's 13 CSS px hard minimum without enlarging navigation to 16 px. CSS font declarations are audited in automated tests.
+- Visual runtime FPS, actual Chrome hardware motion and layout/computed font sizes still require browser-based checks; passing CI alone is not visual verification.

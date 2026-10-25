@@ -75,7 +75,7 @@ test('the hub is a small microchip and seven story nodes connect through thin li
     assert.ok(Math.hypot(points[i][0]-points[j][0],points[i][1]-points[j][1])>20);
   assert.match(world,/const chipBody=material/);
   assert.match(world,/new THREE\.BoxGeometry\(1\.72,\.54,1\.72\)/);
-  assert.match(world,/new THREE\.TubeGeometry\(route,90,\.028,4,false\)/);
+  assert.match(world,/new THREE\.TubeGeometry\(route,128,\.046,8,false\)/);
   assert.match(world,/reverse:lane===1/);
   assert.match(world,/q\.reverse\?1-pulseTravel:pulseTravel/);
 });
@@ -135,8 +135,8 @@ test('the SVG logo actually draws via measured path lengths for more than three 
   assert.ok(1530+6*165+1950>=3000);
   assert.match(css,/body\.logo-drawing \.opening-wordmark-svg \.wordmark-glyph path\{\s*animation:none/);
 });
-test('many independently randomized light points use one GPU draw call, not dozens of spheres',()=>{
-  assert.match(world,/const dotsPerLane=innerWidth<740\?3:7/);
+test('154 desktop or 84 mobile light points use shared GPU buffers in two draw calls',()=>{
+  assert.match(world,/const dotsPerLane=innerWidth<740\?6:11/);
   assert.match(world,/const random=\(\)=>/);
   assert.match(world,/speed:\.095\+random\(\)\*\.16/);
   assert.match(world,/const signalPositions=new Float32Array\(signalDots\.length\*3\)/);
@@ -148,8 +148,12 @@ test('many independently randomized light points use one GPU draw call, not doze
   assert.match(world,/signalsGeometry\.attributes\.position as THREE\.BufferAttribute\)\.needsUpdate=true/);
   assert.match(world,/const pulseTravel=reduceMotion\?\.5:\(seconds\*q\.speed\+q\.offset\)%1/);
   assert.doesNotMatch(world,/new THREE\.SphereGeometry\(\.21,14,10\)/);
-  assert.equal(7*2*7,98);
-  assert.equal(7*2*3,42);
+  assert.match(world,/new THREE\.Points\(signalsGeometry,glowPointsMaterial\)/);
+  assert.match(world,/new THREE\.Points\(signalsGeometry,signalsMaterial\)/);
+  assert.match(world,/new THREE\.QuadraticBezierCurve3\(entry,corner\.clone\(\),exit\)/);
+  assert.match(world,/new THREE\.TubeGeometry\(route,128,\.078,8,false\)/);
+  assert.equal(7*2*11,154);
+  assert.equal(7*2*6,84);
 });
 test('cursor aura is subtle, non-interactive and disabled for touch or reduced-motion devices',()=>{
   assert.match(main,/class="cursor-aura" aria-hidden="true"/);
@@ -157,15 +161,39 @@ test('cursor aura is subtle, non-interactive and disabled for touch or reduced-m
   assert.match(css,/\.cursor-aura\{[\s\S]*?pointer-events:none/);
   assert.match(css,/@media\(pointer:coarse\),\(prefers-reduced-motion:reduce\)/);
 });
-test('no authored font below 13px; footer displays 13px rather than being inflated to 16px',()=>{
-  const footerOverride=css.slice(css.lastIndexOf('/* RAMACH FIX — minimum font'));
+test('every authored font size is at least 13px and the footer ends at a restrained 14px',()=>{
+  const footerOverride=css.slice(css.lastIndexOf('/* RAMACH 07'));
   assert.match(footerOverride,/\.site-footer \.footer-copy,/);
   assert.match(footerOverride,/\.site-footer \.footer-links a,/);
-  assert.match(footerOverride,/font-size:13px !important/);
+  assert.match(footerOverride,/font-size:14px !important/);
   assert.doesNotMatch(footerOverride,/font-size:16px/);
   const declarations=[...css.matchAll(/(?:font-size|font)\s*:\s*([^;}]+)/g)].map(m=>m[1]);
   for(const value of declarations)for(const m of value.matchAll(/(\d+(?:\.\d+)?)px/g))
     assert.ok(Number(m[1])>=13,value);
+});
+test('circular loader precedes the SVG reveal with a soft blue background halo',()=>{
+  const opening=main.slice(main.indexOf('<section class="opening"'),main.indexOf('</section>',main.indexOf('<section class="opening"')));
+  assert.match(opening,/class="opening-blue-halo"/);
+  assert.match(opening,/class="opening-loader" role="status"/);
+  assert.ok(opening.indexOf('class="opening-loader"')<opening.indexOf('class="opening-wordmark"'));
+  assert.match(main,/document\.body\.classList\.add\('loader-complete'\)/);
+  assert.match(main,/\},430\)/);
+  assert.match(main,/\},1150\)/);
+  assert.match(css,/@keyframes ramachLoadingSpin/);
+  assert.match(css,/body\.loader-complete \.opening-loader/);
+  assert.match(css,/\.opening-blue-halo\{/);
+});
+test('smooth glowing paths use quadratic corners and fewer shared GPU particle batches',()=>{
+  assert.match(world,/new THREE\.QuadraticBezierCurve3\(entry,corner\.clone\(\),exit\)/);
+  assert.match(world,/const traceGlow=new THREE\.MeshBasicMaterial/);
+  assert.match(world,/blending:THREE\.AdditiveBlending/);
+  assert.match(world,/new THREE\.TubeGeometry\(route,128,\.046,8,false\)/);
+  assert.match(world,/new THREE\.TubeGeometry\(route,128,\.078,8,false\)/);
+  assert.match(world,/new THREE\.TubeGeometry\(route,128,\.016,8,false\)/);
+  assert.match(world,/new THREE\.Points\(signalsGeometry,glowPointsMaterial\)/);
+  assert.match(world,/new THREE\.Points\(signalsGeometry,signalsMaterial\)/);
+  assert.match(world,/new Set<THREE\.BufferGeometry>\(\)/);
+  assert.doesNotMatch(world,/new THREE\.LineCurve3\(out\[i\],out\[i\+1\]\)/);
 });
 test('mouse wheel physically animates the page with the 3D camera, no instant teleport',()=>{
   assert.doesNotMatch(main,/destination\*stageDistance\(\)/);
