@@ -118,7 +118,7 @@ app.innerHTML = `
           ${wordmarkTopRow.map((glyph,i)=>`<g class="wordmark-glyph" transform="translate(${glyph.x} 34)" style="--line-delay:.12s;--glyph-delay:${(i*.12).toFixed(2)}s">${wordmarkGlyphPaths[glyph.letter].map(d=>`<path d="${d}"/>`).join('')}</g>`).join('')}
         </g>
         <g class="wordmark-row wordmark-row-secondary" aria-hidden="true">
-          ${wordmarkBottomRow.map((glyph,i)=>`<g class="wordmark-glyph" transform="translate(${glyph.x} 190)" style="--line-delay:1.90s;--glyph-delay:${(i*.12).toFixed(2)}s">${wordmarkGlyphPaths[glyph.letter].map(d=>`<path d="${d}" pathLength="1000"/>`).join('')}</g>`).join('')}
+          ${wordmarkBottomRow.map((glyph,i)=>`<g class="wordmark-glyph" transform="translate(${glyph.x} 190)" style="--line-delay:1.90s;--glyph-delay:${(i*.12).toFixed(2)}s">${wordmarkGlyphPaths[glyph.letter].map(d=>`<path d="${d}" />`).join('')}</g>`).join('')}
         </g>
       </svg>
     </div></div>
