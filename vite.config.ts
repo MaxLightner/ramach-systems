@@ -7,7 +7,7 @@ export default defineConfig({
   build:{
     target:'es2022',
     rollupOptions:{
-      input:{main:resolve(root,'index.html'),archyar:resolve(root,'archyar.html'),catalog:resolve(root,'catalog.html')},
+      input:{main:resolve(root,'index.html'),archyar:resolve(root,'archyar.html'),catalog:resolve(root,'catalog.html'),timeline:resolve(root,'timeline.html')},
       output:{manualChunks:{three:['three']}}
     }
   }

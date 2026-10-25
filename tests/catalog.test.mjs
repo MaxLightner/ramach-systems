@@ -38,3 +38,30 @@ test('the catalog has accessible navigation and a mobile responsive layout at re
   const decl=[...css.matchAll(/(?:font-size|font)\s*:\s*([^;}]+)/g)].map(m=>m[1]);
   for(const val of decl)for(const m of val.matchAll(/(\d+(?:\.\d+)?)px/g))assert.ok(Number(m[1])>=13,val);
 });
+
+test('specialized web design shows four grounded site examples with meaningful status labels',()=>{
+  assert.match(catalog,/id:'nikabana'/);
+  assert.match(catalog,/id:'mizato'/);
+  assert.match(catalog,/id:'industrial'/);
+  assert.match(catalog,/id:'velora'/);
+  for(const url of ['https://www.nikabana.ir/','https://mizato.ir/','https://maxlightner.github.io/industrial-pump-demo/','https://maxlightner.github.io/maison-velora-motion-lab/'])
+    assert.ok(catalog.includes(url),url);
+  assert.match(catalog,/کانسپت شخصی · پروژه مشتری نیست/);
+  assert.match(catalog,/نسخه عمومی آزمایشی/);
+  assert.match(catalog,/طراحی نمایشی هستند، نه اسکرین‌شات دقیق/);
+  assert.match(catalog,/selected==='websites'/);
+  assert.match(css,/\.web-case-grid/);
+});
+test('service differentiation explains customer-specific problem, project proof, practical interactions and operations',()=>{
+  for(const phrase of ['از مسئله کسب‌وکار شروع می‌کنیم','پروژه خودتان محور سایت است','تعامل، فقط وقتی ارزش دارد','قابل اداره و پیدا شدن'])
+    assert.ok(catalog.includes(phrase),phrase);
+  assert.match(catalog,/id="why-ramach"/);
+  assert.match(css,/\.web-diff-grid/);
+});
+test('the real WordPress plugin is presented separately from its isolated public timeline demo',()=>{
+  assert.match(catalog,/Mojarrad Core وردپرس/);
+  assert.match(catalog,/href="\.\/timeline\.html"/);
+  assert.match(catalog,/دموی عمومی با داده‌های فرضی/);
+  assert.match(catalog,/به داده‌ها یا حساب‌های خصوصی/);
+  assert.match(css,/\.web-timeline-feature/);
+});

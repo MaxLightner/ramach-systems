@@ -35,3 +35,81 @@ a{color:inherit;text-decoration:none}button{font:inherit}
 .catalog-switcher a[aria-current=page]{border-color:#d2b58a;color:#e7d0ae}.catalog-switcher a:hover{color:#fff}
 .catalog-footer{display:flex;justify-content:space-between;gap:20px;padding:18px clamp(20px,5vw,70px) 26px;margin:auto;max-width:1380px;border-top:1px solid rgba(142,190,168,.2);font-size:15px;color:#91a99c}
 @media(max-width:740px){.catalog-header{padding-top:18px;padding-bottom:18px}.catalog-brand{font-size:13px}.catalog-home{font-size:13px}.catalog-container{padding-top:20px}.catalog-meta{font-size:13px;flex-wrap:wrap}.catalog-hero{display:flex;flex-direction:column-reverse;gap:0;min-height:0}.catalog-visual{min-height:180px;width:100%}.catalog-monogram{width:95px;height:95px;font-size:38px}.catalog-copy{padding:18px 0 38px}.catalog-copy p{font-size:15px}.catalog-copy h1{font-size:37px}.catalog-feature p{font-size:15px}.catalog-switcher a{font-size:14px}.catalog-footer{font-size:13px}}
+
+
+/* Portfolio proof: real public links, intentionally illustrative card previews. */
+.web-case-section,.web-advantage,.web-timeline-feature{margin-top:65px}
+.web-section-heading{display:flex;justify-content:space-between;align-items:end;gap:35px;margin-bottom:26px}
+.web-section-heading>div{max-width:710px}.web-section-heading>p{max-width:400px;margin:0;color:#b7c9bd;font-size:15px;line-height:1.95}
+.web-section-heading h2,.web-timeline-copy h2{
+  margin:8px 0 0;font-size:clamp(27px,3.4vw,43px);font-weight:600;line-height:1.52;color:#f1f2e9
+}
+.web-eyebrow{font:650 15px/1.5 'Manrope Variable','Manrope',sans-serif;letter-spacing:.12em;color:#b5a47a}
+.web-case-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:17px}
+.web-case-card{overflow:hidden;border:1px solid rgba(133,172,158,.26);border-radius:8px;background:rgba(10,29,32,.82)}
+.web-case-preview{display:flex;flex-direction:column;position:relative;min-height:250px;overflow:hidden;border-bottom:1px solid rgba(134,170,150,.25)}
+.web-preview-toolbar{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;padding:13px 17px;direction:ltr;background:rgba(5,14,20,.5);color:rgba(230,238,229,.74);font:500 13px/1.5 'Manrope Variable','Manrope',sans-serif;letter-spacing:.1em}
+.web-preview-dots{font-size:13px;letter-spacing:5px;color:#a3b9ac}
+.web-preview-cover{display:flex;flex:1;flex-direction:column;justify-content:center;align-items:start;gap:16px;padding:27px clamp(22px,4vw,46px);isolation:isolate}
+.web-preview-kicker{font-size:15px;line-height:1.7;color:rgba(242,247,241,.75)}
+.web-preview-cover strong{display:block;font:650 clamp(27px,3.1vw,45px)/1.25 'Manrope Variable','Manrope',sans-serif;letter-spacing:.13em;color:#f1f0e8}
+.web-preview-cover>span:last-child{font:600 13px/1.5 'Manrope Variable','Manrope',sans-serif;letter-spacing:.14em;color:rgba(245,245,236,.8)}
+.web-case-preview--architecture{background:linear-gradient(145deg,rgba(8,26,29,.85),rgba(67,89,80,.5)),repeating-linear-gradient(0deg,transparent 0 35px,#bbd1bd18 36px),#234243}
+.web-case-preview--hospitality{background:radial-gradient(circle at 75% 76%,rgba(184,111,72,.42),transparent 45%),linear-gradient(126deg,#161c20,#443b32)}
+.web-case-preview--engineering{background:radial-gradient(circle at 76% 50%,#839fa338,transparent 48%),repeating-linear-gradient(100deg,transparent 0 28px,#b7d8cf0e 29px),#11282e}
+.web-case-preview--editorial{background:radial-gradient(circle at 72% 52%,#dfbf8755,transparent 40%),linear-gradient(125deg,#231c28,#534139)}
+.web-case-preview--editorial .web-preview-cover strong{font-weight:450;letter-spacing:.2em}
+.web-case-preview:hover .web-preview-cover strong{transform:translateY(-3px);transition:transform .3s ease}
+.web-case-content{display:flex;flex-direction:column;min-height:230px;gap:7px;padding:23px 25px 25px}
+.web-case-status{font-size:13px;color:#bcac87}
+.web-case-content h3{font-size:22px;font-weight:600;line-height:1.5;margin:3px 0;color:#f1eee8}
+.web-case-content p{font-size:15px;line-height:1.9;color:#b6c7bc;flex:1;margin:0 0 10px}
+.web-case-open{font-size:15px;color:#d7d3b9;border-bottom:1px solid #76988b;width:max-content;padding:5px 0}
+.web-case-open:hover{color:#fff}
+.web-preview-disclaimer{font-size:13px;color:#93ada0;line-height:1.8;margin:16px 0 0}
+.web-advantage{padding-top:36px;border-top:1px solid #678b7845}
+.web-diff-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.web-diff-item{border-top:1px solid #8aa99b65;padding:20px 16px 15px;background:linear-gradient(180deg,#1733305c,transparent)}
+.web-diff-item>span{font:600 15px/1 'Manrope Variable','Manrope',sans-serif;color:#c5aa81}
+.web-diff-item h3{font-size:20px;font-weight:600;line-height:1.65;margin:19px 0 11px}
+.web-diff-item p{font-size:15px;line-height:1.95;color:#b7c9bd;margin:0}
+.web-timeline-feature{
+ display:grid;grid-template-columns:minmax(0,1fr) minmax(320px,.88fr);
+ align-items:center;gap:35px;padding:clamp(23px,4vw,50px);
+ border:1px solid #537f7366;border-radius:9px;background:linear-gradient(125deg,#0d2728,#0a1b20);
+}
+.web-timeline-copy p{font-size:16px;line-height:2;color:#b8cbbf;margin:16px 0 24px}
+.web-timeline-tags{display:flex;flex-wrap:wrap;gap:9px;margin:0 0 25px}
+.web-timeline-tags span{font-size:14px;padding:7px 12px;border:1px solid #6c9b835a;border-radius:20px;color:#d8e2d9}
+.web-timeline-copy .web-timeline-footnote{font-size:13px;margin:14px 0 0;color:#9fb3a9;line-height:1.9}
+.web-timeline-visual{padding:20px 24px;border:1px solid #53796e69;border-radius:8px;transform:rotate(-1deg);background:#10272a;box-shadow:0 20px 50px #0003}
+.web-timeline-head{display:flex;justify-content:space-between;gap:18px;direction:ltr;font:650 15px/1.5 'Manrope Variable','Manrope',sans-serif;color:#bed6c8}
+.web-timeline-stages{display:flex;flex-wrap:wrap;gap:7px;margin:20px 0}
+.web-timeline-stages span{border:1px solid #627d7260;padding:6px 11px;border-radius:20px;font-size:13px;color:#96aa9f}
+.web-timeline-stages .is-complete{color:#b1d5bd;border-color:#85bd9c78}.web-timeline-stages .is-active{color:#f2d09a;border-color:#d1b0808c}
+.web-timeline-spine{border-right:1px solid #7ba89472;margin-right:8px;padding-right:21px}
+.web-timeline-spine>div{position:relative;padding:11px 0;display:flex;flex-direction:column;gap:4px}
+.web-timeline-spine i{position:absolute;right:-27px;top:17px;width:11px;height:11px;border:2px solid #a8d6bf;border-radius:50%;background:#142c2b}
+.web-timeline-spine span{font-size:15px;color:#e3eae3}.web-timeline-spine small{font-size:13px;color:#adbbac}
+@media(max-width:950px){
+ .web-diff-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .web-timeline-feature{grid-template-columns:1fr}
+ .web-timeline-visual{max-width:650px;transform:none}
+}
+@media(max-width:640px){
+ .web-section-heading{display:block}
+ .web-section-heading>p{margin-top:14px}
+ .web-case-grid,.web-diff-grid{grid-template-columns:1fr}
+ .web-case-preview{min-height:210px}.web-case-content{min-height:0;padding:20px}
+ .web-case-section,.web-advantage,.web-timeline-feature{margin-top:45px}
+ .web-diff-item{padding:20px}
+ .web-timeline-feature{padding:21px;gap:25px}
+ .web-timeline-copy p{font-size:15px}
+ .web-timeline-visual{padding:19px}
+}
+/* Desktop type: do not introduce new utility labels under 15px. */
+@media(min-width:701px){
+ .web-preview-toolbar,.web-preview-dots,.web-preview-cover>span:last-child,
+ .web-case-status,.web-preview-disclaimer,.web-timeline-copy .web-timeline-footnote,
+ .web-timeline-stages span,.web-timeline-spine small{font-size:15px}
+}
