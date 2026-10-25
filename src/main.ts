@@ -118,7 +118,7 @@ app.innerHTML = `
           ${wordmarkTopRow.map((glyph,i)=>`<g class="wordmark-glyph" transform="translate(${glyph.x} 34)" style="--line-delay:.12s;--glyph-delay:${(i*.12).toFixed(2)}s">${wordmarkGlyphPaths[glyph.letter].map(d=>`<path d="${d}" pathLength="1000"/>`).join('')}</g>`).join('')}
         </g>
         <g class="wordmark-row wordmark-row-secondary" aria-hidden="true">
-          ${wordmarkBottomRow.map((glyph,i)=>`<g class="wordmark-glyph" transform="translate(${glyph.x} 190)" style="--line-delay:1.58s;--glyph-delay:${(i*.12).toFixed(2)}s">${wordmarkGlyphPaths[glyph.letter].map(d=>`<path d="${d}" pathLength="1000"/>`).join('')}</g>`).join('')}
+          ${wordmarkBottomRow.map((glyph,i)=>`<g class="wordmark-glyph" transform="translate(${glyph.x} 190)" style="--line-delay:1.90s;--glyph-delay:${(i*.12).toFixed(2)}s">${wordmarkGlyphPaths[glyph.letter].map(d=>`<path d="${d}" pathLength="1000"/>`).join('')}</g>`).join('')}
         </g>
       </svg>
     </div></div>
@@ -249,6 +249,9 @@ const clamp=(v:number,a=0,b=1)=>Math.max(a,Math.min(b,v));
 const stageStops=[...chapters.map((_,i)=>storyEnd*(i+.96)/chapters.length),.983];
 const cameraArrivalThreshold=.001;
 const minimumReadMs=2150;
+const cameraTravelMs=2500;
+const easeInOutCubic=(v:number)=>v<.5?4*v*v*v:1-Math.pow(-2*v+2,3)/2;
+let transitionFrom=0,transitionTo=0,transitionStarted=0,transitioning=false;
 let currentStop=-1;
 let awaitingArrival=false;
 let holdUntil=0;
@@ -274,6 +277,10 @@ function nearestStopIndex(progress:number){
 function goToStop(index:number){
   currentStop=Math.max(0,Math.min(stageStops.length-1,index));
   const destination=stageStops[currentStop];
+  transitionFrom=displayed;
+  transitionTo=destination;
+  transitionStarted=performance.now();
+  transitioning=!prefersReducedMotion && Math.abs(destination-displayed)>.002;
   target=destination;
   awaitingArrival=true;
   holdUntil=Infinity;
@@ -374,10 +381,19 @@ function frame(now:number){
     haloX+=(mouseX-haloX)*k;haloY+=(mouseY-haloY)*k;
     cursorAura.style.transform='translate3d('+haloX.toFixed(1)+'px,'+haloY.toFixed(1)+'px,0) translate(-50%,-50%)';
   }
-  // Scroll sets a destination, never raw camera position. Exponential damping is frame-rate independent.
-  displayed += (target-displayed)*(1-Math.exp(-delta*12));
-  if(Math.abs(target-displayed)<0.00005)displayed=target;
-  if(awaitingArrival&&Math.abs(target-displayed)<=cameraArrivalThreshold){
+  // Each scroll step owns a complete 2.5-second, reversible, eased camera journey.
+  // The reading hold starts only after the camera has actually reached its destination.
+  if(transitioning){
+    const t=clamp((now-transitionStarted)/cameraTravelMs);
+    displayed=transitionFrom+(transitionTo-transitionFrom)*easeInOutCubic(t);
+    if(t>=1){transitioning=false;displayed=transitionTo;}
+  }else if(awaitingArrival && prefersReducedMotion){
+    displayed=target;
+  }else if(!awaitingArrival){
+    displayed+=(target-displayed)*(1-Math.exp(-delta*12));
+    if(Math.abs(target-displayed)<0.00005)displayed=target;
+  }
+  if(awaitingArrival&&!transitioning&&Math.abs(target-displayed)<=cameraArrivalThreshold){
     awaitingArrival=false;
     holdUntil=now+minimumReadMs;
   }

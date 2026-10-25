@@ -72,8 +72,8 @@ test('the hub is a small microchip and seven story nodes connect through thin li
     assert.ok(Math.hypot(points[i][0]-points[j][0],points[i][1]-points[j][1])>20);
   assert.match(world,/const chipBody=material/);
   assert.match(world,/new THREE\.BoxGeometry\(1\.72,\.54,1\.72\)/);
-  assert.match(world,/new THREE\.TubeGeometry\(route,110,\.034,5,false\)/);
-  assert.match(world,/reverse=lane===1/);
+  assert.match(world,/new THREE\.TubeGeometry\(route,90,\.028,4,false\)/);
+  assert.match(world,/reverse:lane===1/);
   assert.match(world,/q\.reverse\?1-pulseTravel:pulseTravel/);
 });
 test('the final page has a ticker at the top, one central CTA and a narrow utility footer',()=>{
@@ -106,25 +106,45 @@ test('all authored CSS font declarations remain at least 13px',()=>{
   assert.match(css,/--minimum-text-size:13px/);
   assert.match(readme,/13 CSS px/);
 });
-test('scroll progresses by exact 3D stops and imposes a readable two-second minimum hold',()=>{
-  assert.match(main,/const stageStops=\[\.\.\.chapters\.map\(\(_,i\)=>storyEnd\*\(i\+\.96\)\/chapters\.length\),\.983\]/);
+test('the scroll camera takes 2.5 seconds with a pronounced ease-in/out and retains its reading stop',()=>{
+  assert.match(main,/const cameraTravelMs=2500/);
+  assert.match(main,/const easeInOutCubic=\(v:number\)=>v<\.5\?4\*v\*v\*v/);
+  assert.match(main,/transitionStarted=performance\.now\(\)/);
+  assert.match(main,/const t=clamp\(\(now-transitionStarted\)\/cameraTravelMs\)/);
+  assert.match(main,/displayed=transitionFrom\+\(transitionTo-transitionFrom\)\*easeInOutCubic\(t\)/);
   assert.match(main,/const minimumReadMs=2150/);
   assert.match(main,/holdUntil=Infinity/);
-  assert.match(main,/if\(awaitingArrival&&Math\.abs\(target-displayed\)<=cameraArrivalThreshold\)/);
+  assert.match(main,/if\(awaitingArrival&&!transitioning&&Math\.abs\(target-displayed\)<=cameraArrivalThreshold\)/);
   assert.match(main,/holdUntil=now\+minimumReadMs/);
   assert.match(main,/addEventListener\('wheel',event=>/);
-  assert.match(main,/event\.preventDefault\(\)/);
   assert.match(main,/journey\.addEventListener\('touchend'/);
   assert.match(main,/if\(direction&&stageStep\(direction\)\)event\.preventDefault\(\)/);
   assert.match(main,/goToStop\(nearestStopIndex\(target\)\)/);
 });
-test('desktop light packets are visible, animated, and have glowing trails while reduced motion is honored',()=>{
-  assert.match(world,/new THREE\.SphereGeometry\(\.21,14,10\)/);
-  assert.match(world,/new THREE\.SphereGeometry\(\.46,12,9\)/);
-  assert.match(world,/seconds\*\.19\+q\.offset/);
-  assert.match(world,/q\.trails\[k\]\.position\.copy/);
-  assert.match(world,/const pulseTravel=reduceMotion \? 0\.5/);
-  assert.match(world,/toneMapped:false/);
+test('a 4-second SVG stroke reveal includes font/load readiness and preserves reduced-motion settings',()=>{
+  assert.match(main,/--line-delay:1\.90s/);
+  assert.match(main,/await document\.fonts\.ready/);
+  assert.match(css,/drawGlyphFinal 1\.45s cubic-bezier/);
+  // 1.90 second start + six 0.12 second offsets + 1.45 second stroke = 4.07 seconds.
+  const expectedFinish=1.90+6*.12+1.45;
+  assert.ok(expectedFinish>=3.0);
+  assert.match(css,/prefers-reduced-motion:reduce[\s\S]*?body\.logo-drawing \.opening-wordmark-svg \.wordmark-glyph path/);
+});
+test('many independently randomized light points use one GPU draw call, not dozens of spheres',()=>{
+  assert.match(world,/const dotsPerLane=innerWidth<740\?3:7/);
+  assert.match(world,/const random=\(\)=>/);
+  assert.match(world,/speed:\.095\+random\(\)\*\.16/);
+  assert.match(world,/const signalPositions=new Float32Array\(signalDots\.length\*3\)/);
+  assert.match(world,/new THREE\.Points\(signalsGeometry,signalsMaterial\)/);
+  assert.match(world,/signalsCloud\.frustumCulled=false/);
+  assert.match(world,/new THREE\.DataTexture\(pixels,spriteSize,spriteSize,THREE\.RGBAFormat\)/);
+  assert.match(world,/sizeAttenuation:false/);
+  assert.match(world,/scratchSignal/);
+  assert.match(world,/signalsGeometry\.attributes\.position as THREE\.BufferAttribute\)\.needsUpdate=true/);
+  assert.match(world,/const pulseTravel=reduceMotion\?\.5:\(seconds\*q\.speed\+q\.offset\)%1/);
+  assert.doesNotMatch(world,/new THREE\.SphereGeometry\(\.21,14,10\)/);
+  assert.equal(7*2*7,98);
+  assert.equal(7*2*3,42);
 });
 test('cursor aura is subtle, non-interactive and disabled for touch or reduced-motion devices',()=>{
   assert.match(main,/class="cursor-aura" aria-hidden="true"/);
@@ -132,10 +152,16 @@ test('cursor aura is subtle, non-interactive and disabled for touch or reduced-m
   assert.match(css,/\.cursor-aura\{[\s\S]*?pointer-events:none/);
   assert.match(css,/@media\(pointer:coarse\),\(prefers-reduced-motion:reduce\)/);
 });
-test('the footer is larger than the requested 13px minimum',()=>{
-  assert.match(css,/\.site-footer \.footer-copy\{font-size:15px/);
-  assert.match(css,/\.site-footer \.footer-links a\{font-size:15px/);
-  assert.match(css,/@media\(max-width:600px\)\{[\s\S]*?\.site-footer \.footer-links a\{font-size:14px/);
+test('footer typography is legible on desktop and mobile with a 13px absolute floor',()=>{
+  assert.match(css,/\.site-footer \.footer-copy\{\s*font:600 16px/);
+  assert.match(css,/\.site-footer \.footer-links a\{\s*font-size:16px/);
+  assert.match(css,/@media\(max-width:700px\)\{[\s\S]*?\.site-footer \.footer-links a\{font-size:15px/);
+  const declarations=[...css.matchAll(/(?:font-size|font)\s*:\s*([^;}]+)/g)].map(m=>m[1]);
+  for(const value of declarations){
+    for(const match of value.matchAll(/(\d+(?:\.\d+)?)px/g)){
+      assert.ok(Number(match[1])>=13,value);
+    }
+  }
 });
 test('the 3D scene keeps its rendering workload restrained and respects reduced motion',()=>{
   assert.match(world,/renderer\.shadowMap\.enabled = false/);

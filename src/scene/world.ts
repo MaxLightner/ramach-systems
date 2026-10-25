@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 
 type Node = { group: THREE.Group; color: THREE.Color };
-type PathPulse = { curve: THREE.CurvePath<THREE.Vector3>; orb: THREE.Mesh; halo: THREE.Mesh; trails: THREE.Mesh[]; offset: number; reverse: boolean };
+type SignalParticle = { curve: THREE.CurvePath<THREE.Vector3>; offset:number; speed:number; reverse:boolean; channel:0|1 };
 const ivory = 0xe7e3d8, ink = 0x152d30, gold = 0xb99d72, aqua = 0x79c5b7;
 const smooth = (a:number,b:number,v:number) => { const t = Math.max(0,Math.min(1,(v-a)/(b-a))); return t*t*(3-2*t); };
 
@@ -233,19 +233,14 @@ export function createWorld(host:HTMLElement, chapterAlignments:readonly ('left'
     }
     wireRectangle(g,4.5,4.5,3.7,metal);
   }
-  // Engraved 90° routes with short 45° chamfers, not arcs or floating cables.
-  // Gold packets depart the hub; cyan packets return, on discrete paired lanes.
-  const pulses:PathPulse[]=[];
-  const track = new THREE.MeshBasicMaterial({color:0x31504e,transparent:true,opacity:.48,depthWrite:false});
-  const filament = new THREE.MeshBasicMaterial({color:0x508b7f,transparent:true,opacity:.55,depthWrite:false,toneMapped:false});
-  // Browser-independent emissive basic materials, with enough apparent size to be visible on desktop.
-  const outgoing = new THREE.MeshBasicMaterial({color:0xffe5b5,toneMapped:false});
-  const incoming = new THREE.MeshBasicMaterial({color:0xc3fff0,toneMapped:false});
-  const warmHalo = new THREE.MeshBasicMaterial({color:0xffd79c,transparent:true,opacity:.4,blending:THREE.AdditiveBlending,depthWrite:false,toneMapped:false});
-  const coolHalo = new THREE.MeshBasicMaterial({color:0x9affec,transparent:true,opacity:.42,blending:THREE.AdditiveBlending,depthWrite:false,toneMapped:false});
-  const outgoingTrail = new THREE.MeshBasicMaterial({color:0xffda92,transparent:true,opacity:.7,depthWrite:false,toneMapped:false});
-  const incomingTrail = new THREE.MeshBasicMaterial({color:0x86ffe7,transparent:true,opacity:.7,depthWrite:false,toneMapped:false});
-  // Generate crisp segments; corner bevels preserve the board-routing geometry.
+  // Thin board traces plus a *single* GPU point-cloud for all moving light packets.
+  // Previous implementations created separate orb/halo/trail meshes per signal;
+  // this version renders up to 98 independently phased dots in ONE draw call.
+  const track=new THREE.MeshBasicMaterial({color:0x36585a,transparent:true,opacity:.62,depthWrite:false});
+  const filament=new THREE.MeshBasicMaterial({color:0x69bca9,transparent:true,opacity:.61,depthWrite:false,toneMapped:false});
+  const signalDots:SignalParticle[]=[];
+  let randomSeed=0x52414d41; // Stable pseudo-random motion; never randomize every frame.
+  const random=()=>{randomSeed=(1664525*randomSeed+1013904223)>>>0;return randomSeed/4294967296;};
   function beveled(points:THREE.Vector3[],cut:number){
     const out:THREE.Vector3[]=[points[0].clone()];
     for(let i=1;i<points.length-1;i++){
@@ -261,6 +256,7 @@ export function createWorld(host:HTMLElement, chapterAlignments:readonly ('left'
       route.add(new THREE.LineCurve3(out[i],out[i+1]));
     return route;
   }
+  const dotsPerLane=innerWidth<740?3:7;
   for(let i=0;i<worlds.length;i++){
     const destination=worlds[i].group.position;
     const direction=destination.clone().normalize();
@@ -279,18 +275,53 @@ export function createWorld(host:HTMLElement, chapterAlignments:readonly ('left'
         new THREE.Vector3(midX,.12,midZ),
         new THREE.Vector3(end.x,.12,midZ),end
       ],.65);
-      put(root,new THREE.TubeGeometry(route,110,.034,5,false),track);
-      put(root,new THREE.TubeGeometry(route,110,.012,5,false),filament);
-      const reverse=lane===1;
-      const orb=put(root,new THREE.SphereGeometry(.21,14,10),reverse?incoming:outgoing);
-      const halo=put(root,new THREE.SphereGeometry(.46,12,9),reverse?coolHalo:warmHalo);
-      const trails=[
-        put(root,new THREE.SphereGeometry(.15,9,7),reverse?incomingTrail:outgoingTrail),
-        put(root,new THREE.SphereGeometry(.10,8,6),reverse?incomingTrail:outgoingTrail)
-      ];
-      pulses.push({curve:route,orb,halo,trails,offset:(i*.091+lane*.47)%1,reverse});
+      put(root,new THREE.TubeGeometry(route,90,.028,4,false),track);
+      put(root,new THREE.TubeGeometry(route,90,.010,4,false),filament);
+      for(let dot=0;dot<dotsPerLane;dot++){
+        signalDots.push({
+          curve:route,reverse:lane===1,channel:lane===1?1:0,
+          offset:(dot+random()*.65)/dotsPerLane,
+          speed:.095+random()*.16
+        });
+      }
     }
   }
+  const signalPositions=new Float32Array(signalDots.length*3);
+  const signalColors=new Float32Array(signalDots.length*3);
+  for(let i=0;i<signalDots.length;i++){
+    const idx=3*i,jitter=.84+random()*.16;
+    if(signalDots[i].channel===1){
+      signalColors[idx]=.62*jitter;signalColors[idx+1]=1;signalColors[idx+2]=.88*jitter;
+    }else{
+      signalColors[idx]=1;signalColors[idx+1]=.83*jitter;signalColors[idx+2]=.55*jitter;
+    }
+  }
+  // A 32x32 soft sprite uses a tiny (~4 KB) procedural texture and no network fetch.
+  const spriteSize=32;
+  const pixels=new Uint8Array(spriteSize*spriteSize*4);
+  for(let y=0;y<spriteSize;y++)for(let x=0;x<spriteSize;x++){
+    const dx=(x+0.5-spriteSize/2)/(spriteSize/2);
+    const dy=(y+0.5-spriteSize/2)/(spriteSize/2);
+    const radius=Math.hypot(dx,dy);
+    const a=Math.pow(Math.max(0,1-radius),1.05);
+    const j=(y*spriteSize+x)*4;
+    pixels[j]=255;pixels[j+1]=255;pixels[j+2]=255;pixels[j+3]=Math.round(255*a);
+  }
+  const sprite=new THREE.DataTexture(pixels,spriteSize,spriteSize,THREE.RGBAFormat);
+  sprite.magFilter=THREE.LinearFilter;sprite.minFilter=THREE.LinearFilter;sprite.needsUpdate=true;
+  const signalsGeometry=new THREE.BufferGeometry();
+  signalsGeometry.setAttribute('position',new THREE.BufferAttribute(signalPositions,3).setUsage(THREE.DynamicDrawUsage));
+  signalsGeometry.setAttribute('color',new THREE.BufferAttribute(signalColors,3));
+  const signalsMaterial=new THREE.PointsMaterial({
+    color:0xffffff,map:sprite,vertexColors:true,size:innerWidth<740?4.0:5.0,
+    sizeAttenuation:false,transparent:true,opacity:1,
+    blending:THREE.AdditiveBlending,depthWrite:false,toneMapped:false
+  });
+  const signalsCloud=new THREE.Points(signalsGeometry,signalsMaterial);
+  signalsCloud.frustumCulled=false; // The positions are dynamic; the static bounding sphere would hide signals.
+  signalsCloud.renderOrder=2;
+  root.add(signalsCloud);
+  const scratchSignal=new THREE.Vector3();
   // Eight chapter approaches occupy the first 82% of the scene; the last 18% returns to the chip.
   const clamp=(v:number,a=0,b=1)=>Math.max(a,Math.min(b,v));
   const storyEnd=0.82;
@@ -359,16 +390,17 @@ export function createWorld(host:HTMLElement, chapterAlignments:readonly ('left'
       (halo.material as THREE.MeshBasicMaterial).opacity=.025+weight*.2;
       halo.scale.setScalar(1+weight*.018);
     }
-    for(const q of pulses){
-      const pulseTravel=reduceMotion ? 0.5 : (seconds*.19+q.offset)%1;
+    for(let i=0;i<signalDots.length;i++){
+      const q=signalDots[i];
+      const pulseTravel=reduceMotion?.5:(seconds*q.speed+q.offset)%1;
       const along=q.reverse?1-pulseTravel:pulseTravel;
-      q.orb.position.copy(q.curve.getPoint(along));
-      q.halo.position.copy(q.orb.position);
-      for(let k=0;k<q.trails.length;k++){
-        const trailing=(pulseTravel-.015*(k+1)+1)%1;
-        q.trails[k].position.copy(q.curve.getPoint(q.reverse?1-trailing:trailing));
-      }
+      q.curve.getPoint(along,scratchSignal);
+      const k=i*3;
+      signalPositions[k]=scratchSignal.x;
+      signalPositions[k+1]=scratchSignal.y+.08;
+      signalPositions[k+2]=scratchSignal.z;
     }
+    (signalsGeometry.attributes.position as THREE.BufferAttribute).needsUpdate=true;
     renderer.render(scene,camera);
   }
   function resize(){
@@ -382,11 +414,11 @@ export function createWorld(host:HTMLElement, chapterAlignments:readonly ('left'
   const ro=new ResizeObserver(resize);ro.observe(host);resize();
   return {update,resize,dispose(){
     disposed=true;ro.disconnect();
-    scene.traverse(o=>{if(o instanceof THREE.Mesh || o instanceof THREE.Line){
+    scene.traverse(o=>{if(o instanceof THREE.Mesh || o instanceof THREE.Line || o instanceof THREE.Points){
       o.geometry.dispose();
       const mats=Array.isArray(o.material)?o.material:[o.material];
       for(const mat of mats)mat.dispose();
     }});
-    renderer.dispose();renderer.domElement.remove();
+    sprite.dispose();renderer.dispose();renderer.domElement.remove();
   }};
 }

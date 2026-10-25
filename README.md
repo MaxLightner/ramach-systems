@@ -25,11 +25,11 @@ Changes to main run tests, build and deploy via existing GitHub Pages workflow. 
 
 ## Interaction changes (Oct 2026)
 
-- The opening SVG outline starts after the window `load` event, font readiness, two painted frames and a 950 ms pause; a low-intensity blue halo remains on the otherwise dark opening. The logo is not visible before this trigger.
-- The scroll-controlled camera now moves between 8 explicit chapter stops plus a final return-to-hub stop, rather than stopping between nodes. Wheel, keyboard and touch are supported; each landing holds for 2.15 seconds after arrival before another move is accepted. Dragging the scrollbar also snaps to a nearby stop.
-- Desktop GPU pulses use larger unlit emissive particles with glowing tails and increased travel speed. A desktop reduced-motion preference intentionally freezes motion. Chrome / mobile visual parity requires browser-specific verification.
+- The opening SVG outline starts after window `load`, font readiness, two painted frames and a 950 ms pause. Stroke draws span about 4.07 seconds over RAMACH and SYSTEMS; a low-intensity blue halo remains behind the initially invisible wordmark.
+- The scroll-controlled camera moves between 8 chapter stops plus a final return-to-hub stop. Every step is a 2.5-second cubic ease-in/out, followed by a 2.15-second minimum reading hold. Wheel, keyboard and touch are supported; dragging the scrollbar snaps to a nearby stop.
+- The 14 light lanes use 98 independently phased desktop signal dots (42 mobile) in one GPU `THREE.Points` draw call, rather than 56 separate meshes. One procedurally generated 32×32 sprite texture (~4 KB) is shared by the point cloud. Signals are fixed-size 5 CSS px desktop / 4 CSS px mobile and update a single dynamic buffer. A reduced-motion preference intentionally freezes motion. Chrome/mobile visual parity and live FPS require browser-specific verification.
 - Desktop pointer movement creates a low-opacity halo; it is disabled on coarse pointers and for reduced motion.
-- Footer text is explicitly enlarged to 15 CSS px (14 CSS px on narrow screens), with no authored CSS font declaration below 13 CSS px.
+- Footer links and copyright are explicitly enlarged to 16 CSS px (15 CSS px on narrow screens). The build tests audit all authored CSS font declarations for a 13 CSS px minimum.
 
 ## Archyar 3D project viewer (preview)
 
