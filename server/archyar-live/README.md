@@ -19,6 +19,7 @@ Configure `ARCHYAR_VIEWER_ORIGIN=http://localhost:5173` and `ARCHYAR_VIEWER_URL=
 - `PUT /api/sessions/<id>/project`, owner only, body `{"baseRevision":0,"project":<snapshot>}`; broadcasts replacement snapshot.
 - `PATCH /api/sessions/<id>/objects`, editor or owner only; `{"baseRevision":0,"operation":"upsert","object":{...}}` or `{"baseRevision":0,"operation":"delete","objectId":"..."}`.
 - `GET /api/sessions/<id>/project` accepts any session token for snapshot recovery.
+- `DELETE /api/sessions/<id>/project` requires the owner token, revokes the session immediately and closes its viewers.
 - `GET /health` returns a simple status with active session count.
 
 All models stay in memory only. Data disappear at server restart or one-hour session expiration. Max 75 sessions / 24 subscribers per session / 2 MiB messages. Role checks and revision conflicts are enforced on the server.

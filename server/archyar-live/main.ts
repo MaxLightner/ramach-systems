@@ -181,6 +181,12 @@ export async function handleRequest(req:Request):Promise<Response> {
  const role=bearer(req,room);
  if(!role)return response(401,{error:"invalid_session_token"},cors);
  if(req.method==="GET"&&match[2]==="project")return response(200,{project:room.project,revision:room.revision},cors);
+ if(req.method==="DELETE"&&match[2]==="project"){
+  if(role!=="owner")return response(403,{error:"owner_only"},cors);
+  for(const member of room.clients)try{member.socket.close(1000,"Session revoked")}catch{/* closed */}
+  rooms.delete(room.id);
+  return response(200,{status:"revoked"},cors);
+ }
  if(req.method!=="POST"&&req.method!=="PUT"&&req.method!=="PATCH")return response(405,{error:"method_not_allowed"},cors);
  if(role==="viewer")return response(403,{error:"viewer_read_only"},cors);
  let body:unknown;

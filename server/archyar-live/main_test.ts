@@ -37,3 +37,16 @@ Deno.test("does not grant access by guessing a session ID",async()=>{
  const res=await handleRequest(new Request("http://localhost:8787/api/sessions/550e8400-e29b-41d4-a716-446655440099/project"));
  assert.equal(res.status,404);
 });
+
+Deno.test("only the owner can revoke a live session immediately",async()=>{
+ const create=await handleRequest(new Request("http://localhost:8787/api/sessions",{method:"POST",body:JSON.stringify({project})}));
+ assert.equal(create.status,201);
+ const s=await create.json();
+ const url="http://localhost:8787/api/sessions/"+s.sessionId+"/project";
+ const viewerAttempt=await handleRequest(new Request(url,{method:"DELETE",headers:{authorization:"Bearer "+s.viewerToken}}));
+ assert.equal(viewerAttempt.status,403);
+ const ownerRevoke=await handleRequest(new Request(url,{method:"DELETE",headers:{authorization:"Bearer "+s.ownerToken}}));
+ assert.equal(ownerRevoke.status,200);
+ const after=await handleRequest(new Request(url,{headers:{authorization:"Bearer "+s.viewerToken}}));
+ assert.equal(after.status,404);
+});
