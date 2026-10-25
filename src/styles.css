@@ -1004,3 +1004,51 @@ body.modal-open{overflow:hidden}
   .ending-cta,.ending-cta-text::after,.ending-cta-icon,.callback-overlay,.callback-dialog{transition:none}
   .closing-brand{transition:none}
 }
+
+
+/* RAMACH — load-synchronized opening, readable footer, subtle cursor luminance. */
+.opening{
+  background:
+    radial-gradient(ellipse 40% 35% at 50% 49%,rgba(19,79,106,.19) 0%,rgba(12,42,64,.11) 46%,transparent 100%),
+    #03090d;
+}
+.opening::before{
+  display:block!important;content:"";position:absolute;
+  top:50%;left:50%;right:auto;width:min(72vw,850px);height:min(35vw,360px);min-width:0;
+  transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;
+  opacity:.55;background:radial-gradient(ellipse at center,rgba(35,128,166,.18),rgba(15,64,106,.085) 45%,transparent 73%);
+  filter:blur(42px);mix-blend-mode:screen;
+}
+.opening::after{display:none!important}
+.cursor-aura{
+  position:fixed;z-index:8;top:0;left:0;
+  width:245px;height:245px;border-radius:50%;pointer-events:none;
+  opacity:0;transform:translate3d(-500px,-500px,0) translate(-50%,-50%);
+  background:radial-gradient(circle,rgba(74,164,182,.11) 0%,rgba(66,140,160,.065) 25%,rgba(38,98,139,.023) 50%,transparent 71%);
+  mix-blend-mode:screen;will-change:transform;
+  transition:opacity .38s ease;
+}
+body.cursor-glow-enabled .cursor-aura{opacity:1}
+.site-footer{
+  font-size:15px;min-height:56px;gap:18px;
+}
+.site-footer .footer-copy{font-size:15px;letter-spacing:.035em}
+.site-footer .footer-links a{font-size:15px;line-height:1.75}
+.site-footer .footer-social-label{font-size:14px}
+.site-footer .social-placeholder{font-size:15px;width:32px;height:32px}
+.site-footer .footer-notice{font-size:14px}
+@media(max-width:900px){
+  .site-footer{gap:14px 18px}
+  .site-footer .footer-links{gap:11px 21px}
+}
+@media(max-width:600px){
+  .site-footer{font-size:14px;gap:11px}
+  .site-footer .footer-copy{font-size:14px}
+  .site-footer .footer-links a{font-size:14px}
+  .site-footer .footer-social-label{font-size:14px}
+  .site-footer .social-placeholder{font-size:14px}
+  .opening::before{width:88vw;height:48vw;filter:blur(30px)}
+}
+@media(pointer:coarse),(prefers-reduced-motion:reduce){
+  .cursor-aura{display:none!important}
+}

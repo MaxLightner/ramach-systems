@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 
 type Node = { group: THREE.Group; color: THREE.Color };
-type PathPulse = { curve: THREE.CurvePath<THREE.Vector3>; orb: THREE.Mesh; halo: THREE.Mesh; offset: number; reverse: boolean };
+type PathPulse = { curve: THREE.CurvePath<THREE.Vector3>; orb: THREE.Mesh; halo: THREE.Mesh; trails: THREE.Mesh[]; offset: number; reverse: boolean };
 const ivory = 0xe7e3d8, ink = 0x152d30, gold = 0xb99d72, aqua = 0x79c5b7;
 const smooth = (a:number,b:number,v:number) => { const t = Math.max(0,Math.min(1,(v-a)/(b-a))); return t*t*(3-2*t); };
 
@@ -238,10 +238,13 @@ export function createWorld(host:HTMLElement, chapterAlignments:readonly ('left'
   const pulses:PathPulse[]=[];
   const track = new THREE.MeshBasicMaterial({color:0x31504e,transparent:true,opacity:.48,depthWrite:false});
   const filament = new THREE.MeshBasicMaterial({color:0x508b7f,transparent:true,opacity:.55,depthWrite:false,toneMapped:false});
-  const outgoing = new THREE.MeshBasicMaterial({color:0xffdda3,toneMapped:false});
-  const incoming = new THREE.MeshBasicMaterial({color:0x9effe6,toneMapped:false});
-  const warmHalo = new THREE.MeshBasicMaterial({color:0xffcf83,transparent:true,opacity:.19,blending:THREE.AdditiveBlending,depthWrite:false,toneMapped:false});
-  const coolHalo = new THREE.MeshBasicMaterial({color:0x87ffe4,transparent:true,opacity:.2,blending:THREE.AdditiveBlending,depthWrite:false,toneMapped:false});
+  // Browser-independent emissive basic materials, with enough apparent size to be visible on desktop.
+  const outgoing = new THREE.MeshBasicMaterial({color:0xffe5b5,toneMapped:false});
+  const incoming = new THREE.MeshBasicMaterial({color:0xc3fff0,toneMapped:false});
+  const warmHalo = new THREE.MeshBasicMaterial({color:0xffd79c,transparent:true,opacity:.4,blending:THREE.AdditiveBlending,depthWrite:false,toneMapped:false});
+  const coolHalo = new THREE.MeshBasicMaterial({color:0x9affec,transparent:true,opacity:.42,blending:THREE.AdditiveBlending,depthWrite:false,toneMapped:false});
+  const outgoingTrail = new THREE.MeshBasicMaterial({color:0xffda92,transparent:true,opacity:.7,depthWrite:false,toneMapped:false});
+  const incomingTrail = new THREE.MeshBasicMaterial({color:0x86ffe7,transparent:true,opacity:.7,depthWrite:false,toneMapped:false});
   // Generate crisp segments; corner bevels preserve the board-routing geometry.
   function beveled(points:THREE.Vector3[],cut:number){
     const out:THREE.Vector3[]=[points[0].clone()];
@@ -279,9 +282,13 @@ export function createWorld(host:HTMLElement, chapterAlignments:readonly ('left'
       put(root,new THREE.TubeGeometry(route,110,.034,5,false),track);
       put(root,new THREE.TubeGeometry(route,110,.012,5,false),filament);
       const reverse=lane===1;
-      const orb=put(root,new THREE.SphereGeometry(.115,10,7),reverse?incoming:outgoing);
-      const halo=put(root,new THREE.SphereGeometry(.27,10,7),reverse?coolHalo:warmHalo);
-      pulses.push({curve:route,orb,halo,offset:(i*.091+lane*.47)%1,reverse});
+      const orb=put(root,new THREE.SphereGeometry(.21,14,10),reverse?incoming:outgoing);
+      const halo=put(root,new THREE.SphereGeometry(.46,12,9),reverse?coolHalo:warmHalo);
+      const trails=[
+        put(root,new THREE.SphereGeometry(.15,9,7),reverse?incomingTrail:outgoingTrail),
+        put(root,new THREE.SphereGeometry(.10,8,6),reverse?incomingTrail:outgoingTrail)
+      ];
+      pulses.push({curve:route,orb,halo,trails,offset:(i*.091+lane*.47)%1,reverse});
     }
   }
   // Eight chapter approaches occupy the first 82% of the scene; the last 18% returns to the chip.
@@ -353,9 +360,14 @@ export function createWorld(host:HTMLElement, chapterAlignments:readonly ('left'
       halo.scale.setScalar(1+weight*.018);
     }
     for(const q of pulses){
-      const pulseTravel=reduceMotion ? 0.5 : (seconds*.075+q.offset)%1;
-      q.orb.position.copy(q.curve.getPoint(q.reverse?1-pulseTravel:pulseTravel));
+      const pulseTravel=reduceMotion ? 0.5 : (seconds*.19+q.offset)%1;
+      const along=q.reverse?1-pulseTravel:pulseTravel;
+      q.orb.position.copy(q.curve.getPoint(along));
       q.halo.position.copy(q.orb.position);
+      for(let k=0;k<q.trails.length;k++){
+        const trailing=(pulseTravel-.015*(k+1)+1)%1;
+        q.trails[k].position.copy(q.curve.getPoint(q.reverse?1-trailing:trailing));
+      }
     }
     renderer.render(scene,camera);
   }

@@ -13,9 +13,13 @@ test('the opening is deliberately blank before a two-line outline logo begins dr
   assert.match(main,/wordmarkBottomRow\.map/);
   assert.match(main,/pathLength="1000"/);
   assert.doesNotMatch(main,/<text class="wordmark-line/);
-  assert.match(main,/window\.setTimeout\(\(\)=>document\.body\.classList\.add\('logo-drawing'\),680\)/);
+  assert.match(main,/async function beginLogoAfterLoad\(\)/);
+  assert.match(main,/document\.readyState!=='complete'/);
+  assert.match(main,/await document\.fonts\.ready/);
+  assert.match(main,/window\.setTimeout\(\(\)=>document\.body\.classList\.add\('logo-drawing'\),950\)/);
   assert.match(css,/\.opening\{[\s\S]*?background:#03090d/);
-  assert.match(css,/\.opening-grid,\.opening::before,\.opening::after\{display:none\}/);
+  assert.match(css,/\.opening\{[\s\S]*?radial-gradient\(ellipse 40% 35%/);
+  assert.match(css,/\.opening::before\{[\s\S]*?display:block!important/);
   assert.match(css,/\.opening-wordmark\{[\s\S]*?opacity:0;visibility:hidden/);
   assert.match(css,/body\.logo-drawing \.opening-wordmark-svg \.wordmark-glyph path\{[\s\S]*?animation:drawGlyphFinal/);
   assert.match(css,/@keyframes drawGlyphFinal/);
@@ -101,6 +105,37 @@ test('all authored CSS font declarations remain at least 13px',()=>{
   assert.deepEqual(below,[]);
   assert.match(css,/--minimum-text-size:13px/);
   assert.match(readme,/13 CSS px/);
+});
+test('scroll progresses by exact 3D stops and imposes a readable two-second minimum hold',()=>{
+  assert.match(main,/const stageStops=\[\.\.\.chapters\.map\(\(_,i\)=>storyEnd\*\(i\+\.96\)\/chapters\.length\),\.983\]/);
+  assert.match(main,/const minimumReadMs=2150/);
+  assert.match(main,/holdUntil=Infinity/);
+  assert.match(main,/if\(awaitingArrival&&Math\.abs\(target-displayed\)<=cameraArrivalThreshold\)/);
+  assert.match(main,/holdUntil=now\+minimumReadMs/);
+  assert.match(main,/addEventListener\('wheel',event=>/);
+  assert.match(main,/event\.preventDefault\(\)/);
+  assert.match(main,/journey\.addEventListener\('touchend'/);
+  assert.match(main,/if\(direction&&stageStep\(direction\)\)event\.preventDefault\(\)/);
+  assert.match(main,/goToStop\(nearestStopIndex\(target\)\)/);
+});
+test('desktop light packets are visible, animated, and have glowing trails while reduced motion is honored',()=>{
+  assert.match(world,/new THREE\.SphereGeometry\(\.21,14,10\)/);
+  assert.match(world,/new THREE\.SphereGeometry\(\.46,12,9\)/);
+  assert.match(world,/seconds\*\.19\+q\.offset/);
+  assert.match(world,/q\.trails\[k\]\.position\.copy/);
+  assert.match(world,/const pulseTravel=reduceMotion \? 0\.5/);
+  assert.match(world,/toneMapped:false/);
+});
+test('cursor aura is subtle, non-interactive and disabled for touch or reduced-motion devices',()=>{
+  assert.match(main,/class="cursor-aura" aria-hidden="true"/);
+  assert.match(main,/pointermove/);
+  assert.match(css,/\.cursor-aura\{[\s\S]*?pointer-events:none/);
+  assert.match(css,/@media\(pointer:coarse\),\(prefers-reduced-motion:reduce\)/);
+});
+test('the footer is larger than the requested 13px minimum',()=>{
+  assert.match(css,/\.site-footer \.footer-copy\{font-size:15px/);
+  assert.match(css,/\.site-footer \.footer-links a\{font-size:15px/);
+  assert.match(css,/@media\(max-width:600px\)\{[\s\S]*?\.site-footer \.footer-links a\{font-size:14px/);
 });
 test('the 3D scene keeps its rendering workload restrained and respects reduced motion',()=>{
   assert.match(world,/renderer\.shadowMap\.enabled = false/);
