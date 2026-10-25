@@ -1,4 +1,7 @@
-import {strict as assert} from "node:assert";
+const assert = {
+ equal(actual:unknown,expected:unknown){if(actual!==expected)throw Error("Expected "+String(expected)+", got "+String(actual))},
+ ok(condition:unknown){if(!condition)throw Error("Assertion failed")}
+};
 import {handleRequest} from "./main.ts";
 const project={
  schemaVersion:1,projectId:"550e8400-e29b-41d4-a716-446655440000",name:"Test",revision:0,
