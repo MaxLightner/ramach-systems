@@ -39,7 +39,8 @@ test('no fabricated live session success and no unauthenticated remote edits',()
  assert.match(main,/type:'session.join'/);
  assert.match(main,/sessionId:session,token,role:'viewer'/);
  assert.match(main,/history\.replaceState/);
- assert.match(main,/ویرایش فعلاً فقط در همین مرورگر/);
+ assert.match(main,/ویرایش بدون اتصال فقط محلی است/);
+ assert.match(main,/connectedRole!=='editor'&&connectedRole!=='owner'/);
  assert.doesNotMatch(main,/socket\?\.send\(JSON\.stringify\(\{type:'object.upsert'/);
 });
 
