@@ -90,6 +90,10 @@ test('the final page has a ticker at the top, one central CTA and a narrow utili
   assert.match(main,/endingObserver\.observe\(endingSection\)/);
   assert.match(css,/@keyframes ramachTicker/);
   assert.match(css,/\.ending-center\{[\s\S]*?place-items:center/);
+  for(const key of ['archiyar','chido','kitchyar','kamcheh','mizato','websites'])
+    assert.match(ending,new RegExp('href="\\./catalog\\.html\\?product='+key+'"'));
+  assert.ok(ending.indexOf('class="ending-product-links"')>ending.indexOf('class="ending-center"'));
+  assert.ok(ending.indexOf('class="ending-product-links"')<ending.indexOf('class="site-footer"'));
 });
 test('the callback form is hidden until the single CTA opens its dialog and never claims false success',()=>{
   assert.match(main,/id="callback-overlay" hidden/);
@@ -115,7 +119,7 @@ test('the scroll camera takes 2.5 seconds with a pronounced ease-in/out and reta
   assert.match(main,/transitionStarted=performance\.now\(\)/);
   assert.match(main,/const t=clamp\(\(now-transitionStarted\)\/cameraTravelMs\)/);
   assert.match(main,/displayed=transitionFrom\+\(transitionTo-transitionFrom\)\*easeInOutCubic\(t\)/);
-  assert.match(main,/const minimumReadMs=2150/);
+  assert.match(main,/const minimumReadMs=780/);
   assert.match(main,/holdUntil=Infinity/);
   assert.match(main,/if\(awaitingArrival&&!transitioning&&Math\.abs\(target-displayed\)<=cameraArrivalThreshold\)/);
   assert.match(main,/holdUntil=now\+minimumReadMs/);
@@ -161,12 +165,15 @@ test('cursor aura is subtle, non-interactive and disabled for touch or reduced-m
   assert.match(css,/\.cursor-aura\{[\s\S]*?pointer-events:none/);
   assert.match(css,/@media\(pointer:coarse\),\(prefers-reduced-motion:reduce\)/);
 });
-test('every authored font size is at least 13px and the footer ends at a restrained 14px',()=>{
+test('desktop microcopy minimum is 15px; mobile remains at 13px with a 14px footer',()=>{
   const footerOverride=css.slice(css.lastIndexOf('/* RAMACH 07'));
   assert.match(footerOverride,/\.site-footer \.footer-copy,/);
   assert.match(footerOverride,/\.site-footer \.footer-links a,/);
   assert.match(footerOverride,/font-size:14px !important/);
-  assert.doesNotMatch(footerOverride,/font-size:16px/);
+  const desktopOverride=css.slice(css.lastIndexOf('/* Desktop typography floor:'));
+  assert.match(desktopOverride,/@media\(min-width:701px\)/);
+  assert.match(desktopOverride,/--minimum-text-size:15px/);
+  assert.match(desktopOverride,/font-size:15px !important/);
   const declarations=[...css.matchAll(/(?:font-size|font)\s*:\s*([^;}]+)/g)].map(m=>m[1]);
   for(const value of declarations)for(const m of value.matchAll(/(\d+(?:\.\d+)?)px/g))
     assert.ok(Number(m[1])>=13,value);
@@ -195,6 +202,13 @@ test('smooth glowing paths use quadratic corners and fewer shared GPU particle b
   assert.match(world,/new Set<THREE\.BufferGeometry>\(\)/);
   assert.doesNotMatch(world,/new THREE\.LineCurve3\(out\[i\],out\[i\+1\]\)/);
 });
+test('one wheel gesture advances exactly one stop and reading hold stays under one second',()=>{
+  assert.match(main,/const minimumReadMs=780/);
+  assert.match(main,/stageStep\(event\.deltaY>0\?1:-1\)/);
+  assert.doesNotMatch(main,/wheelAccum/);
+  assert.doesNotMatch(main,/Math\.abs\(wheelAccum\)<24/);
+  assert.match(main,/if\(awaitingArrival\|\|performance\.now\(\)<holdUntil\)return true/);
+});
 test('mouse wheel physically animates the page with the 3D camera, no instant teleport',()=>{
   assert.doesNotMatch(main,/destination\*stageDistance\(\)/);
   assert.match(main,/displayed\*stageDistance\(\)/);
@@ -214,4 +228,14 @@ test('the 3D scene keeps its rendering workload restrained and respects reduced 
   assert.match(world,/mesh\.castShadow=false;mesh\.receiveShadow=false/);
   assert.match(world,/Math\.min\(devicePixelRatio,w<740\?1:1\.25\)/);
   assert.match(css,/prefers-reduced-motion:reduce/);
+});
+
+test('CTA displays app and specialist website buttons before the narrow footer',()=>{
+  const ending=main.slice(main.indexOf('<section class="ending"'),main.indexOf('</main>'));
+  const nav=ending.slice(ending.indexOf('class="ending-product-links"'),ending.indexOf('class="site-footer"'));
+  assert.equal((nav.match(/class="ending-product-link(?: ending-product-link-service)?"/g)||[]).length,6);
+  for(const slug of ['archiyar','chido','kitchyar','kamcheh','mizato','websites'])assert.ok(nav.includes('product='+slug));
+  assert.match(nav,/طراحی سایت تخصصی/);
+  assert.match(css,/\.ending-product-links\{/);
+  assert.match(css,/grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
 });

@@ -1212,3 +1212,64 @@ body.loader-complete .opening-loader{
     font-size:14px !important;
   }
 }
+
+
+/* RAMACH — catalog links live between the single CTA and narrow footer. */
+.ending{height:auto;min-height:100svh;overflow:visible}
+.ending-center{min-height:clamp(220px,45svh,510px)}
+.ending-product-links{
+  display:grid;grid-template-columns:repeat(6,minmax(0,1fr));
+  gap:9px;width:100%;padding:0 0 24px;
+  margin:0 auto;max-width:1280px;
+}
+.ending-product-link{
+  min-height:48px;display:flex;align-items:center;justify-content:space-between;
+  gap:9px;padding:10px clamp(8px,1.25vw,15px);direction:ltr;
+  border:1px solid rgba(137,181,165,.33);border-radius:6px;
+  background:rgba(21,42,44,.36);color:#d8e6dc;
+  text-decoration:none;white-space:nowrap;
+  font:600 14px/1.5 'Manrope Variable','Manrope',sans-serif;
+  letter-spacing:.055em;
+  transition:background .23s ease,border-color .23s ease,color .23s ease,transform .23s ease;
+}
+.ending-product-link:hover,.ending-product-link:focus-visible{
+  background:rgba(50,89,82,.46);border-color:rgba(188,224,207,.65);
+  color:#f8f5e8;transform:translateY(-2px);
+}
+.ending-product-link-service{
+  direction:rtl;letter-spacing:0;
+  font:600 14px/1.6 'Vazirmatn Variable','Vazirmatn',sans-serif;
+  color:#e7d3af;border-color:rgba(195,162,111,.48);
+}
+.ending-product-arrow{color:#9abfb0;font:500 16px/1 'Manrope Variable','Manrope',sans-serif}
+@media(max-width:1100px){
+  .ending-product-links{grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+}
+@media(max-width:600px){
+  .ending-center{min-height:39svh;padding:32px 0}
+  .ending-product-links{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding-bottom:18px}
+  .ending-product-link{min-height:45px;padding:9px 11px;font-size:13px}
+  .ending-product-link-service{font-size:13px}
+  .site-footer{margin-top:0}
+}
+/* Desktop typography floor: only microcopy changes; heading/body sizes are preserved.
+   Mobile retains the existing 13px minimum. */
+@media(min-width:701px){
+  :root{--minimum-text-size:15px}
+  .brand-slash,.brand-words small,.site-header .brand small,
+  .site-nav,.header-status,
+  .stage-top,.stage-bottom,.stage-number,.stage-instruction,
+  .chapter-count,.chapter-note,.chapter-eyebrow,.chapter-index,.chapter-category,
+  .closing-brand-sub,.ticker-separator,.ecosystem-track i,
+  .callback-kicker,.callback-status,.callback-form label,
+  .footer-social-label,.social-placeholder,.footer-notice,
+  .webgl-message,.opening-index,.opening-counter,.opening-scroll,
+  .ending-product-link,.ending-product-link-service{
+    font-size:15px !important;
+  }
+  .site-footer,.site-footer .footer-copy,.site-footer .footer-links a,
+  .site-footer .footer-social-label,.site-footer .social-placeholder,
+  .site-footer .footer-notice,.site-footer span:nth-child(2){
+    font-size:15px !important;
+  }
+}

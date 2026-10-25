@@ -63,3 +63,9 @@ The core issue was the prior wheel handler instantly moving `scrollTop` to the n
 - Signals use a shared sprite and **two** GPU point clouds (small bright core, wide faint halo) referencing one dynamic buffer. The desktop has 154 points and mobile 84; no per-particle mesh or post-processing bloom. The 32×32 procedural sprite is about 4 KiB; signal motion and speed remain deterministic and diverse.
 - Footer typography is 14 CSS px on mobile and desktop, preserving the site's 13 CSS px hard minimum without enlarging navigation to 16 px. CSS font declarations are audited in automated tests.
 - Visual runtime FPS, actual Chrome hardware motion and layout/computed font sizes still require browser-based checks; passing CI alone is not visual verification.
+
+## Product and service pages / revised story navigation (2026-10-25)
+
+- After the primary CTA and before the footer are six lightweight links for Archiyar, Chido, Kitchyar, Kamcheh, Mizato and specialized website design. Each links to a distinct URL `./catalog.html?product=...` built from a static Vite entry and real per-product content. The catalog links only to existing public demos, and plainly labels Kitchyar as under development; there are no fake login or production guarantees.
+- Desktop readable typography has a 15 CSS px minimum for microcopy, including scene labels, footer and forms; mobile retains its 13 CSS px minimum and 14 CSS px footer. Editorial titles and body sizes remain larger. Static tests inspect the authored CSS declarations, while visual computed-size testing across devices remains a separate check.
+- Every new wheel gesture is accepted as one stage request immediately, without waiting for a wheel-delta threshold. Transitions remain 2.5 seconds with cubic easing. Post-arrival reading hold is 780 ms (less than 1 second). During travel or hold, further scroll events are consumed, not queued. Touch and keyboard controls remain.

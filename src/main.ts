@@ -172,6 +172,14 @@ app.innerHTML = `
         <span class="ending-cta-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18 18 6M7 6h11v11"/></svg></span>
       </button>
     </div>
+    <nav class="ending-product-links" aria-label="محصولات و خدمات راماچ">
+      <a class="ending-product-link" href="./catalog.html?product=archiyar" aria-label="آرچیار، صفحه محصول"><span dir="ltr">ARCHIYAR</span><span class="ending-product-arrow" aria-hidden="true">↗</span></a>
+      <a class="ending-product-link" href="./catalog.html?product=chido" aria-label="چیدو، صفحه محصول"><span dir="ltr">CHIDO</span><span class="ending-product-arrow" aria-hidden="true">↗</span></a>
+      <a class="ending-product-link" href="./catalog.html?product=kitchyar" aria-label="کیچیار، صفحه محصول"><span dir="ltr">KITCHYAR</span><span class="ending-product-arrow" aria-hidden="true">↗</span></a>
+      <a class="ending-product-link" href="./catalog.html?product=kamcheh" aria-label="کمچه، صفحه محصول"><span dir="ltr">KAMCHEH</span><span class="ending-product-arrow" aria-hidden="true">↗</span></a>
+      <a class="ending-product-link" href="./catalog.html?product=mizato" aria-label="میزاتو، صفحه محصول"><span dir="ltr">MIZATO</span><span class="ending-product-arrow" aria-hidden="true">↗</span></a>
+      <a class="ending-product-link ending-product-link-service" href="./catalog.html?product=websites" aria-label="خدمات طراحی سایت تخصصی"><span>طراحی سایت تخصصی</span><span class="ending-product-arrow" aria-hidden="true">↗</span></a>
+    </nav>
     <footer class="site-footer" aria-label="پیوندهای سایت">
       <span class="footer-copy" dir="ltr">© 2026 RAMACH SYSTEMS</span>
       <nav class="footer-links" aria-label="پیوندهای اصلی">
@@ -277,7 +285,7 @@ const clamp=(v:number,a=0,b=1)=>Math.max(a,Math.min(b,v));
 // Eight chapter landings plus the final return-to-core landing.
 const stageStops=[...chapters.map((_,i)=>storyEnd*(i+.96)/chapters.length),.983];
 const cameraArrivalThreshold=.001;
-const minimumReadMs=2150;
+const minimumReadMs=780;
 const cameraTravelMs=2500;
 const easeInOutCubic=(v:number)=>v<.5?4*v*v*v:1-Math.pow(-2*v+2,3)/2;
 let transitionFrom=0,transitionTo=0,transitionStarted=0,transitioning=false;
@@ -286,8 +294,7 @@ let awaitingArrival=false;
 let holdUntil=0;
 let programmaticScroll=false;
 let idleSnapTimer=0;
-let wheelAccum=0;
-let lastWheelAt=0;
+
 // RAMACH is an animation-led experience: core motion is on unless explicitly disabled
 // via the reduce-motion query argument; desktop OS preferences must not silently
 // turn all cinematic scenes into instant jumps.
@@ -337,14 +344,11 @@ addEventListener('wheel',event=>{
   if(event.ctrlKey||document.body.classList.contains('modal-open'))return;
   if(!stageIsActive())return;
   if((event.target as Element)?.closest?.('input,textarea,select,[contenteditable]'))return;
-  const now=performance.now();
-  if(now-lastWheelAt>240)wheelAccum=0;
-  lastWheelAt=now;
-  wheelAccum+=event.deltaY;
-  if(Math.abs(wheelAccum)<24&&now>=holdUntil&&!awaitingArrival){event.preventDefault();return;}
-  const handled=stageStep(wheelAccum>0?1:-1);
+  // One distinct wheel gesture is sufficient: no arbitrary delta accumulation.
+  // Additional events during camera travel and the short reading hold are consumed.
+  if(event.deltaY===0)return;
+  const handled=stageStep(event.deltaY>0?1:-1);
   if(handled)event.preventDefault();
-  wheelAccum=0;
 },{passive:false});
 let touchY=0;
 journey.addEventListener('touchstart',event=>{
