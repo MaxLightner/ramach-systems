@@ -21,7 +21,7 @@ const HEADERS = {"content-type":"application/json; charset=utf-8","cache-control
 const record = (v: unknown): v is Json => v !== null && typeof v === "object" && !Array.isArray(v);
 const finite = (v: unknown) => typeof v === "number" && Number.isFinite(v);
 const uuid = (v: unknown) => typeof v === "string" && UUID.test(v);
-const three = (v: unknown) => Array.isArray(v) && v.length === 3 && v.every(finite);
+const three = (v: unknown): v is number[] => Array.isArray(v) && v.length === 3 && v.every(finite);
 const four = (v: unknown) => Array.isArray(v) && v.length === 4 && v.every(finite);
 function secret() {
  const buffer = new Uint8Array(32); crypto.getRandomValues(buffer);
