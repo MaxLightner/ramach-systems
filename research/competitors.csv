@@ -1,0 +1,25 @@
+market,category,name,positioning,maturity,ramach_signal,source
+Iran,VR_AR,Zi1Plus,"VR/AR architectural experience before construction",shipping,"VR before build already exists; integrate context/workflow instead",https://ir.linkedin.com/company/zi1plus
+Iran,VR_Tours,VRHouse,"3D/360 property tours, measurement, agency tooling",shipping,"generic virtual tour is not a moat",https://vrhouse.ir/
+Iran,AI_Architecture,Ziggurat,"AI + VR + data-led architecture/construction claim",claimed_shipping,"proof matters more than AI wording",https://ziggurat-co.com/
+Iran,AI_AEC,Novaco/Saba Naft,"agentic massing/layout/regulation MVP",MVP,"Iranian code-aware generative design is active",https://novaco-ahdaf.com/en/projects/design-and-implementation-of-an-agentic-ai-assistant-for-automated-building-massing-floor-plan-layout-generation-and-fun
+Iran,Materials_AI,Architalog,"Iranian product objects + AI moodboard + showroom network",shipping,"local structured product data can become a moat",https://architalog.com/
+Iran,PM,Soha,"construction project time/cost/resource/progress",shipping,"avoid generic PM clone",https://iksoha.com/our-services/customization/construction/
+Iran,Social,Civil808,"Persian civil/architecture engineer social network",shipping,"generic social layer is not new",https://ir.linkedin.com/company/civil808
+Iran,Architecture_Community,ETOOOD,"architect profiles/projects/articles/forum",shipping,"portfolio/feed needs transactional utility",https://etoood.com/
+Iran,Architect_Marketplace,Archiz,"architect discovery and remote design marketplace",shipping,"verified project history may differentiate",https://archizco.com/SearchArchitect/Index
+Iran,B2B_Network,Tosee Sakhteman,"projects/factories/engineers/contractors",shipping,"industry connection proposition exists",https://www.toseesakhteman.com/
+Iran,Marketplace,Kala-ba-Kala,"contractors/suppliers/machinery/projects",shipping,"Kamcheh needs sharper wedge",https://www.kala-bakala.com/about
+Iran,Procurement,Moshtareim,"construction price inquiry and tenders",shipping,"procurement can be partner/integration",https://moshtareim.ir/
+Global,AEC_Platform,Autodesk Forma,"connected design-to-construction cloud + AI",shipping,"global direction validates connected project context",https://adsknews.autodesk.com/en/news/autodesk-forma-ai-aec-connected-workflows-2026/
+Global,Construction_Platform,Procore,"CDE + project workflows + agentic AI",shipping,"agents need connected project data",https://www.procore.com/press/procore-redefines-the-common-data-environment-with-connected-data-and-agentic-ai
+Global,Reality_Capture,OpenSpace,"360 capture mapped to plans/BIM",shipping,"reality capture can become project data",https://www.openspace.ai/products/capture/
+Global,Construction_AI,Buildots,"AI progress tracking + forecasting from site imagery",shipping,"visual capture can graduate to operational intelligence",https://buildots.com/product/
+Global,Construction_AI,Doxel,"CV installed-quantity/progress/pay validation",shipping,"field AI requires measurable evidence",https://doxel.ai/faqs
+Global,Spatial_Twin,Cupix,"4D spatial intelligence from 360 video",shipping,"time-indexed spatial project record is strategic",https://www.cupix.com/
+Global,AI_Design,Finch,"AI-native building design + BIM geometry",shipping,"structured editable geometry is stronger than images",https://www.finch3d.com/
+Global,AI_Design,Snaptrude,"AI in connected editable AEC workspace",shipping,"AI should share project context",https://www.snaptrude.com/blog/announcing-snaptrude-ai
+Global,AI_Design,Maket,"residential plan generation/editing/rendering",shipping,"plan AI is becoming commodity; boundaries matter",https://www.maket.ai/faqs
+Global,Professional_Network,Houzz,"homeowners + professionals + vendors + Pro software",shipping,"network attached to hiring/project workflow",https://www.houzz.com/aboutUs
+Global,Architecture_Network,Architizer,"projects/firms/content/awards/product discovery",shipping,"network utility can be visibility and products",https://architizer.com/about/
+Global,Contractor_Marketplace,BuildZoom,"data-led contractor matching + project consultant",shipping,"trust data and transaction matter",https://www.buildzoom.com/help_center_topics/8
